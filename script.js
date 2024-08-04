@@ -366,6 +366,10 @@ function calculateMonthlyView() {
     return monthlyData;
 }
 
+function sortBillsByDate(bills) {
+    return bills.sort((a, b) => new Date(a.date) - new Date(b.date));
+}
+
 function getNextBillDate(date, frequency) {
     switch (frequency) {
         case 'weekly': date.setDate(date.getDate() + 7); break;
