@@ -537,10 +537,10 @@ function deleteOldPayCycles() {
     const today = new Date();
     const payCycles = getCycleDates(new Date(payday), getCycleLength(payFrequency), generatedPayCycles);
     const validPayCycles = payCycles.filter(cycle => cycle.end >= today);
-    const numberOfCyclesToDelete = payCycles.length - validPayCycles.length;
+    const numberOfCycles toDelete = payCycles.length - validPayCycles.length;
 
-    if (numberOfCyclesToDelete > 0) {
-        generatedPayCycles -= numberOfCyclesToDelete;
+    if (numberOfCycles > 0) {
+        generatedPayCycles -= numberOfCycles;
         saveToLocalStorage();
     }
 }
