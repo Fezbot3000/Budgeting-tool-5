@@ -63,7 +63,6 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('step2').classList.remove('hidden');
     }
     updateBillsTable();
-    deleteOldPayCycles(); // Call the function to delete old pay cycles
     updateAccordion();
 
     // Set dark mode if enabled
@@ -215,7 +214,7 @@ function updateAccordion() {
                 day: '2-digit',
                 year: 'numeric'
             });
-            accordionContainer.innerHTML += `<button class="accordion"><span>${formattedStartDate} - ${formattedEndDate}</span><span class="leftover">Leftover: <span class="amount">$${leftoverAmount.toFixed(2)}</span></span><span class="arrow down">▶</span></button><div class="panel"><div class="pay-cycle"><table><tr><td colspan="2">Income:</td><td class="positive right-align">$${income.toFixed(2)}</td></tr><tr><td colspan="2">Total Bills:</td><td class="negative right-align">-$${cycleTotal.toFixed(2)}</td></tr>${cycleBills}</table></div></div>`;
+            accordionContainer.innerHTML += `<button class="accordion"><span>${formattedStartDate} - ${formattedEndDate}</span><span class="leftover">Leftover: <span class="amount">$${leftoverAmount.toFixed(2)}</span></span><span class="arrow">▶</span></button><div class="panel"><div class="pay-cycle"><table><tr><td colspan="2">Income:</td><td class="positive right-align">$${income.toFixed(2)}</td></tr><tr><td colspan="2">Total Bills:</td><td class="negative right-align">-$${cycleTotal.toFixed(2)}</td></tr>${cycleBills}</table></div></div>`;
             chartData.dates.push(formattedStartDate);
             chartData.totals.push(cycleTotal);
         });
@@ -230,7 +229,7 @@ function updateAccordion() {
                 leftoverClass = leftoverAmount >= 0 ? 'positive' : 'negative';
 
             if (index >= revealedPayCycles) return;
-            accordionContainer.innerHTML += `<button class="accordion"><span>${monthYear}</span><span class="leftover">Leftover: <span class="amount">$${leftoverAmount.toFixed(2)}</span></span><span class="arrow down">▶</span></button><div class="panel"><div class="pay-cycle"><table><tr><td colspan="2">Income (${payDatesForMonth.map(date => new Date(date).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: '2-digit', year: 'numeric' })).join(', ')}):</td><td class="positive right-align">$${monthIncome.toFixed(2)}</td></tr><tr><td colspan="2">Total Bills:</td><td class="negative right-align">-$${monthTotal.toFixed(2)}</td></tr>${billsForMonth}</table></div></div>`;
+            accordionContainer.innerHTML += `<button class="accordion"><span>${monthYear}</span><span class="leftover">Leftover: <span class="amount">$${leftoverAmount.toFixed(2)}</span></span><span class="arrow">▶</span></button><div class="panel"><div class="pay-cycle"><table><tr><td colspan="2">Income (${payDatesForMonth.map(date => new Date(date).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: '2-digit', year: 'numeric' })).join(', ')}):</td><td class="positive right-align">$${monthIncome.toFixed(2)}</td></tr><tr><td colspan="2">Total Bills:</td><td class="negative right-align">-$${monthTotal.toFixed(2)}</td></tr>${billsForMonth}</table></div></div>`;
         });
     }
 
@@ -238,16 +237,7 @@ function updateAccordion() {
         button.addEventListener('click', function () {
             this.classList.toggle('active');
             const panel = this.nextElementSibling;
-            const arrow = this.querySelector('.arrow');
-            if (panel.style.display === 'block') {
-                panel.style.display = 'none';
-                arrow.classList.remove('up');
-                arrow.classList.add('down');
-            } else {
-                panel.style.display = 'block';
-                arrow.classList.remove('down');
-                arrow.classList.add('up');
-            }
+            panel.style.display = panel.style.display === 'block' ? 'none' : 'block';
         });
     });
 
@@ -440,7 +430,7 @@ function loadMorePayCycles() {
 
 function updateChart(chartData) {
     const ctx = document.getElementById('financialChart').getContext('2d');
-    if (window.financialChart && typeof window.financialChart.destroy === 'function') {
+    if (window.financialChart) {
         window.financialChart.destroy();
     }
     window.financialChart = new Chart(ctx, {
@@ -541,19 +531,6 @@ function toggleDarkMode() {
     saveToLocalStorage();
 }
 
-// Function to delete old pay cycles
-function deleteOldPayCycles() {
-    const today = new Date();
-    const payCycles = getCycleDates(new Date(payday), getCycleLength(payFrequency), generatedPayCycles);
-    const validPayCycles = payCycles.filter(cycle => cycle.end >= today);
-    const numberOfCyclesToDelete = payCycles.length - validPayCycles.length;
-
-    if (numberOfCyclesToDelete > 0) {
-        generatedPayCycles -= numberOfCyclesToDelete;
-        saveToLocalStorage();
-    }
-}
-
 document.addEventListener('DOMContentLoaded', () => {
     if (income) {
         const yearlyIncome = calculateYearlyIncome(payFrequency, income);
@@ -568,6 +545,5 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('step2').classList.remove('hidden');
     }
     updateBillsTable();
-    deleteOldPayCycles(); // Call the function to delete old pay cycles
     updateAccordion();
 });
