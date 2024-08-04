@@ -63,6 +63,7 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('step2').classList.remove('hidden');
     }
     updateBillsTable();
+    deleteOldPayCycles(); // Call the function to delete old pay cycles
     updateAccordion();
 
     // Set dark mode if enabled
@@ -430,7 +431,7 @@ function loadMorePayCycles() {
 
 function updateChart(chartData) {
     const ctx = document.getElementById('financialChart').getContext('2d');
-    if (window.financialChart) {
+    if (window.financialChart && typeof window.financialChart.destroy === 'function') {
         window.financialChart.destroy();
     }
     window.financialChart = new Chart(ctx, {
@@ -531,6 +532,19 @@ function toggleDarkMode() {
     saveToLocalStorage();
 }
 
+// Function to delete old pay cycles
+function deleteOldPayCycles() {
+    const today = new Date();
+    const payCycles = getCycleDates(new Date(payday), getCycleLength(payFrequency), generatedPayCycles);
+    const validPayCycles = payCycles.filter(cycle => cycle.end >= today);
+    const numberOfCyclesToDelete = payCycles.length - validPayCycles.length;
+
+    if (numberOfCyclesToDelete > 0) {
+        generatedPayCycles -= numberOfCyclesToDelete;
+        saveToLocalStorage();
+    }
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     if (income) {
         const yearlyIncome = calculateYearlyIncome(payFrequency, income);
@@ -545,5 +559,6 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('step2').classList.remove('hidden');
     }
     updateBillsTable();
+    deleteOldPayCycles(); // Call the function to delete old pay cycles
     updateAccordion();
 });
