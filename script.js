@@ -366,6 +366,10 @@ function calculateMonthlyView() {
     return monthlyData;
 }
 
+function sortBillsByDate(bills) {
+    return bills.sort((a, b) => new Date(a.date) - new Date(b.date));
+}
+
 function getNextBillDate(date, frequency) {
     switch (frequency) {
         case 'weekly': date.setDate(date.getDate() + 7); break;
@@ -537,10 +541,28 @@ function deleteOldPayCycles() {
     const today = new Date();
     const payCycles = getCycleDates(new Date(payday), getCycleLength(payFrequency), generatedPayCycles);
     const validPayCycles = payCycles.filter(cycle => cycle.end >= today);
-    const numberOfCycles toDelete = payCycles.length - validPayCycles.length;
+    const numberOfCyclesToDelete = payCycles.length - validPayCycles.length;
 
-    if (numberOfCycles > 0) {
-        generatedPayCycles -= numberOfCycles;
+    if (numberOfCyclesToDelete > 0) {
+        generatedPayCycles -= numberOfCyclesToDelete;
         saveToLocalStorage();
     }
 }
+
+document.addEventListener('DOMContentLoaded', () => {
+    if (income) {
+        const yearlyIncome = calculateYearlyIncome(payFrequency, income);
+        const formattedPayday = new Date(payday).toLocaleDateString('en-US', {
+            weekday: 'short',
+            month: 'short',
+            day: '2-digit',
+            year: 'numeric'
+        });
+        document.getElementById('incomeTable').innerHTML = `<tr><td>${payFrequency}</td><td class="right-align">$${income.toFixed(2)}</td><td>${formattedPayday}</td><td class="right-align">$${yearlyIncome.toFixed(2)}</td></tr>`;
+        document.getElementById('step1').classList.add('hidden');
+        document.getElementById('step2').classList.remove('hidden');
+    }
+    updateBillsTable();
+    deleteOldPayCycles(); // Call the function to delete old pay cycles
+    updateAccordion();
+});
