@@ -1,4 +1,348 @@
-/* General styles for dark mode */
+/* General Styles */
+body {
+    font-family: 'Roboto', sans-serif;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    background-color: #f5f5f5;
+    font-size: 16px;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+h1 {
+    text-align: center;
+    margin: 20px 0;
+    color: #333;
+}
+
+.container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 20px;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.3s, color 0.3s;
+}
+
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+header h1 {
+    margin: 0;
+    font-size: 24px;
+}
+
+header .reset-btn, header .dark-mode-btn {
+    background-color: #f44336;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    margin-left: 10px;
+}
+
+header .reset-btn:hover, header .dark-mode-btn:hover {
+    background-color: #d32f2f;
+}
+
+.main {
+    margin-top: 20px;
+}
+
+.hidden {
+    display: none;
+}
+
+button {
+    margin: 10px 0;
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    border: none;
+    border-radius: 4px;
+    transition: background-color 0.3s;
+    white-space: nowrap;
+}
+
+button:hover {
+    background-color: #1565c0;
+}
+
+.secondary-btn {
+    background-color: transparent;
+    color: #007bff;
+    text-decoration: underline;
+    border: none;
+}
+
+.secondary-btn:hover {
+    color: white;
+    background-color: #007bff;
+}
+
+.primary-btn {
+    background-color: #007bff;
+    color: #fff;
+}
+
+.primary-btn:hover {
+    background-color: #0056b3;
+}
+
+.delete-btn {
+    background-color: #fff;
+    color: #f44336;
+    border: 2px solid #f44336;
+}
+
+.delete-btn:hover {
+    background-color: #fdecea;
+}
+
+.form-container {
+    margin-bottom: 20px;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 500;
+    padding-bottom: 10px;
+}
+
+.form-group input,
+.form-group select {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 16px;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    box-sizing: border-box;
+}
+
+.form-group select {
+    background: url('data:image/svg+xml;utf8,<svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M6 9l6 6 6-6"></path></svg>') no-repeat right 10px center;
+    background-size: 15px;
+    background-position: right 10px center;
+    background-color: #fff;
+    padding-right: 30px;
+}
+
+.table-container {
+    margin-top: 20px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+    background-color: #fff;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.3s, color 0.3s;
+}
+
+th, td {
+    border: 1px solid #ddd;
+    padding: 12px;
+    text-align: left;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+th {
+    background-color: #f5f5f5;
+    color: #333;
+    font-weight: 500;
+}
+
+.bills.negative {
+    color: #f44336;
+}
+
+.accordion {
+    background-color: #f5f5f5;
+    color: #333;
+    cursor: pointer;
+    padding: 12px;
+    width: 100%;
+    border: 1px solid #ddd;
+    text-align: left;
+    outline: none;
+    font-size: 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-radius: 4px;
+    margin-bottom: 10px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    height: auto;
+}
+
+.accordion .leftover {
+    margin-left: auto;
+    color: #333;
+}
+
+.accordion .leftover .amount {
+    color: #333;
+}
+
+.accordion .arrow {
+    margin-left: 10px;
+}
+
+.accordion.active, .accordion:hover {
+    background-color: #e5e5e5;
+}
+
+.panel {
+    padding: 0 10px;
+    background-color: white;
+    display: none;
+    overflow: hidden;
+    border-bottom-left-radius: 8px;
+    border-bottom-right-radius: 8px;
+}
+
+.right-align {
+    text-align: right;
+}
+
+.positive {
+    color: green;
+}
+
+.negative {
+    color: #f44336;
+}
+
+.chart-container {
+    margin: 20px auto;
+    max-width: 800px;
+}
+
+/* Modal Styles */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.4);
+    padding-top: 60px;
+}
+
+.modal-content {
+    background-color: #fff;
+    margin: 5% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%;
+    max-width: 500px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.modal-content .close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.modal-content .close:hover,
+.modal-content .close:focus {
+    color: black;
+    text-decoration: none;
+}
+
+.modal-content form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.modal-content form .form-group {
+    display: flex;
+    flex-direction: column;
+}
+
+button[type="submit"] {
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    white-space: nowrap;
+}
+
+button[type="submit"]:hover {
+    background-color: #0056b3;
+}
+
+.buttons {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.buttons .left-buttons {
+    display: flex;
+    gap: 10px;
+}
+
+.buttons .right-buttons {
+    display: flex;
+    gap: 10px;
+}
+
+/* Styling for View Mode dropdown */
+.view-mode {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    margin-top: 20px;
+}
+
+.view-mode label {
+    margin-right: 10px;
+    font-size: 14px;
+}
+
+.view-mode select {
+    background: url('data:image/svg+xml;utf8,<svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M6 9l6 6 6-6"></path></svg>') no-repeat right 10px center;
+    background-size: 10px;
+    background-position: right 10px center;
+    padding-right: 20px;
+    font-size: 14px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 10px;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+}
+
+/* Dark Mode Styles */
 body.dark-mode {
     background-color: #121212;
     color: #e0e0e0;
@@ -6,215 +350,46 @@ body.dark-mode {
 
 .container.dark-mode {
     background-color: #1e1e1e;
+    color: #e0e0e0;
 }
 
-/* Accordion arrow styles */
-.arrow.down::before {
-    content: '▼';
+.dark-mode th {
+    background-color: #333;
+    color: #e0e0e0;
 }
 
-.arrow.up::before {
-    content: '▲';
+.dark-mode .accordion {
+    background-color: #333;
+    color: #e0e0e0;
 }
 
-/* Leftover amount styles */
-.leftover {
-    color: #999999; /* Grey color for the text */
+.dark-mode .accordion:hover, .dark-mode .accordion.active {
+    background-color: #444;
 }
 
-.amount.positive {
-    color: green;
+.dark-mode .panel {
+    background-color: #1e1e1e;
 }
 
-.amount.negative {
-    color: red;
-}
-
-/* Mode selector text color */
-select#viewMode {
-    color: #e0e0e0; /* Grey color for the text */
-}
-
-/* Remove box shadow */
-button, .accordion {
-    box-shadow: none !important;
-}
-
-/* Modal styles */
-.modal {
-    display: none; /* Hidden by default */
-    position: fixed; /* Stay in place */
-    z-index: 1; /* Sit on top */
-    left: 0;
-    top: 0;
-    width: 100%; /* Full width */
-    height: 100%; /* Full height */
-    overflow: auto; /* Enable scroll if needed */
-    background-color: rgb(0,0,0); /* Fallback color */
-    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
-    padding-top: 60px;
-}
-
-.modal-content {
-    background-color: #fefefe;
-    margin: 5% auto; /* 15% from the top and centered */
-    padding: 20px;
-    border: 1px solid #888;
-    width: 80%; /* Could be more or less, depending on screen size */
-}
-
-/* Close button */
-.close {
-    color: #aaa;
-    float: right;
-    font-size: 28px;
-    font-weight: bold;
-}
-
-.close:hover,
-.close:focus {
-    color: black;
-    text-decoration: none;
-    cursor: pointer;
-}
-
-/* Additional styles */
-body {
-    font-family: Arial, sans-serif;
-    margin: 0;
-    padding: 0;
-    background-color: #f4f4f4;
-    color: #333;
-}
-
-.container {
-    max-width: 800px;
-    margin: 0 auto;
-    padding: 20px;
-    background-color: #fff;
-    box-shadow: 0 0 10px rgba(0,0,0,0.1);
-    border-radius: 5px;
-}
-
-h1 {
-    text-align: center;
-}
-
-label {
-    display: block;
-    margin: 10px 0 5px;
-}
-
-input[type="number"],
-input[type="date"],
-select {
-    width: 100%;
-    padding: 8px;
-    margin: 5px 0 10px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    box-sizing: border-box;
-}
-
-button {
-    display: block;
-    width: 100%;
-    padding: 10px;
-    margin: 10px 0;
-    background-color: #28a745;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 16px;
-}
-
-button:hover {
-    background-color: #218838;
-}
-
-.hidden {
-    display: none;
-}
-
-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-bottom: 20px;
-}
-
-table th,
-table td {
-    border: 1px solid #ddd;
-    padding: 8px;
-    text-align: left;
-}
-
-table th {
-    background-color: #f2f2f2;
-}
-
-table .right-align {
-    text-align: right;
-}
-
-.accordion {
-    background-color: #eee;
-    color: #444;
-    cursor: pointer;
-    padding: 18px;
-    width: 100%;
-    border: none;
-    text-align: left;
-    outline: none;
-    font-size: 15px;
-    transition: 0.4s;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.accordion.active,
-.accordion:hover {
-    background-color: #ccc;
-}
-
-.panel {
-    padding: 0 18px;
-    display: none;
-    background-color: white;
-    overflow: hidden;
-}
-
-.bills.negative {
-    color: red;
-}
-
-.secondary-btn {
+.dark-mode .reset-btn, .dark-mode .dark-mode-btn {
     background-color: #007bff;
-    color: white;
-    border: none;
-    padding: 5px 10px;
-    cursor: pointer;
-    border-radius: 4px;
-    font-size: 14px;
-    margin-right: 5px;
+    color: #fff;
 }
 
-.secondary-btn:hover {
+.dark-mode .reset-btn:hover, .dark-mode .dark-mode-btn:hover {
     background-color: #0056b3;
 }
 
-.delete-btn {
-    background-color: #dc3545;
-    color: white;
-    border: none;
-    padding: 5px 10px;
-    cursor: pointer;
-    border-radius: 4px;
-    font-size: 14px;
+.dark-mode table {
+    background-color: #1e1e1e;
+    color: #e0e0e0;
 }
 
-.delete-btn:hover {
-    background-color: #c82333;
+.dark-mode th, .dark-mode td {
+    border-color: #333;
+}
+
+.dark-mode .modal-content {
+    background-color: #333;
+    color: #e0e0e0;
 }
