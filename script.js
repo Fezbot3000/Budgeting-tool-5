@@ -430,7 +430,7 @@ function loadMorePayCycles() {
 
 function updateChart(chartData) {
     const ctx = document.getElementById('financialChart').getContext('2d');
-    if (window.financialChart instanceof Chart) {
+    if (window.financialChart && typeof window.financialChart.destroy === 'function') {
         window.financialChart.destroy();
     }
     window.financialChart = new Chart(ctx, {
