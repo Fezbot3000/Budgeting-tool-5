@@ -331,6 +331,8 @@ function calculateMonthlyView() {
         date = adjustDate(getNextBillDate(new Date(date), payFrequency));
     }
 
+    console.log('Pay Dates:', payDates); // Debugging statement
+
     for (let i = 0; i < generatedPayCycles; i++) {
         let startDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
         let endDate = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
@@ -349,6 +351,10 @@ function calculateMonthlyView() {
                 monthPayDates.push(payDate.toDateString());
             }
         });
+
+        console.log(`Processing month: ${monthName} ${currentDate.getFullYear()}`);
+        console.log('Start Date:', startDate);
+        console.log('End Date:', endDate);
 
         // Calculate total bills for the month
         const sortedBills = sortBillsByDate(bills); // Ensure bills are sorted by date
@@ -380,6 +386,7 @@ function calculateMonthlyView() {
 
     return monthlyData;
 }
+
 
 
 function getNextBillDate(date, frequency) {
