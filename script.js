@@ -417,3 +417,32 @@ function resetLocalStorage() {
         window.location.reload();
     }
 }
+
+document.addEventListener('DOMContentLoaded', () => {
+    if (income) {
+        const yearlyIncome = calculateYearlyIncome(payFrequency, income);
+        const formattedPayday = new Date(payday).toLocaleDateString('en-US', {
+            weekday: 'short',
+            month: 'short',
+            day: '2-digit',
+            year: 'numeric'
+        });
+        document.getElementById('incomeTable').innerHTML = `<tr><td>${payFrequency}</td><td class="right-align">$${income.toFixed(2)}</td><td>${formattedPayday}</td><td class="right-align">$${yearlyIncome.toFixed(2)}</td></tr>`;
+        document.getElementById('step1').classList.add('hidden');
+        document.getElementById('step2').classList.remove('hidden');
+    }
+    updateBillsTable();
+    deleteOldPayCycles();
+    revealedPayCycles = 3; // Ensure the initial 3 pay cycles are shown
+    updateAccordion();
+
+    // Add event listeners if elements exist
+    const resetBtn = document.getElementById('resetLocalStorageButton');
+    if (resetBtn) resetBtn.addEventListener('click', resetLocalStorage);
+
+    const loadMoreBtn = document.getElementById('loadMoreButton');
+    if (loadMoreBtn) loadMoreBtn.addEventListener('click', loadMorePayCycles);
+
+    const viewModeSelect = document.getElementById('viewMode');
+    if (viewModeSelect) viewModeSelect.addEventListener('change', toggleViewMode);
+});
