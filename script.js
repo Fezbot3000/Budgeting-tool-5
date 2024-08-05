@@ -53,55 +53,44 @@ function goToStep2() {
     }, 50); // Delay to ensure proper rendering
 }
 
-function getCycleDates(startDate, cycleLength, cycles) {
-    let dates = [];
-    for (let i = 0; i < cycles; i++) {
-        let endDate = new Date(startDate);
-        endDate.setDate(startDate.getDate() + cycleLength - 1);
-        dates.push({ start: new Date(startDate), end: new Date(endDate) });
-        startDate = new Date(endDate);
-        startDate.setDate(startDate.getDate() + 1);
-    }
-    return dates;
-}
-
-function getCycleLength(frequency) {
-    switch (frequency) {
-        case 'weekly': return 7;
-        case 'fortnightly': return 14;
-        case 'monthly': return 30; // Approximate for simplicity
-        default: return 0;
-    }
-}
-
-function deleteOldPayCycles() {
-    const today = new Date();
-    const payCycles = getCycleDates(new Date(payday), getCycleLength(payFrequency), generatedPayCycles);
-    const validPayCycles = payCycles.filter(cycle => cycle.end >= today);
-    const numberOfCyclesToDelete = payCycles.length - validPayCycles.length;
-
-    if (numberOfCyclesToDelete > 0) {
-        generatedPayCycles -= numberOfCyclesToDelete;
-        saveToLocalStorage();
-    }
-}
-
 function updateAccordion() {
     const accordionContainer = document.getElementById('accordionContainer');
     accordionContainer.innerHTML = '<p>Updating Accordion...</p>';
 
+    // Simplified getCycleDates function
+    function getCycleDates(startDate, cycleLength, cycles) {
+        let dates = [];
+        for (let i = 0; i < cycles; i++) {
+            let endDate = new Date(startDate);
+            endDate.setDate(startDate.getDate() + cycleLength - 1);
+            dates.push({ start: new Date(startDate), end: new Date(endDate) });
+            startDate = new Date(endDate);
+            startDate.setDate(startDate.getDate() + 1);
+        }
+        return dates;
+    }
+
+    // Simplified getCycleLength function
+    function getCycleLength(frequency) {
+        switch (frequency) {
+            case 'weekly': return 7;
+            case 'fortnightly': return 14;
+            case 'monthly': return 30; // Approximate for simplicity
+            default: return 0;
+        }
+    }
+
+    // Generate cycle dates
     const cycleDates = getCycleDates(new Date(payday), getCycleLength(payFrequency), generatedPayCycles);
 
     accordionContainer.innerHTML = ''; // Clear initial content
-
-    const sortedBills = sortBillsByDate(bills); // Define sortedBills here
 
     cycleDates.forEach((dates, index) => {
         if (index >= revealedPayCycles) return;
 
         let cycleTotal = 0;
         let cycleBills = '';
-
+        const sortedBills = sortBillsByDate(bills);
         sortedBills.forEach(bill => {
             cycleBills += getBillRowsForCycle(bill, dates);
             cycleTotal += getBillTotalForCycle(bill, dates);
@@ -286,6 +275,18 @@ function calculateYearlyAmount(amount, frequency) {
     return amount * (frequencyMultipliers[frequency] || 0);
 }
 
+function deleteOldPayCycles() {
+    const today = new Date();
+    const payCycles = getCycleDates(new Date(payday), getCycleLength(payFrequency), generatedPayCycles);
+    const validPayCycles = payCycles.filter(cycle => cycle.end >= today);
+    const numberOfCyclesToDelete = payCycles.length - validPayCycles.length;
+
+    if (numberOfCyclesToDelete > 0) {
+        generatedPayCycles -= numberOfCyclesToDelete;
+        saveToLocalStorage();
+    }
+}
+
 document.getElementById('billsForm').addEventListener('submit', function(event) {
     event.preventDefault();
     const billIndex = document.getElementById('billIndex').value,
@@ -407,6 +408,15 @@ function toggleViewMode() {
     viewMode = document.getElementById('viewMode').value;
     saveToLocalStorage();
     updateAccordion();
+}
+
+function getCycleLength(frequency) {
+    switch (frequency) {
+        case 'weekly': return 7;
+        case 'fortnightly': return 14;
+        case 'monthly': return 30; // Approximate for simplicity
+        default: return 0;
+    }
 }
 
 function resetLocalStorage() {
