@@ -353,7 +353,7 @@ function calculateMonthlyView() {
     let endViewDate = new Date(currentDate.getFullYear(), currentDate.getMonth() + generatedPayCycles, 0);
     while (date <= endViewDate) {
         payDates.push(new Date(date));
-        date = adjustDate(getNextBillDate(new Date(date), payFrequency));
+        date = getNextBillDate(new Date(date), payFrequency);
     }
 
     for (let i = 0; i < generatedPayCycles; i++) {
@@ -380,14 +380,18 @@ function calculateMonthlyView() {
 
         sortedBills.forEach(bill => {
             let billDueDate = new Date(bill.date);
-            while (billDueDate <= endDate) {
-                if (billDueDate >= startDate && billDueDate <= endDate) {
-                    billDueDate = adjustDate(billDueDate); // Ensure the bill date is adjusted
-                    monthBills += `<tr><td>${bill.name}</td><td>${billDueDate.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: '2-digit', year: 'numeric' })}</td><td class="bills negative right-align">-$${bill.amount.toFixed(2)}</td></tr>`;
-                    monthTotal += bill.amount;
+            if (billDueDate >= startDate && billDueDate <= endDate) {
+                monthBills += `<tr><td>${bill.name}</td><td>${billDueDate.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: '2-digit', year: 'numeric' })}</td><td class="bills negative right-align">-$${bill.amount.toFixed(2)}</td></tr>`;
+                monthTotal += bill.amount;
+            } else if (billDueDate < startDate && (bill.frequency === 'monthly' || bill.frequency === 'yearly')) {
+                // Check for recurring bills
+                while (billDueDate <= endDate) {
+                    if (billDueDate >= startDate && billDueDate <= endDate) {
+                        monthBills += `<tr><td>${bill.name}</td><td>${billDueDate.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: '2-digit', year: 'numeric' })}</td><td class="bills negative right-align">-$${bill.amount.toFixed(2)}</td></tr>`;
+                        monthTotal += bill.amount;
+                    }
+                    billDueDate = getNextBillDate(billDueDate, bill.frequency);
                 }
-                billDueDate = getNextBillDate(billDueDate, bill.frequency);
-                if (billDueDate > endDate) break; // Break the loop if the next due date is beyond the end of the month
             }
         });
 
@@ -410,12 +414,8 @@ function adjustDate(date) {
     // Move date to the last valid date of the month if it exceeds the number of days in the month
     const lastDayOfMonth = new Date(year, month + 1, 0).getDate();
 
-    console.log(`Original date: ${date}`);
-    console.log(`Last day of month: ${lastDayOfMonth}`);
-
     if (day > lastDayOfMonth) {
         date.setDate(lastDayOfMonth);
-        console.log(`Adjusted date: ${date}`);
     }
 
     return date;
