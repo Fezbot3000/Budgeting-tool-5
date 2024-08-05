@@ -209,11 +209,7 @@ function updateAccordion() {
     const accordionContainer = document.getElementById('accordionContainer');
     accordionContainer.innerHTML = '<p>Updating Accordion...</p>';
 
-    let cycleDates = [
-        { start: new Date(), end: new Date(new Date().setDate(new Date().getDate() + 7)) },
-        { start: new Date(new Date().setDate(new Date().getDate() + 8)), end: new Date(new Date().setDate(new Date().getDate() + 15)) },
-        { start: new Date(new Date().setDate(new Date().getDate() + 16)), end: new Date(new Date().setDate(new Date().getDate() + 23)) }
-    ];
+    const cycleDates = getCycleDates(new Date(payday), getCycleLength(payFrequency), generatedPayCycles);
 
     accordionContainer.innerHTML = ''; // Clear initial content
 
@@ -266,6 +262,18 @@ function updateAccordion() {
     });
 }
 
+function getCycleDates(startDate, cycleLength, cycles) {
+    let dates = [];
+    for (let i = 0; i < cycles; i++) {
+        let endDate = new Date(startDate);
+        endDate.setDate(endDate.getDate() + cycleLength - 1);
+        dates.push({ start: new Date(startDate), end: new Date(endDate) });
+        startDate = new Date(endDate);
+        startDate.setDate(startDate.getDate() + 1);
+    }
+    return dates;
+}
+
 function sortBillsByDate(bills) {
     return bills.sort((a, b) => new Date(a.date) - new Date(b.date));
 }
@@ -274,7 +282,7 @@ function getCycleLength(frequency) {
     switch (frequency) {
         case 'weekly': return 7;
         case 'fortnightly': return 14;
-        case 'monthly': return (new Date(new Date().setMonth(new Date().getMonth() + 1)) - new Date()) / (1000 * 60 * 60 * 24);
+        case 'monthly': return 30; // Approximate for simplicity
         default: return 0;
     }
 }
