@@ -352,3 +352,27 @@ function toggleViewMode() {
     saveToLocalStorage();
     updateAccordion();
 }
+
+// Adding missing function definitions
+function getCycleDates(startDate, cycleLength, cycles) {
+    let dates = [];
+    for (let i = 0; i < cycles; i++) {
+        let endDate = new Date(startDate);
+        endDate.setDate(startDate.getDate() + cycleLength - 1);
+        dates.push({ start: new Date(startDate), end: new Date(endDate) });
+        startDate = new Date(endDate);
+        startDate.setDate(startDate.getDate() + 1);
+    }
+    return dates;
+}
+
+function resetLocalStorage() {
+    if (confirm('Are you sure you want to reset all data? This action cannot be undone.')) {
+        localStorage.clear();
+        window.location.reload();
+    }
+}
+
+document.getElementById('resetLocalStorageButton').addEventListener('click', resetLocalStorage);
+document.getElementById('loadMoreButton').addEventListener('click', loadMorePayCycles);
+document.getElementById('viewMode').addEventListener('change', toggleViewMode);
