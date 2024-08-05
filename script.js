@@ -32,53 +32,22 @@ function goToStep2() {
         return;
     }
 
-    saveToLocalStorage();
-    updateIncomeTable();
-    document.getElementById('step1').classList.add('hidden');
-    document.getElementById('step2').classList.remove('hidden');
-}
-
-function calculateYearlyIncome(frequency, income) {
-    return income * (frequencyMultipliers[frequency] || 0);
-}
-
-function calculateYearlyBills() {
-    let yearlyTotal = 0;
-    bills.forEach(bill => {
-        yearlyTotal += calculateYearlyAmount(bill.amount, bill.frequency);
-    });
-    return yearlyTotal;
-}
-
-function calculateYearlyAmount(amount, frequency) {
-    return amount * (frequencyMultipliers[frequency] || 0);
-}
-
-function updateIncomeTable() {
     const yearlyIncome = calculateYearlyIncome(payFrequency, income);
-    const yearlyBills = calculateYearlyBills();
-    const potentialSavings = yearlyIncome - yearlyBills;
     const formattedPayday = new Date(payday).toLocaleDateString('en-US', {
         weekday: 'short',
         month: 'short',
         day: '2-digit',
         year: 'numeric'
     });
-    document.getElementById('incomeTable').innerHTML = `
-        <tr>
-            <td>${payFrequency}</td>
-            <td class="right-align">$${income.toFixed(2)}</td>
-            <td>${formattedPayday}</td>
-            <td class="right-align">$${yearlyIncome.toFixed(2)}</td>
-        </tr>
-        <tr>
-            <td colspan="3">Yearly Bills:</td>
-            <td class="right-align" id="yearlyBills">-$${yearlyBills.toFixed(2)}</td>
-        </tr>
-        <tr>
-            <td colspan="3">Potential Savings:</td>
-            <td class="right-align" id="potentialSavings">$${potentialSavings.toFixed(2)}</td>
-        </tr>`;
+    document.getElementById('incomeTable').innerHTML = `<tr><td>${payFrequency}</td><td class="right-align">$${income.toFixed(2)}</td><td>${formattedPayday}</td><td class="right-align">$${yearlyIncome.toFixed(2)}</td></tr>`;
+    document.getElementById('step1').classList.add('hidden');
+    document.getElementById('step2').classList.remove('hidden');
+    saveToLocalStorage();
+    updateAccordion();
+}
+
+function calculateYearlyIncome(frequency, income) {
+    return income * (frequencyMultipliers[frequency] || 0);
 }
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -111,6 +80,33 @@ document.addEventListener('DOMContentLoaded', () => {
     if (resetLocalStorageButton) resetLocalStorageButton.addEventListener('click', resetLocalStorage);
 });
 
+function updateIncomeTable() {
+    const yearlyIncome = calculateYearlyIncome(payFrequency, income);
+    const yearlyBills = calculateYearlyBills();
+    const potentialSavings = yearlyIncome - yearlyBills;
+    const formattedPayday = new Date(payday).toLocaleDateString('en-US', {
+        weekday: 'short',
+        month: 'short',
+        day: '2-digit',
+        year: 'numeric'
+    });
+    document.getElementById('incomeTable').innerHTML = `
+        <tr>
+            <td>${payFrequency}</td>
+            <td class="right-align">$${income.toFixed(2)}</td>
+            <td>${formattedPayday}</td>
+            <td class="right-align">$${yearlyIncome.toFixed(2)}</td>
+        </tr>
+        <tr>
+            <td colspan="3">Yearly Bills:</td>
+            <td class="right-align" id="yearlyBills">-$${yearlyBills.toFixed(2)}</td>
+        </tr>
+        <tr>
+            <td colspan="3">Potential Savings:</td>
+            <td class="right-align" id="potentialSavings">$${potentialSavings.toFixed(2)}</td>
+        </tr>`;
+}
+
 document.getElementById('billsForm').addEventListener('submit', function(event) {
     event.preventDefault();
     const billIndex = document.getElementById('billIndex').value,
@@ -132,7 +128,6 @@ document.getElementById('billsForm').addEventListener('submit', function(event) 
 
     saveToLocalStorage();
     updateBillsTable();
-    updateIncomeTable(); // Update income table when a new bill is added or updated
     updateAccordion();
     resetBillForm();
     closeModal();
@@ -153,16 +148,24 @@ function updateBillsTable() {
     billsTable.insertAdjacentHTML('beforeend', totalRow);
 }
 
-function sortBillsByDate(bills) {
-    return bills.sort((a, b) => new Date(a.date) - new Date(b.date));
+function calculateYearlyAmount(amount, frequency) {
+    return amount * (frequencyMultipliers[frequency] || 0);
+}
+
+function calculateYearlyBills() {
+    let yearlyTotal = 0;
+    bills.forEach(bill => {
+        yearlyTotal += calculateYearlyAmount(bill.amount, bill.frequency);
+    });
+    return yearlyTotal;
 }
 
 function removeBill(index) {
     bills.splice(index, 1);
     saveToLocalStorage();
     updateBillsTable();
-    updateIncomeTable(); // Update income table when a bill is removed
     updateAccordion(); // Ensure pay cycles are updated
+    calculateYearlyBills();
 }
 
 function toggleBillList() {
@@ -290,6 +293,10 @@ function updateAccordion() {
     });
 
     updateChart(chartData);
+}
+
+function sortBillsByDate(bills) {
+    return bills.sort((a, b) => new Date(a.date) - new Date(b.date));
 }
 
 function getCycleLength(frequency) {
@@ -549,7 +556,17 @@ function updateIncome() {
     payday = document.getElementById('editPayday').value;
     saveToLocalStorage();
 
-    updateIncomeTable(); // Update the income table with new values
+    // Update the income table without reloading
+    const yearlyIncome = calculateYearlyIncome(payFrequency, income);
+    const formattedPayday = new Date(payday).toLocaleDateString('en-US', {
+        weekday: 'short',
+        month: 'short',
+        day: '2-digit',
+        year: 'numeric'
+    });
+    document.getElementById('incomeTable').innerHTML = `<tr><td>${payFrequency}</td><td class="right-align">$${income.toFixed(2)}</td><td>${formattedPayday}</td><td class="right-align">$${yearlyIncome.toFixed(2)}</td></tr>`;
+
+    // Close modal
     closeIncomeModal();
     updateAccordion();
 }
@@ -586,7 +603,16 @@ function deleteOldPayCycles() {
 
 document.addEventListener('DOMContentLoaded', () => {
     if (income) {
-        updateIncomeTable();
+        const yearlyIncome = calculateYearlyIncome(payFrequency, income);
+        const formattedPayday = new Date(payday).toLocaleDateString('en-US', {
+            weekday: 'short',
+            month: 'short',
+            day: '2-digit',
+            year: 'numeric'
+        });
+        document.getElementById('incomeTable').innerHTML = `<tr><td>${payFrequency}</td><td class="right-align">$${income.toFixed(2)}</td><td>${formattedPayday}</td><td class="right-align">$${yearlyIncome.toFixed(2)}</td></tr>`;
+        document.getElementById('step1').classList.add('hidden');
+        document.getElementById('step2').classList.remove('hidden');
     }
     updateBillsTable();
     deleteOldPayCycles(); // Call the function to delete old pay cycles
