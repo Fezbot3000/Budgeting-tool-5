@@ -8,7 +8,7 @@ let darkMode = localStorage.getItem('darkMode') === 'true';
 let generatedPayCycles = 12; // Generate 12 months of pay cycles
 let revealedPayCycles = 3; // Initially reveal 3 pay cycles
 
-// Constants
+// Constant
 const frequencyMultipliers = { weekly: 52, fortnightly: 26, monthly: 12, yearly: 1 };
 
 function saveToLocalStorage() {
