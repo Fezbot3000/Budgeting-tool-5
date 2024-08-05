@@ -38,18 +38,15 @@ function goToStep2() {
 
     document.getElementById('incomeTable').innerHTML = `<tr><td>${payFrequency}</td><td class="right-align">$${income.toFixed(2)}</td><td>${formattedPayday}</td><td class="right-align">$${yearlyIncome.toFixed(2)}</td></tr>`;
 
-    // Hide and show step2 to force re-render
-    const step2Container = document.getElementById('step2');
-    step2Container.classList.add('hidden');
-    void step2Container.offsetWidth; // Trigger reflow
-    step2Container.classList.remove('hidden');
-
     document.getElementById('step1').classList.add('hidden');
-    document.getElementById('step2').classList.remove('hidden');
-    saveToLocalStorage();
-    
-    revealedPayCycles = 3; // Ensure the initial 3 pay cycles are shown
-    updateAccordion();
+    document.getElementById('step2').classList.add('hidden');
+
+    setTimeout(() => {
+        document.getElementById('step2').classList.remove('hidden');
+        saveToLocalStorage();
+        revealedPayCycles = 3; // Ensure the initial 3 pay cycles are shown
+        updateAccordion();
+    }, 50); // Delay to ensure proper rendering
 }
 
 function calculateYearlyIncome(frequency, income) {
