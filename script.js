@@ -385,7 +385,7 @@ function calculateMonthlyView() {
 
         // Calculate total income for the month
         payDates.forEach(payDate => {
-           const payDateStartOfDay = new Date(payDate.getFullYear(), payDate.getMonth(), payDate.getDate())
+           const payDateStartOfDay = new Date(payDate.getFullYear(), payDate.getMonth(), payDate.getDate());
 
            if (payDateStartOfDay >= startDate && payDateStartOfDay <= endDate) {
                 monthIncome += income;
@@ -398,12 +398,15 @@ function calculateMonthlyView() {
 
         sortedBills.forEach(bill => {
             let billDueDate = new Date(bill.date);
+            billDueDate = adjustDate(billDueDate); // Adjust the bill date if necessary
+
             if (billDueDate >= startDate && billDueDate <= endDate) {
                 monthBills += `<tr><td>${bill.name}</td><td>${billDueDate.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: '2-digit', year: 'numeric' })}</td><td class="bills negative right-align">-$${bill.amount.toFixed(2)}</td></tr>`;
                 monthTotal += bill.amount;
             } else if (billDueDate < startDate && (bill.frequency === 'monthly' || bill.frequency === 'yearly')) {
                 // Check for recurring bills
                 while (billDueDate <= endDate) {
+                    billDueDate = adjustDate(billDueDate); // Adjust the bill date if necessary
                     if (billDueDate >= startDate && billDueDate <= endDate) {
                         monthBills += `<tr><td>${bill.name}</td><td>${billDueDate.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: '2-digit', year: 'numeric' })}</td><td class="bills negative right-align">-$${bill.amount.toFixed(2)}</td></tr>`;
                         monthTotal += bill.amount;
