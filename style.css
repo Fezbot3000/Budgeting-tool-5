@@ -96,12 +96,29 @@ button:hover {
 }
 
 .delete-btn {
+    background-color: #fff;
     color: #f44336;
     border: 2px solid #f44336;
+    border-radius: 4px;
+    padding: 5px 10px;
+    font-size: 14px;
 }
 
 .delete-btn:hover {
     background-color: #fdecea;
+}
+
+.edit-btn {
+    background-color: transparent;
+    color: #007bff;
+    text-decoration: underline;
+    border: none;
+    padding: 5px 10px;
+    font-size: 14px;
+}
+
+.edit-btn:hover {
+    color: #0056b3;
 }
 
 .form-container {
@@ -330,6 +347,15 @@ button[type="submit"]:hover {
 .buttons .right-buttons {
     display: flex;
     gap: 10px;
+}
+
+.actions {
+    display: flex;
+    gap: 10px;
+}
+
+.actions button {
+    flex: 1;
 }
 
 /* Styling for View Mode dropdown */
