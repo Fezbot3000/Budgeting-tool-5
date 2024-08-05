@@ -202,16 +202,10 @@ function toggleViewMode() {
 function updateAccordion() {
     console.log('Updating accordion');
     const accordionContainer = document.getElementById('accordionContainer');
-    if (!accordionContainer) {
-        console.error('Accordion container not found');
-        return;
-    }
-
     accordionContainer.innerHTML = '';
     let cycleDates, chartData;
 
     if (viewMode === 'payCycle') {
-        console.log('View mode is payCycle');
         cycleDates = getCycleDates(new Date(payday), getCycleLength(payFrequency), generatedPayCycles);
         console.log('Cycle dates:', cycleDates);
         chartData = { dates: [], totals: [] };
@@ -219,6 +213,7 @@ function updateAccordion() {
         cycleDates.forEach((dates, index) => {
             if (index >= revealedPayCycles) return;
             console.log('Processing cycle dates:', dates);
+
             let cycleTotal = 0,
                 cycleBills = '';
             const sortedBills = sortBillsByDate(bills);
@@ -226,6 +221,7 @@ function updateAccordion() {
                 cycleBills += getBillRowsForCycle(bill, dates);
                 cycleTotal += getBillTotalForCycle(bill, dates);
             });
+
             const leftoverAmount = income - cycleTotal;
             const leftoverClass = leftoverAmount >= 0 ? 'positive-amount' : 'negative-amount';
             const formattedStartDate = dates.start.toLocaleDateString('en-US', {
@@ -240,6 +236,7 @@ function updateAccordion() {
                 day: '2-digit',
                 year: 'numeric'
             });
+
             accordionContainer.innerHTML += `
                 <button class="accordion">
                     <span>${formattedStartDate} - ${formattedEndDate}</span>
@@ -260,9 +257,7 @@ function updateAccordion() {
             chartData.totals.push(cycleTotal);
         });
     } else if (viewMode === 'monthly') {
-        console.log('View mode is monthly');
         chartData = calculateMonthlyView();
-        console.log('Chart data:', chartData);
         chartData.dates.forEach((monthYear, index) => {
             const monthTotal = chartData.totals[index],
                 billsForMonth = chartData.bills[index],
@@ -272,6 +267,7 @@ function updateAccordion() {
                 leftoverClass = leftoverAmount >= 0 ? 'positive-amount' : 'negative-amount';
 
             if (index >= revealedPayCycles) return;
+
             accordionContainer.innerHTML += `
                 <button class="accordion">
                     <span>${monthYear}</span>
