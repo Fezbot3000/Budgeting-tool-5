@@ -168,7 +168,9 @@ th {
 }
 
 .bills.negative {
-    color: #f44336;
+    color: #f44336 !important;
+    border: 1px solid red; /* Debugging border */
+    background-color: #ffeeee; /* Debugging background */
 }
 
 .accordion {
@@ -225,7 +227,9 @@ th {
 }
 
 .negative {
-    color: #f44336;
+    color: #f44336 !important;
+    border: 1px solid red; /* Debugging border */
+    background-color: #ffeeee; /* Debugging background */
 }
 
 .chart-container {
