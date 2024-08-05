@@ -98,6 +98,7 @@ button:hover {
 .delete-btn {
     color: #f44336;
     border: 2px solid #f44336;
+    background-color: #fff; /* Background for light mode */
 }
 
 .delete-btn:hover {
@@ -381,6 +382,7 @@ h1.dark-mode {
 
 .dark-mode .accordion {
     background-color: #1e1e1e; /* Changed to solid background */
+    border: 0px; /* Removed border */
     color: #e0e0e0;
 }
 
