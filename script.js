@@ -1,5 +1,3 @@
-console.log("JavaScript is running");
-
 // Initialize variables and load data from localStorage
 let bills = JSON.parse(localStorage.getItem('bills')) || [];
 let payFrequency = localStorage.getItem('payFrequency') || '';
@@ -9,8 +7,6 @@ let viewMode = localStorage.getItem('viewMode') || 'payCycle';
 let darkMode = localStorage.getItem('darkMode') === 'true';
 let generatedPayCycles = 12; // Generate 12 months of pay cycles
 let revealedPayCycles = 3; // Initially reveal 3 pay cycles
-
-console.log("Initial data:", { bills, payFrequency, income, payday, viewMode, darkMode, generatedPayCycles, revealedPayCycles });
 
 // Constants
 const frequencyMultipliers = { weekly: 52, fortnightly: 26, monthly: 12, yearly: 1 };
@@ -22,7 +18,6 @@ function saveToLocalStorage() {
     localStorage.setItem('payday', payday);
     localStorage.setItem('viewMode', viewMode);
     localStorage.setItem('darkMode', darkMode);
-    console.log("Data saved to localStorage:", { payFrequency, income, payday, viewMode, darkMode });
 }
 
 function goToStep2() {
@@ -54,7 +49,6 @@ function calculateYearlyIncome(frequency, income) {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-    console.log("DOMContentLoaded event fired");
 
     if (income) {
         const yearlyIncome = calculateYearlyIncome(payFrequency, income);
@@ -125,7 +119,6 @@ function updateBillsTable() {
     let totalYearlyAmount = 0;
     billsTable.innerHTML = `<tr><th>Bill Name</th><th class="right-align">Bill Amount</th><th>Bill Frequency</th><th>Next Due Date</th><th class="right-align">12-Monthly Total Amount</th><th>Actions</th></tr>`;
     const sortedBills = sortBillsByDate(bills);
-    console.log("Sorted bills:", sortedBills); // Debugging statement
     sortedBills.forEach((bill, index) => {
         const yearlyAmount = calculateYearlyAmount(bill.amount, bill.frequency);
         totalYearlyAmount += yearlyAmount;
@@ -135,6 +128,7 @@ function updateBillsTable() {
     const totalRow = `<tr><td colspan="4" class="total-label">Total Yearly Amount:</td><td class="right-align total-amount">-$${totalYearlyAmount.toFixed(2)}</td><td></td></tr>`;
     billsTable.insertAdjacentHTML('beforeend', totalRow);
 }
+
 
 function calculateYearlyAmount(amount, frequency) {
     return amount * (frequencyMultipliers[frequency] || 0);
@@ -186,7 +180,6 @@ function resetBillForm() {
 
 function toggleViewMode() {
     viewMode = document.getElementById('viewMode').value;
-    console.log("View mode changed to:", viewMode); // Debugging statement
     saveToLocalStorage();
     updateAccordion();
 }
@@ -243,7 +236,6 @@ function updateAccordion() {
             chartData.totals.push(cycleTotal);
         });
     } else if (viewMode === 'monthly') {
-        console.log('Monthly view mode selected'); // Debugging statement
         chartData = calculateMonthlyView();
         chartData.dates.forEach((monthYear, index) => {
             const monthTotal = chartData.totals[index],
@@ -254,13 +246,6 @@ function updateAccordion() {
                 leftoverClass = leftoverAmount >= 0 ? 'positive' : 'negative';
 
             if (index >= revealedPayCycles) return;
-            console.log(`Processing month ${monthYear}:`, {
-                monthTotal,
-                monthIncome,
-                payDatesForMonth,
-                billsForMonth
-            }); // Debugging statement
-            console.log(`Bills for ${monthYear}:`, billsForMonth); // Additional log to check the bills being added
             accordionContainer.innerHTML += `
                 <button class="accordion">
                     <span>${monthYear}</span>
@@ -371,8 +356,6 @@ function calculateMonthlyView() {
         date = adjustDate(getNextBillDate(new Date(date), payFrequency));
     }
 
-    console.log('Pay Dates:', payDates); // Debugging statement
-
     for (let i = 0; i < generatedPayCycles; i++) {
         let startDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
         let endDate = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
@@ -392,23 +375,15 @@ function calculateMonthlyView() {
             }
         });
 
-        console.log(`Processing month: ${monthName} ${currentDate.getFullYear()}`);
-        console.log('Start Date:', startDate);
-        console.log('End Date:', endDate);
-
         // Calculate total bills for the month
         const sortedBills = sortBillsByDate(bills); // Ensure bills are sorted by date
-        console.log(`Sorted Bills for ${monthName} ${currentDate.getFullYear()}:`, sortedBills); // Debugging statement
-
         sortedBills.forEach(bill => {
             let billDueDate = new Date(bill.date);
-            console.log(`Processing bill: ${bill.name}, Due Date: ${billDueDate}`); // Debugging statement
             while (billDueDate <= endDate) {
                 if (billDueDate >= startDate && billDueDate <= endDate) {
                     billDueDate = adjustDate(billDueDate); // Ensure the bill date is adjusted
                     monthBills += `<tr><td>${bill.name}</td><td>${billDueDate.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: '2-digit', year: 'numeric' })}</td><td class="bills negative right-align">-$${bill.amount.toFixed(2)}</td></tr>`;
                     monthTotal += bill.amount;
-                    console.log(`Added bill: ${bill.name}, Amount: ${bill.amount}, Due Date: ${billDueDate}`); // Debugging statement
                 }
                 billDueDate = getNextBillDate(billDueDate, bill.frequency);
                 if (billDueDate > endDate) break; // Break the loop if the next due date is beyond the end of the month
@@ -422,8 +397,6 @@ function calculateMonthlyView() {
 
         currentDate.setMonth(currentDate.getMonth() + 1);
     }
-
-    console.log('Monthly Data:', monthlyData); // Debugging statement
 
     return monthlyData;
 }
