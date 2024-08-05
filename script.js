@@ -280,7 +280,6 @@ function updateAccordion() {
     updateChart(chartData);
 }
 
-
 function sortBillsByDate(bills) {
     return bills.sort((a, b) => new Date(a.date) - new Date(b.date));
 }
