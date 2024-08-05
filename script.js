@@ -245,6 +245,7 @@ function updateAccordion() {
                 payDatesForMonth,
                 billsForMonth
             }); // Debugging statement
+            console.log(`Bills for ${monthYear}:`, billsForMonth); // Additional log to check the bills being added
             accordionContainer.innerHTML += `<button class="accordion"><span>${monthYear}</span><span class="leftover">Leftover: <span class="amount">$${leftoverAmount.toFixed(2)}</span></span><span class="arrow">▶</span></button><div class="panel"><div class="pay-cycle"><table><tr><td colspan="2">Income (${payDatesForMonth.map(date => new Date(date).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: '2-digit', year: 'numeric' })).join(', ')}):</td><td class="positive right-align">$${monthIncome.toFixed(2)}</td></tr><tr><td colspan="2">Total Bills:</td><td class="negative right-align">-$${monthTotal.toFixed(2)}</td></tr>${billsForMonth}</table></div></div>`;
         });
     }
@@ -259,6 +260,7 @@ function updateAccordion() {
 
     updateChart(chartData);
 }
+
 
 function sortBillsByDate(bills) {
     return bills.sort((a, b) => new Date(a.date) - new Date(b.date));
@@ -394,6 +396,21 @@ function calculateMonthlyView() {
     return monthlyData;
 }
 
+function adjustDate(date) {
+    const day = date.getDate();
+    const month = date.getMonth();
+    const year = date.getFullYear();
+
+    // Move date to the last valid date of the month if it exceeds the number of days in the month
+    const lastDayOfMonth = new Date(year, month + 1, 0).getDate();
+
+    if (day > lastDayOfMonth) {
+        date.setDate(lastDayOfMonth);
+    }
+
+    return date;
+}
+
 function getNextBillDate(date, frequency) {
     switch (frequency) {
         case 'weekly': date.setDate(date.getDate() + 7); break;
@@ -408,21 +425,6 @@ function getNextBillDate(date, frequency) {
         case 'yearly': date.setFullYear(date.getFullYear() + 1); break;
     }
     return adjustDate(date);
-}
-
-function adjustDate(date) {
-    const day = date.getDate();
-    const month = date.getMonth();
-    const year = date.getFullYear();
-
-    // Move date to the last valid date of the month if it exceeds the number of days in the month
-    const lastDayOfMonth = new Date(year, month + 1, 0).getDate();
-
-    if (day > lastDayOfMonth) {
-        date.setDate(lastDayOfMonth);
-    }
-
-    return date;
 }
 
 function loadMorePayCycles() {
