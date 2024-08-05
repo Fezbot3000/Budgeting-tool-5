@@ -382,7 +382,7 @@ h1.dark-mode {
 
 .dark-mode .accordion {
     background-color: #1e1e1e; /* Changed to solid background */
-    border: 0px; /* Removed border */
+    border: 1px solid #ddd; /* Added 1px solid border */
     color: #e0e0e0;
 }
 
