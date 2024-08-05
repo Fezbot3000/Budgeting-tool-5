@@ -61,11 +61,11 @@
                     <!-- New rows for yearly bills and potential savings -->
                     <tr>
                         <td colspan="3">Yearly Bills:</td>
-                        <td class="right-align" id="yearlyBills"></td>
+                        <td class="right-align" id="yearlyBills">-$0.00</td>
                     </tr>
                     <tr>
                         <td colspan="3">Potential Savings:</td>
-                        <td class="right-align" id="potentialSavings"></td>
+                        <td class="right-align" id="potentialSavings">$0.00</td>
                     </tr>
                 </table>
                 <table id="billsTable">
@@ -78,7 +78,8 @@
                         <th>Actions</th>
                     </tr>
                 </table>
-                <div class="view-mode">
+                <!-- Hidden view mode section -->
+                <div class="view-mode hidden">
                     <label for="viewMode">View Mode:</label>
                     <select id="viewMode" onchange="toggleViewMode()">
                         <option value="payCycle">Pay Cycle View</option>
@@ -122,10 +123,7 @@
                     <label for="billDate">Next Due Date:</label>
                     <input type="date" id="billDate" name="billDate" required>
                 </div>
-                <div class="actions">
-                    <button type="submit" id="submitBill" class="primary-btn">Add Bill</button>
-                    <button type="button" class="delete-btn" onclick="deleteBill()">Delete</button>
-                </div>
+                <button type="submit" id="submitBill" class="primary-btn">Add Bill</button>
             </form>
         </div>
     </div>
