@@ -8,7 +8,7 @@ let darkMode = localStorage.getItem('darkMode') === 'true';
 let generatedPayCycles = 12; // Generate 12 months of pay cycles
 let revealedPayCycles = 3; // Initially reveal 3 pay cycles
 
-// Constant
+// Constants
 const frequencyMultipliers = { weekly: 52, fortnightly: 26, monthly: 12, yearly: 1 };
 
 function saveToLocalStorage() {
@@ -220,6 +220,7 @@ function updateAccordion() {
             chartData.totals.push(cycleTotal);
         });
     } else if (viewMode === 'monthly') {
+        console.log('Monthly view mode selected'); // Debugging statement
         chartData = calculateMonthlyView();
         chartData.dates.forEach((monthYear, index) => {
             const monthTotal = chartData.totals[index],
@@ -244,6 +245,70 @@ function updateAccordion() {
 
     updateChart(chartData);
 }
+
+function updateAccordion() {
+    const accordionContainer = document.getElementById('accordionContainer');
+    accordionContainer.innerHTML = '';
+    let cycleDates, chartData;
+
+    if (viewMode === 'payCycle') {
+        cycleDates = getCycleDates(new Date(payday), getCycleLength(payFrequency), generatedPayCycles);
+        chartData = { dates: [], totals: [] };
+
+        cycleDates.forEach((dates, index) => {
+            if (index >= revealedPayCycles) return;
+            let cycleTotal = 0,
+                cycleBills = '';
+            const sortedBills = sortBillsByDate(bills);
+            sortedBills.forEach(bill => {
+                cycleBills += getBillRowsForCycle(bill, dates);
+                cycleTotal += getBillTotalForCycle(bill, dates);
+            });
+            const leftoverAmount = income - cycleTotal;
+            const leftoverClass = leftoverAmount >= 0 ? 'positive' : 'negative';
+            const formattedStartDate = dates.start.toLocaleDateString('en-US', {
+                weekday: 'short',
+                month: 'short',
+                day: '2-digit',
+                year: 'numeric'
+            });
+            const formattedEndDate = dates.end.toLocaleDateString('en-US', {
+                weekday: 'short',
+                month: 'short',
+                day: '2-digit',
+                year: 'numeric'
+            });
+            accordionContainer.innerHTML += `<button class="accordion"><span>${formattedStartDate} - ${formattedEndDate}</span><span class="leftover">Leftover: <span class="amount">$${leftoverAmount.toFixed(2)}</span></span><span class="arrow">▶</span></button><div class="panel"><div class="pay-cycle"><table><tr><td colspan="2">Income:</td><td class="positive right-align">$${income.toFixed(2)}</td></tr><tr><td colspan="2">Total Bills:</td><td class="negative right-align">-$${cycleTotal.toFixed(2)}</td></tr>${cycleBills}</table></div></div>`;
+            chartData.dates.push(formattedStartDate);
+            chartData.totals.push(cycleTotal);
+        });
+    } else if (viewMode === 'monthly') {
+        console.log('Monthly view mode selected'); // Debugging statement
+        chartData = calculateMonthlyView();
+        chartData.dates.forEach((monthYear, index) => {
+            const monthTotal = chartData.totals[index],
+                billsForMonth = chartData.bills[index],
+                monthIncome = chartData.incomes[index],
+                payDatesForMonth = chartData.payDates[index],
+                leftoverAmount = monthIncome - monthTotal,
+                leftoverClass = leftoverAmount >= 0 ? 'positive' : 'negative';
+
+            if (index >= revealedPayCycles) return;
+            accordionContainer.innerHTML += `<button class="accordion"><span>${monthYear}</span><span class="leftover">Leftover: <span class="amount">$${leftoverAmount.toFixed(2)}</span></span><span class="arrow">▶</span></button><div class="panel"><div class="pay-cycle"><table><tr><td colspan="2">Income (${payDatesForMonth.map(date => new Date(date).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: '2-digit', year: 'numeric' })).join(', ')}):</td><td class="positive right-align">$${monthIncome.toFixed(2)}</td></tr><tr><td colspan="2">Total Bills:</td><td class="negative right-align">-$${monthTotal.toFixed(2)}</td></tr>${billsForMonth}</table></div></div>`;
+        });
+    }
+
+    document.querySelectorAll('.accordion').forEach(button => {
+        button.addEventListener('click', function () {
+            this.classList.toggle('active');
+            const panel = this.nextElementSibling;
+            panel.style.display = panel.style.display === 'block' ? 'none' : 'block';
+        });
+    });
+
+    updateChart(chartData);
+}
+
 
 function sortBillsByDate(bills) {
     return bills.sort((a, b) => new Date(a.date) - new Date(b.date));
@@ -343,7 +408,6 @@ function calculateMonthlyView() {
 
         // Calculate total bills for the month
         const sortedBills = sortBillsByDate(bills); // Ensure bills are sorted by date
-
         console.log(`Sorted Bills for ${monthName} ${currentDate.getFullYear()}:`, sortedBills); // Debugging statement
 
         sortedBills.forEach(bill => {
@@ -365,6 +429,8 @@ function calculateMonthlyView() {
 
         currentDate.setMonth(currentDate.getMonth() + 1);
     }
+
+    console.log('Monthly Data:', monthlyData); // Debugging statement
 
     return monthlyData;
 }
