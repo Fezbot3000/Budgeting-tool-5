@@ -211,11 +211,14 @@ function updateAccordion() {
     let cycleDates, chartData;
 
     if (viewMode === 'payCycle') {
+        console.log('View mode is payCycle');
         cycleDates = getCycleDates(new Date(payday), getCycleLength(payFrequency), generatedPayCycles);
+        console.log('Cycle dates:', cycleDates);
         chartData = { dates: [], totals: [] };
 
         cycleDates.forEach((dates, index) => {
             if (index >= revealedPayCycles) return;
+            console.log('Processing cycle dates:', dates);
             let cycleTotal = 0,
                 cycleBills = '';
             const sortedBills = sortBillsByDate(bills);
@@ -257,7 +260,9 @@ function updateAccordion() {
             chartData.totals.push(cycleTotal);
         });
     } else if (viewMode === 'monthly') {
+        console.log('View mode is monthly');
         chartData = calculateMonthlyView();
+        console.log('Chart data:', chartData);
         chartData.dates.forEach((monthYear, index) => {
             const monthTotal = chartData.totals[index],
                 billsForMonth = chartData.bills[index],
@@ -299,6 +304,7 @@ function updateAccordion() {
 
     updateChart(chartData);
 }
+
 
 function sortBillsByDate(bills) {
     return bills.sort((a, b) => new Date(a.date) - new Date(b.date));
