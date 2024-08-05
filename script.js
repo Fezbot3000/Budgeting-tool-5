@@ -207,92 +207,49 @@ function toggleViewMode() {
 
 function updateAccordion() {
     const accordionContainer = document.getElementById('accordionContainer');
-    accordionContainer.innerHTML = '<p>Updating Accordion...</p>'; // Visual confirmation
+    accordionContainer.innerHTML = '<p>Updating Accordion...</p>';
 
-    let cycleDates, chartData;
+    let cycleDates = [
+        { start: new Date(), end: new Date(new Date().setDate(new Date().getDate() + 7)) },
+        { start: new Date(new Date().setDate(new Date().getDate() + 8)), end: new Date(new Date().setDate(new Date().getDate() + 15)) },
+        { start: new Date(new Date().setDate(new Date().getDate() + 16)), end: new Date(new Date().setDate(new Date().getDate() + 23)) }
+    ];
 
-    if (viewMode === 'payCycle') {
-        cycleDates = getCycleDates(new Date(payday), getCycleLength(payFrequency), generatedPayCycles);
-        chartData = { dates: [], totals: [] };
+    accordionContainer.innerHTML = ''; // Clear initial content
 
-        cycleDates.forEach((dates, index) => {
-            if (index >= revealedPayCycles) return;
+    cycleDates.forEach((dates, index) => {
+        if (index >= revealedPayCycles) return;
 
-            let cycleTotal = 0,
-                cycleBills = '';
-            const sortedBills = sortBillsByDate(bills);
-            sortedBills.forEach(bill => {
-                cycleBills += getBillRowsForCycle(bill, dates);
-                cycleTotal += getBillTotalForCycle(bill, dates);
-            });
-
-            const leftoverAmount = income - cycleTotal;
-            const leftoverClass = leftoverAmount >= 0 ? 'positive-amount' : 'negative-amount';
-            const formattedStartDate = dates.start.toLocaleDateString('en-US', {
-                weekday: 'short',
-                month: 'short',
-                day: '2-digit',
-                year: 'numeric'
-            });
-            const formattedEndDate = dates.end.toLocaleDateString('en-US', {
-                weekday: 'short',
-                month: 'short',
-                day: '2-digit',
-                year: 'numeric'
-            });
-
-            accordionContainer.innerHTML += `
-                <button class="accordion">
-                    <span>${formattedStartDate} - ${formattedEndDate}</span>
-                    <span class="leftover">Leftover: <span class="amount ${leftoverClass}">$${leftoverAmount.toFixed(2)}</span></span>
-                    <span class="arrow">▶</span>
-                </button>
-                <div class="panel">
-                    <div class="pay-cycle">
-                        <table>
-                            <tr><td colspan="2">Income:</td><td class="positive right-align">$${income.toFixed(2)}</td></tr>
-                            <tr><td colspan="2">Total Bills:</td><td class="negative right-align">-$${cycleTotal.toFixed(2)}</td></tr>
-                            ${cycleBills}
-                        </table>
-                    </div>
-                </div>
-            `;
-            chartData.dates.push(formattedStartDate);
-            chartData.totals.push(cycleTotal);
+        const formattedStartDate = dates.start.toLocaleDateString('en-US', {
+            weekday: 'short',
+            month: 'short',
+            day: '2-digit',
+            year: 'numeric'
         });
-    } else if (viewMode === 'monthly') {
-        chartData = calculateMonthlyView();
-        chartData.dates.forEach((monthYear, index) => {
-            const monthTotal = chartData.totals[index],
-                billsForMonth = chartData.bills[index],
-                monthIncome = chartData.incomes[index],
-                payDatesForMonth = chartData.payDates[index],
-                leftoverAmount = monthIncome - monthTotal,
-                leftoverClass = leftoverAmount >= 0 ? 'positive-amount' : 'negative-amount';
-
-            if (index >= revealedPayCycles) return;
-
-            accordionContainer.innerHTML += `
-                <button class="accordion">
-                    <span>${monthYear}</span>
-                    <span class="leftover">Leftover: <span class="amount ${leftoverClass}">$${leftoverAmount.toFixed(2)}</span></span>
-                    <span class="arrow">▶</span>
-                </button>
-                <div class="panel">
-                    <div class="pay-cycle">
-                        <table>
-                            <tr>
-                                <td colspan="2">Income (${payDatesForMonth.map(date => new Date(date).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: '2-digit', year: 'numeric' })).join(', ')}):</td>
-                                <td class="positive right-align">$${monthIncome.toFixed(2)}</td>
-                            </tr>
-                            <tr><td colspan="2">Total Bills:</td><td class="negative right-align">-$${monthTotal.toFixed(2)}</td></tr>
-                            ${billsForMonth}
-                        </table>
-                    </div>
-                </div>
-            `;
+        const formattedEndDate = dates.end.toLocaleDateString('en-US', {
+            weekday: 'short',
+            month: 'short',
+            day: '2-digit',
+            year: 'numeric'
         });
-    }
+
+        accordionContainer.innerHTML += `
+            <button class="accordion">
+                <span>${formattedStartDate} - ${formattedEndDate}</span>
+                <span class="leftover">Leftover: <span class="amount positive-amount">$1000.00</span></span>
+                <span class="arrow">▶</span>
+            </button>
+            <div class="panel">
+                <div class="pay-cycle">
+                    <table>
+                        <tr><td colspan="2">Income:</td><td class="positive right-align">$1500.00</td></tr>
+                        <tr><td colspan="2">Total Bills:</td><td class="negative right-align">-$500.00</td></tr>
+                        <tr><td>Sample Bill</td><td>01/01/2024</td><td class="bills negative right-align">-$500.00</td></tr>
+                    </table>
+                </div>
+            </div>
+        `;
+    });
 
     document.querySelectorAll('.accordion').forEach(button => {
         button.addEventListener('click', function () {
@@ -302,7 +259,11 @@ function updateAccordion() {
         });
     });
 
-    updateChart(chartData);
+    // Update chart with mock data
+    updateChart({
+        dates: cycleDates.map(d => d.start.toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' })),
+        totals: [500, 700, 300]
+    });
 }
 
 function sortBillsByDate(bills) {
