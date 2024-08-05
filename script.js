@@ -295,7 +295,7 @@ function updateAccordion() {
 }
 
 function sortBillsByDate(bills) {
-    return bills.sort((a, b) => new Date(a.dueDate) - new Date(b.dueDate));
+    return bills.sort((a, b) => new Date(a.date) - new Date(b.date));
 }
 
 function getCycleLength(frequency) {
