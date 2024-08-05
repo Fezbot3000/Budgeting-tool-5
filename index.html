@@ -11,8 +11,10 @@
     <div class="container">
         <header>
             <h1>Budgeting Tool</h1>
-            <button class="reset-btn" onclick="resetLocalStorage()">Reset Data</button>
-            <button class="dark-mode-btn" onclick="toggleDarkMode()">Toggle Dark Mode</button>
+            <div class="header-buttons">
+                <button class="reset-btn" onclick="resetLocalStorage()">Reset Data</button>
+                <button class="dark-mode-btn" onclick="toggleDarkMode()">Toggle Dark Mode</button>
+            </div>
         </header>
         <main>
             <div class="form-container" id="step1">
@@ -55,6 +57,15 @@
                         <th class="right-align">Income Amount</th>
                         <th>Next Pay Day</th>
                         <th class="right-align">Yearly Income</th>
+                    </tr>
+                    <!-- New rows for yearly bills and potential savings -->
+                    <tr>
+                        <td colspan="3">Yearly Bills:</td>
+                        <td class="right-align" id="yearlyBills"></td>
+                    </tr>
+                    <tr>
+                        <td colspan="3">Potential Savings:</td>
+                        <td class="right-align" id="potentialSavings"></td>
                     </tr>
                 </table>
                 <table id="billsTable">
