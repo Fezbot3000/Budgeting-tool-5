@@ -224,6 +224,14 @@ th {
     color: green;
 }
 
+.positive-amount {
+    color: green;
+}
+
+.negative-amount {
+    color: red;
+}
+
 .negative {
     color: #f44336 !important;
     background-color: #ffeeee; /* Debugging background */
