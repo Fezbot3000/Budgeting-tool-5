@@ -53,13 +53,18 @@ function calculateYearlyIncome(frequency, income) {
 document.addEventListener('DOMContentLoaded', () => {
     if (income) {
         const yearlyIncome = calculateYearlyIncome(payFrequency, income);
+        const yearlyBills = calculateYearlyBills();
+        const potentialSavings = yearlyIncome - yearlyBills;
         const formattedPayday = new Date(payday).toLocaleDateString('en-US', {
             weekday: 'short',
             month: 'short',
             day: '2-digit',
             year: 'numeric'
         });
-        document.getElementById('incomeTable').innerHTML = `<tr><td>${payFrequency}</td><td class="right-align">$${income.toFixed(2)}</td><td>${formattedPayday}</td><td class="right-align">$${yearlyIncome.toFixed(2)}</td></tr>`;
+        document.getElementById('incomeTable').innerHTML = `
+            <tr><td>${payFrequency}</td><td class="right-align">$${income.toFixed(2)}</td><td>${formattedPayday}</td><td class="right-align">$${yearlyIncome.toFixed(2)}</td></tr>
+            <tr><td colspan="3">Yearly Bills:</td><td class="right-align" id="yearlyBills">-$${yearlyBills.toFixed(2)}</td></tr>
+            <tr><td colspan="3">Potential Savings:</td><td class="right-align" id="potentialSavings">$${potentialSavings.toFixed(2)}</td></tr>`;
         document.getElementById('step1').classList.add('hidden');
         document.getElementById('step2').classList.remove('hidden');
     }
@@ -139,10 +144,7 @@ function calculateYearlyBills() {
     bills.forEach(bill => {
         yearlyTotal += calculateYearlyAmount(bill.amount, bill.frequency);
     });
-    const yearlyBillsAmountElement = document.getElementById('yearlyBillsAmount');
-    if (yearlyBillsAmountElement) {
-        yearlyBillsAmountElement.innerText = `Total Yearly Bill Amount: $${yearlyTotal.toFixed(2)}`;
-    }
+    return yearlyTotal;
 }
 
 function removeBill(index) {
