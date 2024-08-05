@@ -1,3 +1,5 @@
+console.log("JavaScript is running");
+
 // Initialize variables and load data from localStorage
 let bills = JSON.parse(localStorage.getItem('bills')) || [];
 let payFrequency = localStorage.getItem('payFrequency') || '';
@@ -77,6 +79,7 @@ function updateFinancialOverview() {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+    console.log('Document loaded');
     if (income) {
         const yearlyIncome = calculateYearlyIncome(payFrequency, income);
         const formattedPayday = new Date(payday).toLocaleDateString('en-US', {
@@ -147,6 +150,7 @@ document.getElementById('billsForm').addEventListener('submit', function(event) 
 });
 
 function updateBillsTable() {
+    console.log('Updating bills table');
     const billsTable = document.getElementById('billsTable');
     let totalYearlyAmount = 0;
     billsTable.innerHTML = `<tr><th>Bill Name</th><th class="right-align">Bill Amount</th><th>Bill Frequency</th><th>Next Due Date</th><th class="right-align">12-Monthly Total Amount</th><th>Actions</th></tr>`;
@@ -201,6 +205,7 @@ function toggleViewMode() {
 }
 
 function updateAccordion() {
+    console.log('Updating accordion');
     const accordionContainer = document.getElementById('accordionContainer');
     accordionContainer.innerHTML = '';
     let cycleDates, chartData;
