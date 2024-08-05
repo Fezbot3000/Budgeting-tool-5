@@ -325,6 +325,7 @@ function openModal() {
 }
 
 function closeModal() {
+    console.log('Closing modal'); // Add this line for debugging
     const modal = document.getElementById('billModal');
     modal.style.display = 'none';
 }
