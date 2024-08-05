@@ -1,5 +1,3 @@
-console.log("JavaScript is running");
-
 // Initialize variables and load data from localStorage
 let bills = JSON.parse(localStorage.getItem('bills')) || [];
 let payFrequency = localStorage.getItem('payFrequency') || '';
@@ -43,11 +41,41 @@ function goToStep2() {
     document.getElementById('step1').classList.add('hidden');
     document.getElementById('step2').classList.remove('hidden');
     saveToLocalStorage();
+    updateFinancialOverview();
     updateAccordion();
 }
 
 function calculateYearlyIncome(frequency, income) {
     return income * (frequencyMultipliers[frequency] || 0);
+}
+
+function calculateYearlyBills() {
+    let yearlyTotal = 0;
+    bills.forEach(bill => {
+        yearlyTotal += calculateYearlyAmount(bill.amount, bill.frequency);
+    });
+    return yearlyTotal;
+}
+
+function calculateYearlyAmount(amount, frequency) {
+    return amount * (frequencyMultipliers[frequency] || 0);
+}
+
+function calculatePotentialSavings(yearlyIncome, yearlyBills) {
+    return yearlyIncome - yearlyBills;
+}
+
+function updateFinancialOverview() {
+    const yearlyIncome = calculateYearlyIncome(payFrequency, income);
+    const yearlyBills = calculateYearlyBills();
+    const potentialSavings = calculatePotentialSavings(yearlyIncome, yearlyBills);
+
+    const financialOverviewElement = document.getElementById('financialOverview');
+    financialOverviewElement.innerHTML = `
+        <tr><td>Yearly Income:</td><td class="right-align">$${yearlyIncome.toFixed(2)}</td></tr>
+        <tr><td>Yearly Bills:</td><td class="right-align">-$${yearlyBills.toFixed(2)}</td></tr>
+        <tr><td>Potential Savings:</td><td class="right-align">$${potentialSavings.toFixed(2)}</td></tr>
+    `;
 }
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -64,6 +92,7 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('step2').classList.remove('hidden');
     }
     updateBillsTable();
+    updateFinancialOverview();
     deleteOldPayCycles(); // Call the function to delete old pay cycles
     updateAccordion();
 
@@ -110,6 +139,7 @@ document.getElementById('billsForm').addEventListener('submit', function(event) 
 
     saveToLocalStorage();
     updateBillsTable();
+    updateFinancialOverview();
     updateAccordion();
     resetBillForm();
     closeModal();
@@ -130,32 +160,17 @@ function updateBillsTable() {
     billsTable.insertAdjacentHTML('beforeend', totalRow);
 }
 
-function calculateYearlyAmount(amount, frequency) {
-    return amount * (frequencyMultipliers[frequency] || 0);
-}
-
-function calculateYearlyBills() {
-    let yearlyTotal = 0;
-    bills.forEach(bill => {
-        yearlyTotal += calculateYearlyAmount(bill.amount, bill.frequency);
-    });
-    const yearlyBillsAmountElement = document.getElementById('yearlyBillsAmount');
-    if (yearlyBillsAmountElement) {
-        yearlyBillsAmountElement.innerText = `Total Yearly Bill Amount: $${yearlyTotal.toFixed(2)}`;
-    }
+function sortBillsByDate(bills) {
+    return bills.sort((a, b) => new Date(a.date) - new Date(b.date));
 }
 
 function removeBill(index) {
     bills.splice(index, 1);
     saveToLocalStorage();
     updateBillsTable();
+    updateFinancialOverview();
     updateAccordion(); // Ensure pay cycles are updated
     calculateYearlyBills();
-}
-
-function toggleBillList() {
-    const billsTable = document.getElementById('billsTable');
-    billsTable.style.display = billsTable.style.display === 'none' ? 'table' : 'none';
 }
 
 function editBill(index) {
@@ -279,10 +294,6 @@ function updateAccordion() {
     updateChart(chartData);
 }
 
-function sortBillsByDate(bills) {
-    return bills.sort((a, b) => new Date(a.date) - new Date(b.date));
-}
-
 function getCycleLength(frequency) {
     switch (frequency) {
         case 'weekly': return 7;
@@ -353,7 +364,7 @@ function calculateMonthlyView() {
     let endViewDate = new Date(currentDate.getFullYear(), currentDate.getMonth() + generatedPayCycles, 0);
     while (date <= endViewDate) {
         payDates.push(new Date(date));
-        date = getNextBillDate(new Date(date), payFrequency);
+        date = adjustDate(getNextBillDate(new Date(date), payFrequency));
     }
 
     for (let i = 0; i < generatedPayCycles; i++) {
@@ -380,18 +391,14 @@ function calculateMonthlyView() {
 
         sortedBills.forEach(bill => {
             let billDueDate = new Date(bill.date);
-            if (billDueDate >= startDate && billDueDate <= endDate) {
-                monthBills += `<tr><td>${bill.name}</td><td>${billDueDate.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: '2-digit', year: 'numeric' })}</td><td class="bills negative right-align">-$${bill.amount.toFixed(2)}</td></tr>`;
-                monthTotal += bill.amount;
-            } else if (billDueDate < startDate && (bill.frequency === 'monthly' || bill.frequency === 'yearly')) {
-                // Check for recurring bills
-                while (billDueDate <= endDate) {
-                    if (billDueDate >= startDate && billDueDate <= endDate) {
-                        monthBills += `<tr><td>${bill.name}</td><td>${billDueDate.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: '2-digit', year: 'numeric' })}</td><td class="bills negative right-align">-$${bill.amount.toFixed(2)}</td></tr>`;
-                        monthTotal += bill.amount;
-                    }
-                    billDueDate = getNextBillDate(billDueDate, bill.frequency);
+            while (billDueDate <= endDate) {
+                if (billDueDate >= startDate && billDueDate <= endDate) {
+                    billDueDate = adjustDate(billDueDate); // Ensure the bill date is adjusted
+                    monthBills += `<tr><td>${bill.name}</td><td>${billDueDate.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: '2-digit', year: 'numeric' })}</td><td class="bills negative right-align">-$${bill.amount.toFixed(2)}</td></tr>`;
+                    monthTotal += bill.amount;
                 }
+                billDueDate = getNextBillDate(billDueDate, bill.frequency);
+                if (billDueDate > endDate) break; // Break the loop if the next due date is beyond the end of the month
             }
         });
 
@@ -552,6 +559,7 @@ function updateIncome() {
 
     // Close modal
     closeIncomeModal();
+    updateFinancialOverview();
     updateAccordion();
 }
 
@@ -584,21 +592,3 @@ function deleteOldPayCycles() {
         saveToLocalStorage();
     }
 }
-
-document.addEventListener('DOMContentLoaded', () => {
-    if (income) {
-        const yearlyIncome = calculateYearlyIncome(payFrequency, income);
-        const formattedPayday = new Date(payday).toLocaleDateString('en-US', {
-            weekday: 'short',
-            month: 'short',
-            day: '2-digit',
-            year: 'numeric'
-        });
-        document.getElementById('incomeTable').innerHTML = `<tr><td>${payFrequency}</td><td class="right-align">$${income.toFixed(2)}</td><td>${formattedPayday}</td><td class="right-align">$${yearlyIncome.toFixed(2)}</td></tr>`;
-        document.getElementById('step1').classList.add('hidden');
-        document.getElementById('step2').classList.remove('hidden');
-    }
-    updateBillsTable();
-    deleteOldPayCycles(); // Call the function to delete old pay cycles
-    updateAccordion();
-});
