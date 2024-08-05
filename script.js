@@ -223,7 +223,22 @@ function updateAccordion() {
                 day: '2-digit',
                 year: 'numeric'
             });
-            accordionContainer.innerHTML += `<button class="accordion"><span>${formattedStartDate} - ${formattedEndDate}</span><span class="leftover">Leftover: <span class="amount">$${leftoverAmount.toFixed(2)}</span></span><span class="arrow">▶</span></button><div class="panel"><div class="pay-cycle"><table><tr><td colspan="2">Income:</td><td class="positive right-align">$${income.toFixed(2)}</td></tr><tr><td colspan="2">Total Bills:</td><td class="negative right-align">-$${cycleTotal.toFixed(2)}</td></tr>${cycleBills}</table></div></div>`;
+            accordionContainer.innerHTML += `
+                <button class="accordion">
+                    <span>${formattedStartDate} - ${formattedEndDate}</span>
+                    <span class="leftover">Leftover: <span class="amount">$${leftoverAmount.toFixed(2)}</span></span>
+                    <span class="arrow">▶</span>
+                </button>
+                <div class="panel">
+                    <div class="pay-cycle">
+                        <table>
+                            <tr><td colspan="2">Income:</td><td class="positive right-align">$${income.toFixed(2)}</td></tr>
+                            <tr><td colspan="2">Total Bills:</td><td class="negative right-align">-$${cycleTotal.toFixed(2)}</td></tr>
+                            ${cycleBills}
+                        </table>
+                    </div>
+                </div>
+            `;
             chartData.dates.push(formattedStartDate);
             chartData.totals.push(cycleTotal);
         });
@@ -246,7 +261,25 @@ function updateAccordion() {
                 billsForMonth
             }); // Debugging statement
             console.log(`Bills for ${monthYear}:`, billsForMonth); // Additional log to check the bills being added
-            accordionContainer.innerHTML += `<button class="accordion"><span>${monthYear}</span><span class="leftover">Leftover: <span class="amount">$${leftoverAmount.toFixed(2)}</span></span><span class="arrow">▶</span></button><div class="panel"><div class="pay-cycle"><table><tr><td colspan="2">Income (${payDatesForMonth.map(date => new Date(date).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: '2-digit', year: 'numeric' })).join(', ')}):</td><td class="positive right-align">$${monthIncome.toFixed(2)}</td></tr><tr><td colspan="2">Total Bills:</td><td class="negative right-align">-$${monthTotal.toFixed(2)}</td></tr>${billsForMonth}</table></div></div>`;
+            accordionContainer.innerHTML += `
+                <button class="accordion">
+                    <span>${monthYear}</span>
+                    <span class="leftover">Leftover: <span class="amount">$${leftoverAmount.toFixed(2)}</span></span>
+                    <span class="arrow">▶</span>
+                </button>
+                <div class="panel">
+                    <div class="pay-cycle">
+                        <table>
+                            <tr>
+                                <td colspan="2">Income (${payDatesForMonth.map(date => new Date(date).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: '2-digit', year: 'numeric' })).join(', ')}):</td>
+                                <td class="positive right-align">$${monthIncome.toFixed(2)}</td>
+                            </tr>
+                            <tr><td colspan="2">Total Bills:</td><td class="negative right-align">-$${monthTotal.toFixed(2)}</td></tr>
+                            ${billsForMonth}
+                        </table>
+                    </div>
+                </div>
+            `;
         });
     }
 
@@ -260,7 +293,6 @@ function updateAccordion() {
 
     updateChart(chartData);
 }
-
 
 function sortBillsByDate(bills) {
     return bills.sort((a, b) => new Date(a.date) - new Date(b.date));
