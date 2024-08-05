@@ -123,8 +123,8 @@ document.getElementById('billsForm').addEventListener('submit', function(event) 
     if (billIndex === '') {
         bills.push({ name: billName, amount: billAmount, frequency: billFrequency, date: billDate });
     } else {
-        bills[billIndex] = { name: billName, amount: billAmount, frequency: billFrequency, date: billDate });
-    }
+        bills[billIndex] = { name: billName, amount: billAmount, frequency: billFrequency, date: billDate
+    };
 
     saveToLocalStorage();
     updateBillsTable();
