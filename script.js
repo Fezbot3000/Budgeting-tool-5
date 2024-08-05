@@ -202,6 +202,11 @@ function toggleViewMode() {
 function updateAccordion() {
     console.log('Updating accordion');
     const accordionContainer = document.getElementById('accordionContainer');
+    if (!accordionContainer) {
+        console.error('Accordion container not found');
+        return;
+    }
+
     accordionContainer.innerHTML = '';
     let cycleDates, chartData;
 
@@ -385,12 +390,12 @@ function calculateMonthlyView() {
 
         // Calculate total income for the month
         payDates.forEach(payDate => {
-           const payDateStartOfDay = new Date(payDate.getFullYear(), payDate.getMonth(), payDate.getDate())
+            const payDateStartOfDay = new Date(payDate.getFullYear(), payDate.getMonth(), payDate.getDate());
 
-           if (payDateStartOfDay >= startDate && payDateStartOfDay <= endDate) {
+            if (payDateStartOfDay >= startDate && payDateStartOfDay <= endDate) {
                 monthIncome += income;
                 monthPayDates.push(payDate.toDateString());
-           }
+            }
         });
 
         // Calculate total bills for the month
