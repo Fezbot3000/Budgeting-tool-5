@@ -1,3 +1,58 @@
+let bills = JSON.parse(localStorage.getItem('bills')) || [];
+let payFrequency = localStorage.getItem('payFrequency') || '';
+let income = parseFloat(localStorage.getItem('income')) || 0;
+let payday = localStorage.getItem('payday') || '';
+let viewMode = localStorage.getItem('viewMode') || 'payCycle';
+let darkMode = localStorage.getItem('darkMode') === 'true';
+let generatedPayCycles = 12; // Generate 12 months of pay cycles
+let revealedPayCycles = 3; // Initially reveal 3 pay cycles
+
+const frequencyMultipliers = { weekly: 52, fortnightly: 26, monthly: 12, yearly: 1 };
+
+function saveToLocalStorage() {
+    localStorage.setItem('bills', JSON.stringify(bills));
+    localStorage.setItem('payFrequency', payFrequency);
+    localStorage.setItem('income', income.toString());
+    localStorage.setItem('payday', payday);
+    localStorage.setItem('viewMode', viewMode);
+    localStorage.setItem('darkMode', darkMode);
+}
+
+function calculateYearlyIncome(frequency, income) {
+    return income * (frequencyMultipliers[frequency] || 0);
+}
+
+function goToStep2() {
+    payFrequency = document.getElementById('frequency').value;
+    income = parseFloat(document.getElementById('income').value);
+    payday = document.getElementById('payday').value;
+
+    if (isNaN(income) || income <= 0) {
+        alert("Please enter a valid positive income.");
+        return;
+    }
+
+    const yearlyIncome = calculateYearlyIncome(payFrequency, income);
+    const formattedPayday = new Date(payday).toLocaleDateString('en-US', {
+        weekday: 'short',
+        month: 'short',
+        day: '2-digit',
+        year: 'numeric'
+    });
+
+    document.getElementById('incomeTable').innerHTML = `<tr><td>${payFrequency}</td><td class="right-align">$${income.toFixed(2)}</td><td>${formattedPayday}</td><td class="right-align">$${yearlyIncome.toFixed(2)}</td></tr>`;
+
+    document.getElementById('step1').classList.add('hidden');
+    document.getElementById('step2').classList.add('hidden');
+
+    setTimeout(() => {
+        document.getElementById('step2').classList.remove('hidden');
+        saveToLocalStorage();
+        revealedPayCycles = 3; // Ensure the initial 3 pay cycles are shown
+        updateAccordion();
+    }, 50); // Delay to ensure proper rendering
+}
+
 function updateAccordion() {
     const accordionContainer = document.getElementById('accordionContainer');
     accordionContainer.innerHTML = '<p>Updating Accordion...</p>';
@@ -189,6 +244,16 @@ document.addEventListener('DOMContentLoaded', () => {
     deleteOldPayCycles();
     revealedPayCycles = 3; // Ensure the initial 3 pay cycles are shown
     updateAccordion();
+
+    // Add event listeners if elements exist
+    const resetBtn = document.getElementById('resetLocalStorageButton');
+    if (resetBtn) resetBtn.addEventListener('click', resetLocalStorage);
+
+    const loadMoreBtn = document.getElementById('loadMoreButton');
+    if (loadMoreBtn) loadMoreBtn.addEventListener('click', loadMorePayCycles);
+
+    const viewModeSelect = document.getElementById('viewMode');
+    if (viewModeSelect) viewModeSelect.addEventListener('change', toggleViewMode);
 });
 
 function updateBillsTable() {
@@ -346,7 +411,6 @@ function toggleViewMode() {
     updateAccordion();
 }
 
-// Adding missing function definitions
 function getCycleLength(frequency) {
     switch (frequency) {
         case 'weekly': return 7;
@@ -363,6 +427,31 @@ function resetLocalStorage() {
     }
 }
 
-document.getElementById('resetLocalStorageButton').addEventListener('click', resetLocalStorage);
-document.getElementById('loadMoreButton').addEventListener('click', loadMorePayCycles);
-document.getElementById('viewMode').addEventListener('change', toggleViewMode);
+document.addEventListener('DOMContentLoaded', () => {
+    if (income) {
+        const yearlyIncome = calculateYearlyIncome(payFrequency, income);
+        const formattedPayday = new Date(payday).toLocaleDateString('en-US', {
+            weekday: 'short',
+            month: 'short',
+            day: '2-digit',
+            year: 'numeric'
+        });
+        document.getElementById('incomeTable').innerHTML = `<tr><td>${payFrequency}</td><td class="right-align">$${income.toFixed(2)}</td><td>${formattedPayday}</td><td class="right-align">$${yearlyIncome.toFixed(2)}</td></tr>`;
+        document.getElementById('step1').classList.add('hidden');
+        document.getElementById('step2').classList.remove('hidden');
+    }
+    updateBillsTable();
+    deleteOldPayCycles();
+    revealedPayCycles = 3; // Ensure the initial 3 pay cycles are shown
+    updateAccordion();
+
+    // Add event listeners if elements exist
+    const resetBtn = document.getElementById('resetLocalStorageButton');
+    if (resetBtn) resetBtn.addEventListener('click', resetLocalStorage);
+
+    const loadMoreBtn = document.getElementById('loadMoreButton');
+    if (loadMoreBtn) loadMoreBtn.addEventListener('click', loadMorePayCycles);
+
+    const viewModeSelect = document.getElementById('viewMode');
+    if (viewModeSelect) viewModeSelect.addEventListener('change', toggleViewMode);
+});
