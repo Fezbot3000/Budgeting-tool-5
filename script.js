@@ -346,3 +346,9 @@ function loadMorePayCycles() {
     revealedPayCycles += 3;
     updateAccordion();
 }
+
+function toggleViewMode() {
+    viewMode = document.getElementById('viewMode').value;
+    saveToLocalStorage();
+    updateAccordion();
+}
