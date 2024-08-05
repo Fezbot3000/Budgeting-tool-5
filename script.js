@@ -309,9 +309,9 @@ document.getElementById('billsForm').addEventListener('submit', function(event) 
     saveToLocalStorage();
     updateBillsTable();
     updateAccordion();
-    resetBillForm();
-    closeModal(); // Ensure this is called to close the modal
+    closeModal(); // Ensure this is called to close the modal and reset the form
 });
+
 
 function removeBill(index) {
     bills.splice(index, 1);
@@ -321,13 +321,14 @@ function removeBill(index) {
 }
 
 function openModal() {
+    resetBillForm(); // Reset the form when opening the modal
     document.getElementById('billModal').style.display = 'block';
 }
 
 function closeModal() {
-    console.log('Closing modal'); // Add this line for debugging
     const modal = document.getElementById('billModal');
     modal.style.display = 'none';
+    resetBillForm();
 }
 
 function openIncomeModal() {
@@ -393,8 +394,9 @@ function editBill(index) {
     document.getElementById('billFrequency').value = bill.frequency;
     document.getElementById('billDate').value = bill.date;
     document.getElementById('submitBill').textContent = 'Save';
-    openModal();
+    document.getElementById('billModal').style.display = 'block';
 }
+
 
 function toggleBillList() {
     const billsTable = document.getElementById('billsTable');
