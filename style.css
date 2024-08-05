@@ -227,7 +227,6 @@ th {
 
 .negative {
     color: #f44336 !important;
-    border: 1px solid red; /* Debugging border */
     background-color: #ffeeee; /* Debugging background */
 }
 
