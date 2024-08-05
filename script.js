@@ -52,21 +52,7 @@ function calculateYearlyIncome(frequency, income) {
 
 document.addEventListener('DOMContentLoaded', () => {
     if (income) {
-        const yearlyIncome = calculateYearlyIncome(payFrequency, income);
-        const yearlyBills = calculateYearlyBills();
-        const potentialSavings = yearlyIncome - yearlyBills;
-        const formattedPayday = new Date(payday).toLocaleDateString('en-US', {
-            weekday: 'short',
-            month: 'short',
-            day: '2-digit',
-            year: 'numeric'
-        });
-        document.getElementById('incomeTable').innerHTML = `
-            <tr><td>${payFrequency}</td><td class="right-align">$${income.toFixed(2)}</td><td>${formattedPayday}</td><td class="right-align">$${yearlyIncome.toFixed(2)}</td></tr>
-            <tr><td colspan="3">Yearly Bills:</td><td class="right-align" id="yearlyBills">-$${yearlyBills.toFixed(2)}</td></tr>
-            <tr><td colspan="3">Potential Savings:</td><td class="right-align" id="potentialSavings">$${potentialSavings.toFixed(2)}</td></tr>`;
-        document.getElementById('step1').classList.add('hidden');
-        document.getElementById('step2').classList.remove('hidden');
+        updateIncomeTable();
     }
     updateBillsTable();
     deleteOldPayCycles(); // Call the function to delete old pay cycles
@@ -93,6 +79,33 @@ document.addEventListener('DOMContentLoaded', () => {
     if (loadMoreButton) loadMoreButton.addEventListener('click', loadMorePayCycles);
     if (resetLocalStorageButton) resetLocalStorageButton.addEventListener('click', resetLocalStorage);
 });
+
+function updateIncomeTable() {
+    const yearlyIncome = calculateYearlyIncome(payFrequency, income);
+    const yearlyBills = calculateYearlyBills();
+    const potentialSavings = yearlyIncome - yearlyBills;
+    const formattedPayday = new Date(payday).toLocaleDateString('en-US', {
+        weekday: 'short',
+        month: 'short',
+        day: '2-digit',
+        year: 'numeric'
+    });
+    document.getElementById('incomeTable').innerHTML = `
+        <tr>
+            <td>${payFrequency}</td>
+            <td class="right-align">$${income.toFixed(2)}</td>
+            <td>${formattedPayday}</td>
+            <td class="right-align">$${yearlyIncome.toFixed(2)}</td>
+        </tr>
+        <tr>
+            <td colspan="3">Yearly Bills:</td>
+            <td class="right-align" id="yearlyBills">-$${yearlyBills.toFixed(2)}</td>
+        </tr>
+        <tr>
+            <td colspan="3">Potential Savings:</td>
+            <td class="right-align" id="potentialSavings">$${potentialSavings.toFixed(2)}</td>
+        </tr>`;
+}
 
 document.getElementById('billsForm').addEventListener('submit', function(event) {
     event.preventDefault();
