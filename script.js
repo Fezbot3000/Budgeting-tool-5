@@ -1,3 +1,5 @@
+console.log("JavaScript is running");
+
 // Initialize variables and load data from localStorage
 let bills = JSON.parse(localStorage.getItem('bills')) || [];
 let payFrequency = localStorage.getItem('payFrequency') || '';
@@ -49,7 +51,6 @@ function calculateYearlyIncome(frequency, income) {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-
     if (income) {
         const yearlyIncome = calculateYearlyIncome(payFrequency, income);
         const formattedPayday = new Date(payday).toLocaleDateString('en-US', {
@@ -128,7 +129,6 @@ function updateBillsTable() {
     const totalRow = `<tr><td colspan="4" class="total-label">Total Yearly Amount:</td><td class="right-align total-amount">-$${totalYearlyAmount.toFixed(2)}</td><td></td></tr>`;
     billsTable.insertAdjacentHTML('beforeend', totalRow);
 }
-
 
 function calculateYearlyAmount(amount, frequency) {
     return amount * (frequencyMultipliers[frequency] || 0);
@@ -377,6 +377,7 @@ function calculateMonthlyView() {
 
         // Calculate total bills for the month
         const sortedBills = sortBillsByDate(bills); // Ensure bills are sorted by date
+
         sortedBills.forEach(bill => {
             let billDueDate = new Date(bill.date);
             while (billDueDate <= endDate) {
@@ -409,8 +410,12 @@ function adjustDate(date) {
     // Move date to the last valid date of the month if it exceeds the number of days in the month
     const lastDayOfMonth = new Date(year, month + 1, 0).getDate();
 
+    console.log(`Original date: ${date}`);
+    console.log(`Last day of month: ${lastDayOfMonth}`);
+
     if (day > lastDayOfMonth) {
         date.setDate(lastDayOfMonth);
+        console.log(`Adjusted date: ${date}`);
     }
 
     return date;
