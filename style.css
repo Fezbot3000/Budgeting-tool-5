@@ -380,7 +380,7 @@ h1.dark-mode {
 }
 
 .dark-mode .accordion {
-    background-color: #121212; /* Changed to solid background */
+    background-color: #1e1e1e; /* Changed to solid background */
     color: #e0e0e0;
 }
 
@@ -417,11 +417,11 @@ h1.dark-mode {
 
 /* Remove background color on negative numbers in dark mode */
 body.dark-mode .negative-amount, body.dark-mode .bills.negative {
-    background-color: transparent !important;
+    background-color: #1e1e1e !important; /* Changed background to solid */
 }
 
 .dark-mode .total-bills {
-    background-color: #121212; /* Changed background to solid */
+    background-color: #1e1e1e; /* Changed background to solid */
 }
 
 .dark-mode .leftover {
@@ -435,5 +435,5 @@ body.dark-mode .negative-amount, body.dark-mode .bills.negative {
 }
 
 .dark-mode .delete-btn {
-    background-color: #121212; /* Changed background to solid */
+    background-color: #1e1e1e; /* Changed background to solid */
 }
