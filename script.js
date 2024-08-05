@@ -207,7 +207,8 @@ function toggleViewMode() {
 
 function updateAccordion() {
     const accordionContainer = document.getElementById('accordionContainer');
-    accordionContainer.innerHTML = '';
+    accordionContainer.innerHTML = '<p>Updating Accordion...</p>'; // Visual confirmation
+
     let cycleDates, chartData;
 
     if (viewMode === 'payCycle') {
