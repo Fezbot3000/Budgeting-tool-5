@@ -128,6 +128,7 @@ document.getElementById('billsForm').addEventListener('submit', function(event) 
 
     saveToLocalStorage();
     updateBillsTable();
+    updateIncomeTable(); // Update income table when a new bill is added or updated
     updateAccordion();
     resetBillForm();
     closeModal();
@@ -164,6 +165,7 @@ function removeBill(index) {
     bills.splice(index, 1);
     saveToLocalStorage();
     updateBillsTable();
+    updateIncomeTable(); // Update income table when a bill is removed
     updateAccordion(); // Ensure pay cycles are updated
     calculateYearlyBills();
 }
@@ -568,6 +570,7 @@ function updateIncome() {
 
     // Close modal
     closeIncomeModal();
+    updateIncomeTable(); // Ensure the income table updates with the latest values
     updateAccordion();
 }
 
@@ -603,6 +606,7 @@ function deleteOldPayCycles() {
 
 document.addEventListener('DOMContentLoaded', () => {
     if (income) {
+        updateIncomeTable();
         const yearlyIncome = calculateYearlyIncome(payFrequency, income);
         const formattedPayday = new Date(payday).toLocaleDateString('en-US', {
             weekday: 'short',
