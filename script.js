@@ -37,11 +37,12 @@ function goToStep2() {
         day: '2-digit',
         year: 'numeric'
     });
-    document.getElementById('incomeTable').innerHTML = `<tr><td>${payFrequency}</td><td class="right-align">$${income.toFixed(2)}</td><td>${formattedPayday}</td><td class="right-align">$${yearlyIncome.toFixed(2)}</td></tr>`;
+    document.getElementById('incomeTable').innerHTML = `<tr><td>${payFrequency}</td><td class="right-align">$${income.toFixed(2)}</td><td>${formattedPayday}</td><td class="right-align">$${yearlyIncome.toFixed(2)}</td></tr>
+        <tr><td colspan="3">Yearly Bills:</td><td class="right-align" id="yearlyBills">-$${calculateYearlyBills().toFixed(2)}</td></tr>
+        <tr><td colspan="3">Potential Savings:</td><td class="right-align" id="potentialSavings">$${calculatePotentialSavings(yearlyIncome, calculateYearlyBills()).toFixed(2)}</td></tr>`;
     document.getElementById('step1').classList.add('hidden');
     document.getElementById('step2').classList.remove('hidden');
     saveToLocalStorage();
-    updateFinancialOverview();
     updateAccordion();
 }
 
@@ -70,12 +71,8 @@ function updateFinancialOverview() {
     const yearlyBills = calculateYearlyBills();
     const potentialSavings = calculatePotentialSavings(yearlyIncome, yearlyBills);
 
-    const financialOverviewElement = document.getElementById('financialOverview');
-    financialOverviewElement.innerHTML = `
-        <tr><td>Yearly Income:</td><td class="right-align">$${yearlyIncome.toFixed(2)}</td></tr>
-        <tr><td>Yearly Bills:</td><td class="right-align">-$${yearlyBills.toFixed(2)}</td></tr>
-        <tr><td>Potential Savings:</td><td class="right-align">$${potentialSavings.toFixed(2)}</td></tr>
-    `;
+    document.getElementById('yearlyBills').innerText = `-$${yearlyBills.toFixed(2)}`;
+    document.getElementById('potentialSavings').innerText = `$${potentialSavings.toFixed(2)}`;
 }
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -87,7 +84,9 @@ document.addEventListener('DOMContentLoaded', () => {
             day: '2-digit',
             year: 'numeric'
         });
-        document.getElementById('incomeTable').innerHTML = `<tr><td>${payFrequency}</td><td class="right-align">$${income.toFixed(2)}</td><td>${formattedPayday}</td><td class="right-align">$${yearlyIncome.toFixed(2)}</td></tr>`;
+        document.getElementById('incomeTable').innerHTML = `<tr><td>${payFrequency}</td><td class="right-align">$${income.toFixed(2)}</td><td>${formattedPayday}</td><td class="right-align">$${yearlyIncome.toFixed(2)}</td></tr>
+            <tr><td colspan="3">Yearly Bills:</td><td class="right-align" id="yearlyBills">-$${calculateYearlyBills().toFixed(2)}</td></tr>
+            <tr><td colspan="3">Potential Savings:</td><td class="right-align" id="potentialSavings">$${calculatePotentialSavings(yearlyIncome, calculateYearlyBills()).toFixed(2)}</td></tr>`;
         document.getElementById('step1').classList.add('hidden');
         document.getElementById('step2').classList.remove('hidden');
     }
@@ -555,11 +554,12 @@ function updateIncome() {
         day: '2-digit',
         year: 'numeric'
     });
-    document.getElementById('incomeTable').innerHTML = `<tr><td>${payFrequency}</td><td class="right-align">$${income.toFixed(2)}</td><td>${formattedPayday}</td><td class="right-align">$${yearlyIncome.toFixed(2)}</td></tr>`;
+    document.getElementById('incomeTable').innerHTML = `<tr><td>${payFrequency}</td><td class="right-align">$${income.toFixed(2)}</td><td>${formattedPayday}</td><td class="right-align">$${yearlyIncome.toFixed(2)}</td></tr>
+        <tr><td colspan="3">Yearly Bills:</td><td class="right-align" id="yearlyBills">-$${calculateYearlyBills().toFixed(2)}</td></tr>
+        <tr><td colspan="3">Potential Savings:</td><td class="right-align" id="potentialSavings">$${calculatePotentialSavings(yearlyIncome, calculateYearlyBills()).toFixed(2)}</td></tr>`;
 
     // Close modal
     closeIncomeModal();
-    updateFinancialOverview();
     updateAccordion();
 }
 
