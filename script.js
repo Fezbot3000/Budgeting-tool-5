@@ -1,3 +1,4 @@
+// Existing global variables and functions
 let bills = JSON.parse(localStorage.getItem('bills')) || [];
 let payFrequency = localStorage.getItem('payFrequency') || '';
 let income = parseFloat(localStorage.getItem('income')) || 0;
@@ -53,44 +54,57 @@ function goToStep2() {
     }, 50); // Delay to ensure proper rendering
 }
 
+// Simplified getCycleDates function
+function getCycleDates(startDate, cycleLength, cycles) {
+    let dates = [];
+    for (let i = 0; i < cycles; i++) {
+        let endDate = new Date(startDate);
+        endDate.setDate(startDate.getDate() + cycleLength - 1);
+        dates.push({ start: new Date(startDate), end: new Date(endDate) });
+        startDate = new Date(endDate);
+        startDate.setDate(startDate.getDate() + 1);
+    }
+    return dates;
+}
+
+// Simplified getCycleLength function
+function getCycleLength(frequency) {
+    switch (frequency) {
+        case 'weekly': return 7;
+        case 'fortnightly': return 14;
+        case 'monthly': return 30; // Approximate for simplicity
+        default: return 0;
+    }
+}
+
+function deleteOldPayCycles() {
+    const today = new Date();
+    const payCycles = getCycleDates(new Date(payday), getCycleLength(payFrequency), generatedPayCycles);
+    const validPayCycles = payCycles.filter(cycle => cycle.end >= today);
+    const numberOfCyclesToDelete = payCycles.length - validPayCycles.length;
+
+    if (numberOfCyclesToDelete > 0) {
+        generatedPayCycles -= numberOfCyclesToDelete;
+        saveToLocalStorage();
+    }
+}
+
 function updateAccordion() {
     const accordionContainer = document.getElementById('accordionContainer');
     accordionContainer.innerHTML = '<p>Updating Accordion...</p>';
 
-    // Simplified getCycleDates function
-    function getCycleDates(startDate, cycleLength, cycles) {
-        let dates = [];
-        for (let i = 0; i < cycles; i++) {
-            let endDate = new Date(startDate);
-            endDate.setDate(startDate.getDate() + cycleLength - 1);
-            dates.push({ start: new Date(startDate), end: new Date(endDate) });
-            startDate = new Date(endDate);
-            startDate.setDate(startDate.getDate() + 1);
-        }
-        return dates;
-    }
-
-    // Simplified getCycleLength function
-    function getCycleLength(frequency) {
-        switch (frequency) {
-            case 'weekly': return 7;
-            case 'fortnightly': return 14;
-            case 'monthly': return 30; // Approximate for simplicity
-            default: return 0;
-        }
-    }
-
-    // Generate cycle dates
     const cycleDates = getCycleDates(new Date(payday), getCycleLength(payFrequency), generatedPayCycles);
 
     accordionContainer.innerHTML = ''; // Clear initial content
+
+    const sortedBills = sortBillsByDate(bills); // Define sortedBills here
 
     cycleDates.forEach((dates, index) => {
         if (index >= revealedPayCycles) return;
 
         let cycleTotal = 0;
         let cycleBills = '';
-        const sortedBills = sortBillsByDate(bills);
+
         sortedBills.forEach(bill => {
             cycleBills += getBillRowsForCycle(bill, dates);
             cycleTotal += getBillTotalForCycle(bill, dates);
@@ -206,8 +220,7 @@ function updateChart(chartData) {
                 borderWidth: 1
             }]
         },
-        options: {
-            scales: {
+        options: {            scales: {
                 x: {
                     beginAtZero: true,
                     type: 'category',
@@ -273,18 +286,6 @@ function updateBillsTable() {
 
 function calculateYearlyAmount(amount, frequency) {
     return amount * (frequencyMultipliers[frequency] || 0);
-}
-
-function deleteOldPayCycles() {
-    const today = new Date();
-    const payCycles = getCycleDates(new Date(payday), getCycleLength(payFrequency), generatedPayCycles);
-    const validPayCycles = payCycles.filter(cycle => cycle.end >= today);
-    const numberOfCyclesToDelete = payCycles.length - validPayCycles.length;
-
-    if (numberOfCyclesToDelete > 0) {
-        generatedPayCycles -= numberOfCyclesToDelete;
-        saveToLocalStorage();
-    }
 }
 
 document.getElementById('billsForm').addEventListener('submit', function(event) {
@@ -410,47 +411,9 @@ function toggleViewMode() {
     updateAccordion();
 }
 
-function getCycleLength(frequency) {
-    switch (frequency) {
-        case 'weekly': return 7;
-        case 'fortnightly': return 14;
-        case 'monthly': return 30; // Approximate for simplicity
-        default: return 0;
-    }
-}
-
 function resetLocalStorage() {
     if (confirm('Are you sure you want to reset all data? This action cannot be undone.')) {
         localStorage.clear();
         window.location.reload();
     }
 }
-
-document.addEventListener('DOMContentLoaded', () => {
-    if (income) {
-        const yearlyIncome = calculateYearlyIncome(payFrequency, income);
-        const formattedPayday = new Date(payday).toLocaleDateString('en-US', {
-            weekday: 'short',
-            month: 'short',
-            day: '2-digit',
-            year: 'numeric'
-        });
-        document.getElementById('incomeTable').innerHTML = `<tr><td>${payFrequency}</td><td class="right-align">$${income.toFixed(2)}</td><td>${formattedPayday}</td><td class="right-align">$${yearlyIncome.toFixed(2)}</td></tr>`;
-        document.getElementById('step1').classList.add('hidden');
-        document.getElementById('step2').classList.remove('hidden');
-    }
-    updateBillsTable();
-    deleteOldPayCycles();
-    revealedPayCycles = 3; // Ensure the initial 3 pay cycles are shown
-    updateAccordion();
-
-    // Add event listeners if elements exist
-    const resetBtn = document.getElementById('resetLocalStorageButton');
-    if (resetBtn) resetBtn.addEventListener('click', resetLocalStorage);
-
-    const loadMoreBtn = document.getElementById('loadMoreButton');
-    if (loadMoreBtn) loadMoreBtn.addEventListener('click', loadMorePayCycles);
-
-    const viewModeSelect = document.getElementById('viewMode');
-    if (viewModeSelect) viewModeSelect.addEventListener('change', toggleViewMode);
-});
