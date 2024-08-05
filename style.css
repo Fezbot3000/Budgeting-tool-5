@@ -96,7 +96,6 @@ button:hover {
 }
 
 .delete-btn {
-    background-color: #fff;
     color: #f44336;
     border: 2px solid #f44336;
 }
@@ -197,7 +196,7 @@ th {
 }
 
 .accordion .leftover .amount {
-    color: #333;
+    color: #fff;
 }
 
 .accordion .arrow {
@@ -315,15 +314,6 @@ button[type="submit"]:hover {
 .buttons .right-buttons {
     display: flex;
     gap: 10px;
-}
-
-.actions {
-    display: flex;
-    gap: 10px;
-}
-
-.actions button {
-    flex: 1;
 }
 
 /* Styling for View Mode dropdown */
