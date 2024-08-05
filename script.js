@@ -123,7 +123,7 @@ document.getElementById('billsForm').addEventListener('submit', function(event) 
     if (billIndex === '') {
         bills.push({ name: billName, amount: billAmount, frequency: billFrequency, date: billDate });
     } else {
-        bills[billIndex] = { name: billName, amount: billAmount, frequency: billFrequency, date: billDate };
+        bills[billIndex] = { name: billName, amount: billAmount, frequency: billFrequency, date: billDate });
     }
 
     saveToLocalStorage();
@@ -385,12 +385,12 @@ function calculateMonthlyView() {
 
         // Calculate total income for the month
         payDates.forEach(payDate => {
-            const payDateStartOfDay = new Date(payDate.getFullYear(), payDate.getMonth(), payDate.getDate());
+           const payDateStartOfDay = new Date(payDate.getFullYear(), payDate.getMonth(), payDate.getDate())
 
-            if (payDateStartOfDay >= startDate && payDateStartOfDay <= endDate) {
+           if (payDateStartOfDay >= startDate && payDateStartOfDay <= endDate) {
                 monthIncome += income;
                 monthPayDates.push(payDate.toDateString());
-            }
+           }
         });
 
         // Calculate total bills for the month
