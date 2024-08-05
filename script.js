@@ -371,6 +371,7 @@ function calculateMonthlyView() {
                     console.log(`Added bill: ${bill.name}, Amount: ${bill.amount}, Due Date: ${billDueDate}`); // Debugging statement
                 }
                 billDueDate = getNextBillDate(billDueDate, bill.frequency);
+                if (billDueDate > endDate) break; // Break the loop if the next due date is beyond the end of the month
             }
         });
 
@@ -386,6 +387,7 @@ function calculateMonthlyView() {
 
     return monthlyData;
 }
+
 
 
 
