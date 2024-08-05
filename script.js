@@ -239,6 +239,12 @@ function updateAccordion() {
                 leftoverClass = leftoverAmount >= 0 ? 'positive' : 'negative';
 
             if (index >= revealedPayCycles) return;
+            console.log(`Processing month ${monthYear}:`, {
+                monthTotal,
+                monthIncome,
+                payDatesForMonth,
+                billsForMonth
+            }); // Debugging statement
             accordionContainer.innerHTML += `<button class="accordion"><span>${monthYear}</span><span class="leftover">Leftover: <span class="amount">$${leftoverAmount.toFixed(2)}</span></span><span class="arrow">▶</span></button><div class="panel"><div class="pay-cycle"><table><tr><td colspan="2">Income (${payDatesForMonth.map(date => new Date(date).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: '2-digit', year: 'numeric' })).join(', ')}):</td><td class="positive right-align">$${monthIncome.toFixed(2)}</td></tr><tr><td colspan="2">Total Bills:</td><td class="negative right-align">-$${monthTotal.toFixed(2)}</td></tr>${billsForMonth}</table></div></div>`;
         });
     }
@@ -387,9 +393,6 @@ function calculateMonthlyView() {
 
     return monthlyData;
 }
-
-
-
 
 function getNextBillDate(date, frequency) {
     switch (frequency) {
