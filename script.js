@@ -312,7 +312,6 @@ document.getElementById('billsForm').addEventListener('submit', function(event) 
     closeModal(); // Ensure this is called to close the modal and reset the form
 });
 
-
 function removeBill(index) {
     bills.splice(index, 1);
     saveToLocalStorage();
@@ -381,7 +380,7 @@ function resetBillForm() {
     document.getElementById('billIndex').value = '';
     document.getElementById('billName').value = '';
     document.getElementById('billAmount').value = '';
-    document.getElementById('billFrequency').value = '';
+    document.getElementById('billFrequency').value = 'weekly'; // Default to weekly
     document.getElementById('billDate').value = '';
     document.getElementById('submitBill').textContent = 'Add Bill';
 }
@@ -396,7 +395,6 @@ function editBill(index) {
     document.getElementById('submitBill').textContent = 'Save';
     document.getElementById('billModal').style.display = 'block';
 }
-
 
 function toggleBillList() {
     const billsTable = document.getElementById('billsTable');
