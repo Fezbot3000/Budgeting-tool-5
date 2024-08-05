@@ -317,6 +317,15 @@ button[type="submit"]:hover {
     gap: 10px;
 }
 
+.actions {
+    display: flex;
+    gap: 10px;
+}
+
+.actions button {
+    flex: 1;
+}
+
 /* Styling for View Mode dropdown */
 .view-mode {
     display: flex;
