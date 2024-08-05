@@ -318,7 +318,6 @@ function removeBill(index) {
     saveToLocalStorage();
     updateBillsTable();
     updateAccordion();
-    calculateYearlyBills();
 }
 
 function openModal() {
