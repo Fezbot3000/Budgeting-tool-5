@@ -199,6 +199,14 @@ th {
     color: #fff;
 }
 
+.amount.positive-amount {
+    color: green !important;
+}
+
+.amount.negative-amount {
+    color: red !important;
+}
+
 .accordion .arrow {
     margin-left: 10px;
 }
