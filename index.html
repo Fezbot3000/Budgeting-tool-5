@@ -122,7 +122,10 @@
                     <label for="billDate">Next Due Date:</label>
                     <input type="date" id="billDate" name="billDate" required>
                 </div>
-                <button type="submit" id="submitBill" class="primary-btn">Add Bill</button>
+                <div class="actions">
+                    <button type="submit" id="submitBill" class="primary-btn">Add Bill</button>
+                    <button type="button" class="delete-btn" onclick="deleteBill()">Delete</button>
+                </div>
             </form>
         </div>
     </div>
