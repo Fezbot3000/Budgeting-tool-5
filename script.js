@@ -342,7 +342,10 @@ function calculateMonthlyView() {
         });
 
         // Calculate total bills for the month
-        const sortedBills = sortBillsByDate(bills);
+        const sortedBills = sortBillsByDate(bills); // Ensure bills are sorted by date
+
+        console.log(`Sorted Bills for ${monthName} ${currentDate.getFullYear()}:`, sortedBills); // Debugging statement
+
         sortedBills.forEach(bill => {
             let billDueDate = new Date(bill.date);
             while (billDueDate <= endDate) {
@@ -365,6 +368,7 @@ function calculateMonthlyView() {
 
     return monthlyData;
 }
+
 
 function sortBillsByDate(bills) {
     return bills.sort((a, b) => new Date(a.date) - new Date(b.date));
@@ -550,7 +554,7 @@ function deleteOldPayCycles() {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-    if (income) {
+    if (income) { 
         const yearlyIncome = calculateYearlyIncome(payFrequency, income);
         const formattedPayday = new Date(payday).toLocaleDateString('en-US', {
             weekday: 'short',
