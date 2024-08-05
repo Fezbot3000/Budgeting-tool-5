@@ -310,7 +310,7 @@ document.getElementById('billsForm').addEventListener('submit', function(event) 
     updateBillsTable();
     updateAccordion();
     resetBillForm();
-    closeModal();
+    closeModal(); // Ensure this is called to close the modal
 });
 
 function removeBill(index) {
@@ -325,7 +325,8 @@ function openModal() {
 }
 
 function closeModal() {
-    document.getElementById('billModal').style.display = 'none';
+    const modal = document.getElementById('billModal');
+    modal.style.display = 'none';
 }
 
 function openIncomeModal() {
