@@ -289,6 +289,8 @@ function deleteOldPayCycles() {
 
 document.getElementById('billsForm').addEventListener('submit', function(event) {
     event.preventDefault();
+    console.log('Form submitted'); // Add this line for debugging
+
     const billIndex = document.getElementById('billIndex').value,
         billName = document.getElementById('billName').value,
         billAmount = parseFloat(document.getElementById('billAmount').value),
