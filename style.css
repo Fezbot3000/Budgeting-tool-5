@@ -395,3 +395,70 @@ body.dark-mode {
     background-color: #333;
     color: #e0e0e0;
 }
+
+/* Pay Cycle View Mobile Styles */
+@media (max-width: 768px) {
+    .accordion {
+        display: block;
+        padding: 10px;
+        margin: 10px 0;
+        font-size: 14px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        border-radius: 8px;
+    }
+
+    .accordion .leftover {
+        display: block;
+        margin: 5px 0;
+        font-size: 16px;
+        font-weight: bold;
+        color: #007bff;
+    }
+
+    .accordion .leftover .amount {
+        color: #007bff;
+    }
+
+    .accordion .arrow {
+        display: none;
+    }
+
+    .panel {
+        padding: 10px;
+        font-size: 14px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        margin-top: 10px;
+    }
+
+    .panel .bills {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 10px;
+    }
+
+    .panel .bills .bill-name {
+        font-weight: bold;
+        flex: 1;
+    }
+
+    .panel .bills .bill-amount {
+        color: #f44336;
+        font-weight: bold;
+    }
+
+    .view-mode {
+        display: none; /* Hide the view mode dropdown on mobile */
+    }
+
+    /* Adjust button styles for mobile */
+    .primary-btn {
+        font-size: 14px;
+        padding: 8px 16px;
+    }
+
+    .secondary-btn {
+        font-size: 14px;
+    }
+}
+
