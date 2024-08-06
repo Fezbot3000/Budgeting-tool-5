@@ -78,7 +78,22 @@
                         <option value="monthly">Month-to-Month View</option>
                     </select>
                 </div>
-                <div id="accordionContainer"></div>
+                <div id="accordionContainer">
+                    <!-- Example of dynamically generated pay cycles -->
+                    <div class="accordion">
+                        <div class="leftover">Next pay cycle: 14 Aug - 27 Aug 2024</div>
+                        <div class="panel">
+                            <div class="bills">
+                                <span class="bill-name">Pet insurance</span>
+                                <span class="bill-amount">$89.03</span>
+                            </div>
+                            <div class="bills">
+                                <span class="bill-name">Apple storage</span>
+                                <span class="bill-amount">$44.99</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
                 <button class="primary-btn" onclick="loadMorePayCycles()">Load 3 More Pay Cycles</button>
                 <div id="yearlyBillsSection"></div>
             </div>
@@ -89,7 +104,7 @@
     </div>
 
     <!-- Bill Modal Structure -->
-        <div id="billModal" class="modal">
+    <div id="billModal" class="modal">
         <div class="modal-content">
             <span class="close" onclick="closeModal()">&times;</span>
             <form id="billsForm">
