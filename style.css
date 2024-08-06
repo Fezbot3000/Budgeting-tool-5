@@ -29,13 +29,11 @@ header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    flex-wrap: wrap; /* Add this */
 }
 
 header h1 {
     margin: 0;
     font-size: 24px;
-    flex: 1; /* Add this */
 }
 
 header .reset-btn, header .dark-mode-btn {
@@ -145,7 +143,6 @@ button:hover {
 
 .table-container {
     margin-top: 20px;
-    overflow-x: auto; /* Add this */
 }
 
 table {
@@ -399,40 +396,4 @@ body.dark-mode {
 .dark-mode .modal-content {
     background-color: #333;
     color: #e0e0e0;
-}
-
-/* Media Queries for Mobile Responsiveness */
-@media (max-width: 768px) {
-    .container {
-        padding: 10px;
-    }
-
-    header {
-        flex-direction: column;
-        align-items: flex-start;
-    }
-
-    header .reset-btn, header .dark-mode-btn {
-        margin: 10px 0;
-    }
-
-    .table-container, .chart-container {
-        overflow-x: auto;
-    }
-
-    .view-mode {
-        justify-content: center;
-        flex-wrap: wrap;
-    }
-
-    .buttons {
-        flex-direction: column;
-        align-items: flex-start;
-    }
-
-    .buttons .left-buttons, .buttons .right-buttons {
-        flex-direction: column;
-        gap: 5px;
-        width: 100%;
-    }
 }
