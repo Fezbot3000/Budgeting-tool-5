@@ -477,11 +477,8 @@ body.dark-mode {
 /* Styling for the panel content */
 .panel-content {
     background: #fff;
-    border-radius: 8px;
-    padding: 20px;
     margin-bottom: 10px;
     overflow: hidden;
-    width: 100%; /* Ensure the panel content spans the full width of the accordion */
 }
 
 /* Ensure the table inside the accordion matches the width of the accordion */
@@ -505,9 +502,7 @@ body.dark-mode {
 
 .panel-content table td {
     background: #fff;
-    width: 33%; /* Ensure table cells are evenly distributed */
 }
-
 
 /* Responsive Table */
 @media (max-width: 768px) {
