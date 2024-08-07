@@ -397,67 +397,67 @@ body.dark-mode {
 }
 
 /* New Styles for Updated Design */
-.cycle-header {
-    font-weight: bold;
-    font-size: 1.2em;
-    margin-top: 20px;
-    margin-bottom: 10px;
-}
-
 .cycle-info {
     display: flex;
     justify-content: space-between;
-    padding: 10px;
-    background-color: #f5f5f5;
+    align-items: center;
+    padding: 10px 0;
+    margin-bottom: 10px;
+}
+
+.cycle-info .left-align {
+    text-align: left;
+    font-weight: bold;
+}
+
+.cycle-info .right-align {
+    text-align: right;
+    font-weight: bold;
+}
+
+/* Additional styles for income summary */
+.income-summary {
+    background: #fff;
+    border: 1px solid #ddd;
     border-radius: 8px;
+    padding: 20px;
     margin-bottom: 10px;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
-.cycle-info span {
-    display: block;
+.income-summary p {
+    margin: 10px 0;
 }
 
-.cycle-info .positive {
+.positive {
     color: #4caf50;
-    font-weight: bold;
 }
 
-.cycle-info .negative {
+.negative {
     color: #f44336;
-    font-weight: bold;
 }
 
-.cycle-info .leftover {
-    color: #4caf50;
-    font-weight: bold;
-    text-align: right;
-}
-
+/* Styling for the accordion button */
 .accordion-btn {
-    background-color: #f5f5f5;
-    color: #333;
-    cursor: pointer;
-    padding: 12px;
-    width: 100%;
+    background: #fff;
     border: none;
+    width: 100%;
     text-align: left;
-    outline: none;
-    font-size: 16px;
+    padding: 20px;
     display: flex;
     justify-content: space-between;
     align-items: center;
     border-radius: 8px;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
     margin-bottom: 10px;
+    cursor: pointer;
 }
 
-.accordion-btn.active, .accordion-btn:hover {
-    background-color: #e5e5e5;
+.accordion-btn:hover, .accordion-btn.active {
+    background: #f9f9f9;
 }
 
 .accordion-btn .arrow {
-    margin-left: auto;
     transition: transform 0.3s;
 }
 
@@ -465,13 +465,12 @@ body.dark-mode {
     transform: rotate(90deg);
 }
 
+/* Panel content styling */
 .panel-content {
-    padding: 10px;
-    background-color: white;
+    padding: 0 20px;
     display: none;
     overflow: hidden;
     border-radius: 8px;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
 .panel-content table {
@@ -482,17 +481,15 @@ body.dark-mode {
 
 .panel-content td {
     padding: 8px;
-    border: 1px solid #ddd;
-}
-
-.panel-content .positive {
-    color: #4caf50;
-    font-weight: bold;
+    border-bottom: 1px solid #ddd;
 }
 
 .panel-content .negative {
     color: #f44336;
-    font-weight: bold;
+}
+
+.panel-content .positive {
+    color: #4caf50;
 }
 
 /* Responsive Design */
