@@ -445,7 +445,6 @@ body.dark-mode {
 }
 
 /* Styling for the accordion button */
-/* Styling for the accordion button */
 .accordion-btn {
     background: #fff;
     border: none;
@@ -459,6 +458,7 @@ body.dark-mode {
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
     margin-bottom: 10px;
     cursor: pointer;
+    appearance: none; /* Reset default styles */
 }
 
 .accordion-btn span {
@@ -468,10 +468,18 @@ body.dark-mode {
 .accordion-btn .arrow {
     transition: transform 0.3s;
     flex-shrink: 0; /* Prevent the arrow from shrinking */
+    content: '\25B6'; /* Right-pointing triangle */
+    color: #000; /* Ensure the color is black */
 }
 
 .accordion-btn.active .arrow {
     transform: rotate(90deg);
+}
+
+/* Remove blue color on mobile */
+.accordion-btn:focus {
+    outline: none; /* Remove default focus outline */
+    background: #fff; /* Ensure background remains white */
 }
 
 /* Panel content styling */
