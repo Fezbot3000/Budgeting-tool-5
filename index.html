@@ -49,24 +49,6 @@
                         </div>
                     </div>
                 </div>
-                <table id="incomeTable">
-                    <tr>
-                        <th>Income Frequency</th>
-                        <th class="right-align">Income Amount</th>
-                        <th>Next Pay Day</th>
-                        <th class="right-align">Yearly Income</th>
-                    </tr>
-                </table>
-                <table id="billsTable">
-                    <tr>
-                        <th>Bill Name</th>
-                        <th class="right-align">Bill Amount</th>
-                        <th>Bill Frequency</th>
-                        <th>Next Due Date</th>
-                        <th class="right-align">12-Monthly Total Amount</th>
-                        <th>Actions</th>
-                    </tr>
-                </table>
                 <div class="view-mode">
                     <label for="viewMode">View Mode:</label>
                     <select id="viewMode" onchange="toggleViewMode()">
@@ -74,7 +56,34 @@
                         <option value="monthly">Month-to-Month View</option>
                     </select>
                 </div>
-                <div id="accordionContainer"></div>
+                <div id="accordionContainer">
+                    <!-- Example of a Pay Cycle -->
+                    <div class="cycle-header">Next cycle: 8th August 2024 - 14th August 2024</div>
+                    <div class="cycle-info">
+                        <div>
+                            <span>Income:</span>
+                            <span class="positive">$249.00</span>
+                        </div>
+                        <div>
+                            <span>Estimated to pay:</span>
+                            <span class="negative">-$249.00</span>
+                        </div>
+                        <div>
+                            <span>Leftover:</span>
+                            <span class="leftover">$75.00</span>
+                        </div>
+                    </div>
+                    <button class="accordion-btn">
+                        <span>Tue 13th</span>
+                        <span class="arrow">&#9654;</span>
+                    </button>
+                    <div class="panel-content">
+                        <ul>
+                            <li>Telstra - <span class="negative">-$249.00</span></li>
+                            <li>Pet Insurance - <span class="negative">-$249.00</span></li>
+                        </ul>
+                    </div>
+                </div>
                 <button class="primary-btn" onclick="loadMorePayCycles()">Load 3 More Pay Cycles</button>
                 <div id="yearlyBillsSection"></div>
             </div>
