@@ -470,6 +470,7 @@ body.dark-mode {
     color: #000; /* Ensure the color is black */
     font-size: 16px; /* Adjust size if necessary */
     transition: transform 0.3s;
+    margin-left: auto; /* Align the arrow to the right */
 }
 
 .accordion-btn.active .arrow::after {
@@ -477,7 +478,7 @@ body.dark-mode {
 }
 
 /* Remove blue color on mobile */
-.accordion-btn:focus {
+.accordion-btn:focus, .accordion-btn:hover {
     outline: none; /* Remove default focus outline */
     background: #fff; /* Ensure background remains white */
 }
