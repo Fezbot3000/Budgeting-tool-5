@@ -230,9 +230,9 @@ function updateAccordion() {
                     </div>
                     <button class="accordion-btn">
                         <span>${formattedStartDate}</span>
-                        <span class="arrow"></span>
+                        <span class="toggle-text">Show</span>
                     </button>
-                    <div class="panel-content">
+                    <div class="panel-content" style="display: none;">
                         <table>
                             ${cycleBills}
                         </table>
@@ -266,9 +266,9 @@ function updateAccordion() {
                     </div>
                     <button class="accordion-btn">
                         <span>${monthYear}</span>
-                        <span class="arrow"></span>
+                        <span class="toggle-text">Show</span>
                     </button>
-                    <div class="panel-content">
+                    <div class="panel-content" style="display: none;">
                         <table>
                             ${billsForMonth}
                         </table>
@@ -280,9 +280,14 @@ function updateAccordion() {
 
     document.querySelectorAll('.accordion-btn').forEach(button => {
         button.addEventListener('click', function () {
-            this.classList.toggle('active');
             const panel = this.nextElementSibling;
-            panel.style.display = panel.style.display === 'block' ? 'none' : 'block';
+            if (panel.style.display === 'block') {
+                panel.style.display = 'none';
+                this.querySelector('.toggle-text').textContent = 'Show';
+            } else {
+                panel.style.display = 'block';
+                this.querySelector('.toggle-text').textContent = 'Hide';
+            }
         });
     });
 
