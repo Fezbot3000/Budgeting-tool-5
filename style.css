@@ -442,7 +442,7 @@ body.dark-mode {
 /* Styling for the accordion button */
 .accordion-btn {
     background: #fff;
-    border: none;
+    border: 1px solid #ddd;
     width: 100%;
     text-align: left;
     padding: 20px;
