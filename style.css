@@ -10,9 +10,7 @@ body {
 }
 
 h1 {
-    text-align: center;
     margin: 20px 0;
-    color: #333;
 }
 
 .cycle-summary {
@@ -35,7 +33,6 @@ header {
 }
 
 header h1 {
-    margin: 0;
     font-size: 24px;
 }
 
@@ -171,7 +168,22 @@ th {
 
 .bills.negative {
     color: #f44336 !important;
-    background-color: #ffeeee; /* Debugging background */
+    background-color: #ffeeee;
+}
+
+.bill-summary-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 20px;
+}
+
+.bill-summary-header h2 {
+    margin: 0;
+}
+
+.bill-summary-header .primary-btn {
+    margin-left: 20px; /* Optional: Adjust the space between the heading and the button */
 }
 
 .accordion {
@@ -350,6 +362,10 @@ body.dark-mode {
     color: #e0e0e0;
 }
 
+.income-summary.dark-mode {
+    background-color: #e5e5e5;
+}
+
 .container.dark-mode {
     background-color: #1e1e1e;
     color: #e0e0e0;
@@ -392,7 +408,7 @@ body.dark-mode {
 }
 
 .dark-mode .modal-content {
-    background-color: #333;
+    background-color: #e5e5e5;
     color: #e0e0e0;
 }
 
@@ -417,7 +433,6 @@ body.dark-mode {
 
 /* Additional styles for income summary */
 .income-summary {
-    background: #fff;
     border: 1px solid #ddd;
     border-radius: 8px;
     padding: 20px;
@@ -445,7 +460,6 @@ body.dark-mode {
 
 /* Styling for the accordion button */
 .accordion-btn {
-    background: #fff;
     border: 1px solid #ddd;
     width: 100%;
     text-align: left;
@@ -476,7 +490,6 @@ body.dark-mode {
 
 /* Styling for the panel content */
 .panel-content {
-    background: #fff;
     margin-bottom: 10px;
     overflow: hidden;
 }
@@ -492,16 +505,11 @@ body.dark-mode {
 .panel-content table td {
     padding: 10px;
     text-align: left;
-    border-bottom: 1px solid #ddd;
 }
 
 .panel-content table th {
     background: #f5f5f5;
     font-weight: bold;
-}
-
-.panel-content table td {
-    background: #fff;
 }
 
 /* Responsive Table */
@@ -525,11 +533,9 @@ body.dark-mode {
     }
 
     #billsTable th {
-        background: #f5f5f5;
         font-weight: bold;
     }
 
     #billsTable td {
-        background: #fff;
     }
 }
