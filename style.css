@@ -427,6 +427,13 @@ body.dark-mode {
 
 .income-summary p {
     margin: 10px 0;
+    display: flex;
+    justify-content: space-between;
+}
+
+.income-summary span {
+    text-align: right;
+    margin-left: auto;
 }
 
 .positive {
