@@ -20,6 +20,63 @@ function saveToLocalStorage() {
     localStorage.setItem('darkMode', darkMode);
 }
 
+function exportData() {
+    const data = {
+        bills: bills,
+        payFrequency: payFrequency,
+        income: income,
+        payday: payday,
+        viewMode: viewMode,
+        darkMode: darkMode
+    };
+    const dataStr = JSON.stringify(data, null, 2);
+    const blob = new Blob([dataStr], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "budget_data.json";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+}
+
+function importData(event) {
+    const file = event.target.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const data = JSON.parse(e.target.result);
+            bills = data.bills || [];
+            payFrequency = data.payFrequency || '';
+            income = parseFloat(data.income) || 0;
+            payday = data.payday || '';
+            viewMode = data.viewMode || 'payCycle';
+            darkMode = data.darkMode === true;
+
+            saveToLocalStorage();
+            updateBillsTable();
+            updateAccordion();
+            if (darkMode) {
+                document.body.classList.add('dark-mode');
+                document.querySelector('.container').classList.add('dark-mode');
+            } else {
+                document.body.classList.remove('dark-mode');
+                document.querySelector('.container').classList.remove('dark-mode');
+            }
+
+            const yearlyIncome = calculateYearlyIncome(payFrequency, income);
+            const formattedPayday = new Date(payday).toLocaleDateString('en-US', {
+                weekday: 'short',
+                month: 'short',
+                day: '2-digit',
+                year: 'numeric'
+            });
+            document.getElementById('incomeTable').innerHTML = `<tr><td>${payFrequency}</td><td class="right-align">$${income.toFixed(2)}</td><td>${formattedPayday}</td><td class="right-align">$${yearlyIncome.toFixed(2)}</td></tr>`;
+        };
+        reader.readAsText(file);
+    }
+}
+
 function goToStep2() {
     payFrequency = document.getElementById('frequency').value;
     income = parseFloat(document.getElementById('income').value);
