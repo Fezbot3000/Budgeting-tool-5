@@ -506,29 +506,30 @@ body.dark-mode {
 
 /* Responsive Table */
 @media (max-width: 768px) {
-    .table-container {
+    #billsTable {
+        display: block;
         overflow-x: auto;
         -webkit-overflow-scrolling: touch; /* Smooth scrolling for iOS */
+        white-space: nowrap; /* Prevent text from wrapping */
     }
 
-    .table-container table {
+    #billsTable table {
         width: 100%;
         min-width: 600px; /* Minimum width to prevent collapsing */
         border-collapse: collapse;
     }
 
-    .table-container th, .table-container td {
+    #billsTable th, #billsTable td {
         padding: 10px;
         text-align: left;
-        white-space: nowrap; /* Prevent text from wrapping */
     }
 
-    .table-container th {
+    #billsTable th {
         background: #f5f5f5;
         font-weight: bold;
     }
 
-    .table-container td {
+    #billsTable td {
         background: #fff;
     }
 }
