@@ -254,7 +254,6 @@ th {
     width: 80%;
     max-width: 500px;
     border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
     transition: background-color 0.3s, color 0.3s;
 }
 
@@ -419,7 +418,6 @@ body.dark-mode {
     border-radius: 8px;
     padding: 20px;
     margin-bottom: 10px;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
 .income-summary p {
@@ -452,7 +450,6 @@ body.dark-mode {
     justify-content: space-between; /* Ensure items are spaced apart */
     align-items: center; /* Ensure items are vertically centered */
     border-radius: 8px;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
     margin-bottom: 10px;
     cursor: pointer;
     appearance: none; /* Reset default styles */
@@ -477,7 +474,6 @@ body.dark-mode {
 .panel-content {
     background: #fff;
     border-radius: 8px;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
     padding: 20px;
     margin-bottom: 10px;
     overflow: hidden;
