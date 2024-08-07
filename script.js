@@ -106,7 +106,7 @@ function calculateYearlyIncome(frequency, income) {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-
+    // Check if income is already set
     if (income) {
         const yearlyIncome = calculateYearlyIncome(payFrequency, income);
         const formattedPayday = new Date(payday).toLocaleDateString('en-US', {
@@ -119,6 +119,10 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('step1').classList.add('hidden');
         document.getElementById('step2').classList.remove('hidden');
     }
+    // Update the view mode dropdown to match the stored value
+    document.getElementById('viewMode').value = viewMode;
+
+    // Update other elements and data
     updateBillsTable();
     deleteOldPayCycles(); // Call the function to delete old pay cycles
     updateAccordion();
@@ -174,17 +178,35 @@ document.getElementById('billsForm').addEventListener('submit', function(event) 
 function updateBillsTable() {
     const billsTable = document.getElementById('billsTable');
     let totalYearlyAmount = 0;
-    billsTable.innerHTML = `<tr><th>Bill Name</th><th class="right-align">Bill Amount</th><th>Bill Frequency</th><th>Next Due Date</th><th class="right-align">12-Monthly Total Amount</th><th>Actions</th></tr>`;
+    billsTable.innerHTML = `<thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th class="right-align">Amount</th>
+                                    <th>Frequency</th>
+                                    <th>Due</th>
+                                    <th class="right-align">Yearly Total</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>`;
     const sortedBills = sortBillsByDate(bills);
     sortedBills.forEach((bill, index) => {
         const yearlyAmount = calculateYearlyAmount(bill.amount, bill.frequency);
         totalYearlyAmount += yearlyAmount;
-        billsTable.innerHTML += `<tr><td>${bill.name}</td><td class="bills negative right-align">-$${bill.amount.toFixed(2)}</td><td>${bill.frequency}</td><td>${new Date(bill.date).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: '2-digit', year: 'numeric' })}</td><td class="right-align">-$${yearlyAmount.toFixed(2)}</td><td><button class="secondary-btn" onclick="editBill(${index})">Edit</button> <button class="delete-btn" onclick="removeBill(${index})">Delete</button></td></tr>`;
+        billsTable.querySelector('tbody').innerHTML += `<tr>
+            <td>${bill.name}</td>
+            <td class="bills negative right-align">-$${bill.amount.toFixed(2)}</td>
+            <td>${bill.frequency}</td>
+            <td>${new Date(bill.date).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: '2-digit', year: 'numeric' })}</td>
+            <td class="right-align">-$${yearlyAmount.toFixed(2)}</td>
+            <td><button class="secondary-btn" onclick="editBill(${index})">Edit</button> <button class="delete-btn" onclick="removeBill(${index})">Delete</button></td>
+        </tr>`;
     });
 
     const totalRow = `<tr><td colspan="4" class="total-label">Total Yearly Amount:</td><td class="right-align total-amount">-$${totalYearlyAmount.toFixed(2)}</td><td></td></tr>`;
-    billsTable.insertAdjacentHTML('beforeend', totalRow);
+    billsTable.querySelector('tbody').insertAdjacentHTML('beforeend', totalRow);
 }
+
 
 
 function calculateYearlyAmount(amount, frequency) {
