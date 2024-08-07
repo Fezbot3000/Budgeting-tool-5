@@ -217,7 +217,6 @@ function updateAccordion() {
                 year: 'numeric'
             });
 
-            // Updated structure with cycle-info and income-summary
             accordionContainer.innerHTML += `
                 <div class="cycle-summary">
                     <div class="cycle-info">
@@ -231,7 +230,7 @@ function updateAccordion() {
                     </div>
                     <button class="accordion-btn">
                         <span>${formattedStartDate}</span>
-                        <span class="arrow">&#9654;</span>
+                        <span class="arrow"></span>
                     </button>
                     <div class="panel-content">
                         <table>
@@ -267,7 +266,7 @@ function updateAccordion() {
                     </div>
                     <button class="accordion-btn">
                         <span>${monthYear}</span>
-                        <span class="arrow">&#9654;</span>
+                        <span class="arrow"></span>
                     </button>
                     <div class="panel-content">
                         <table>
