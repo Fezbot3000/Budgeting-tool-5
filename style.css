@@ -393,28 +393,3 @@ body.dark-mode {
     background-color: #333;
     color: #e0e0e0;
 }
-
-/* Mobile Styles */
-@media only screen and (max-width: 768px) {
-    .table-container, .form-container {
-        padding: 0 10px;
-    }
-
-    table, th, td {
-        font-size: 14px;
-        padding: 8px;
-    }
-
-    .buttons {
-        flex-direction: column;
-        gap: 10px;
-    }
-
-    .view-mode {
-        justify-content: center;
-    }
-
-    .accordion {
-        padding: 10px;
-    }
-}
