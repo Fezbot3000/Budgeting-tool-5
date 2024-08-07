@@ -44,9 +44,6 @@
                             <button class="secondary-btn" onclick="toggleBillList()">Hide/Show Bill List</button>
                             <button class="secondary-btn" onclick="openIncomeModal()">Edit Income</button>
                         </div>
-                        <div class="right-buttons">
-                            <button class="primary-btn" onclick="openModal()">Add a Bill</button>
-                        </div>
                     </div>
                 </div>
                 <table id="incomeTable">
@@ -61,8 +58,11 @@
                         <!-- Dynamic content will be inserted here -->
                     </tbody>
                 </table>
-                <h2>Bills summary</h2>
                 <table id="billsTable">
+                    <div class="bill-summary-header">
+                        <h2>Bills summary</h2>
+                        <button class="primary-btn" onclick="openModal()">Add a Bill</button>
+                    </div>
                     <thead>
                         <tr>
                             <th>Name</th>
@@ -77,6 +77,7 @@
                         <!-- Dynamic content will be inserted here -->
                     </tbody>
                 </table>
+                <h2>Pay Cycle</h2>
                 <div class="view-mode">
                     <label for="viewMode">View Mode:</label>
                     <select id="viewMode" onchange="toggleViewMode()">
