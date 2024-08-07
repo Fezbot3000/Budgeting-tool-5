@@ -29,13 +29,11 @@ header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    flex-wrap: wrap;
 }
 
 header h1 {
     margin: 0;
     font-size: 24px;
-    flex: 1;
 }
 
 header .reset-btn, header .dark-mode-btn {
@@ -145,7 +143,6 @@ button:hover {
 
 .table-container {
     margin-top: 20px;
-    overflow-x: auto;
 }
 
 table {
@@ -168,6 +165,10 @@ th {
     background-color: #f5f5f5;
     color: #333;
     font-weight: 500;
+}
+
+.bills.negative {
+    color: #f44336 !important;
 }
 
 .accordion {
@@ -225,7 +226,6 @@ th {
 
 .negative {
     color: #f44336 !important;
-    background-color: #ffeeee;
 }
 
 .chart-container {
@@ -394,98 +394,27 @@ body.dark-mode {
     color: #e0e0e0;
 }
 
-/* Media Queries for Mobile Responsiveness */
-@media (max-width: 768px) {
-    .container {
-        padding: 10px;
+/* Mobile Styles */
+@media only screen and (max-width: 768px) {
+    .table-container, .form-container {
+        padding: 0 10px;
     }
 
-    header {
-        flex-direction: column;
-        align-items: flex-start;
-    }
-
-    header .reset-btn, header .dark-mode-btn {
-        margin: 10px 0;
-    }
-
-    .table-container, .chart-container {
-        overflow-x: auto;
-    }
-
-    .view-mode {
-        justify-content: center;
-        flex-wrap: wrap;
+    table, th, td {
+        font-size: 14px;
+        padding: 8px;
     }
 
     .buttons {
         flex-direction: column;
-        align-items: flex-start;
+        gap: 10px;
     }
 
-    .buttons .left-buttons, .buttons .right-buttons {
-        flex-direction: column;
-        gap: 5px;
-        width: 100%;
-    }
-    
-    /* Pay Cycle View Mobile Styles */
-    .pay-cycle {
-        margin: 10px 0;
-        padding: 15px;
-        border-radius: 8px;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-        background-color: #fff;
+    .view-mode {
+        justify-content: center;
     }
 
-    .pay-cycle-header {
-        font-weight: bold;
-        margin-bottom: 10px;
-    }
-
-    .pay-cycle-summary {
-        display: flex;
-        justify-content: space-between;
-        padding: 10px 0;
-        border-bottom: 1px solid #ddd;
-    }
-
-    .pay-cycle-summary div {
-        flex: 1;
-        text-align: center;
-    }
-
-    .pay-cycle-summary div span {
-        display: block;
-    }
-
-    .pay-cycle-summary div span:first-child {
-        font-size: 14px;
-        color: #666;
-    }
-
-    .pay-cycle-summary div span:last-child {
-        font-size: 16px;
-        font-weight: bold;
-    }
-
-    .pay-cycle-accordion {
-        padding: 10px 0;
-    }
-
-    .pay-cycle-accordion div {
-        display: flex;
-        justify-content: space-between;
-        margin-bottom: 5px;
-    }
-
-    .pay-cycle-accordion div span:first-child {
-        font-weight: bold;
-    }
-
-    .next-cycle-date {
-        font-size: 14px;
-        color: #666;
-        margin-bottom: 5px;
+    .accordion {
+        padding: 10px;
     }
 }
