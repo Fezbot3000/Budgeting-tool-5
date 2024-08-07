@@ -51,6 +51,18 @@ header .reset-btn:hover, header .dark-mode-btn:hover {
     background-color: #d32f2f;
 }
 
+/* Add these styles to your CSS file */
+.pay-cycle-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 20px;
+}
+
+.pay-cycle-header h2 {
+    margin: 0;
+}
+
 .main {
     margin-top: 20px;
 }
