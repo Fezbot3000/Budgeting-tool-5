@@ -45,7 +45,10 @@ document.addEventListener('DOMContentLoaded', function() {
             year: 'numeric'
         });
 
-        document.getElementById('incomeTable').innerHTML = `<tr><td>${payFrequency}</td><td class="right-align">$${income.toFixed(2)}</td><td>${formattedPayday}</td><td class="right-align">$${yearlyIncome.toFixed(2)}</td></tr>`;
+        const incomeTable = document.getElementById('incomeTable');
+        if (incomeTable) {
+            incomeTable.innerHTML = `<tr><td>${payFrequency}</td><td class="right-align">$${income.toFixed(2)}</td><td>${formattedPayday}</td><td class="right-align">$${yearlyIncome.toFixed(2)}</td></tr>`;
+        }
 
         document.getElementById('step1').classList.add('hidden');
         document.getElementById('step2').classList.add('hidden');
