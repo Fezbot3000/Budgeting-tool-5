@@ -29,11 +29,13 @@ header {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    flex-wrap: wrap;
 }
 
 header h1 {
     margin: 0;
     font-size: 24px;
+    flex: 1;
 }
 
 header .reset-btn, header .dark-mode-btn {
@@ -143,6 +145,7 @@ button:hover {
 
 .table-container {
     margin-top: 20px;
+    overflow-x: auto;
 }
 
 table {
@@ -165,11 +168,6 @@ th {
     background-color: #f5f5f5;
     color: #333;
     font-weight: 500;
-}
-
-.bills.negative {
-    color: #f44336 !important;
-    background-color: #ffeeee; /* Debugging background */
 }
 
 .accordion {
@@ -227,7 +225,7 @@ th {
 
 .negative {
     color: #f44336 !important;
-    background-color: #ffeeee; /* Debugging background */
+    background-color: #ffeeee;
 }
 
 .chart-container {
@@ -396,69 +394,98 @@ body.dark-mode {
     color: #e0e0e0;
 }
 
-/* Pay Cycle View Mobile Styles */
+/* Media Queries for Mobile Responsiveness */
 @media (max-width: 768px) {
-    .accordion {
-        display: block;
+    .container {
         padding: 10px;
+    }
+
+    header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    header .reset-btn, header .dark-mode-btn {
         margin: 10px 0;
-        font-size: 14px;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-        border-radius: 8px;
     }
 
-    .accordion .leftover {
-        display: block;
-        margin: 5px 0;
-        font-size: 16px;
-        font-weight: bold;
-        color: #007bff;
-    }
-
-    .accordion .leftover .amount {
-        color: #007bff;
-    }
-
-    .accordion .arrow {
-        display: none;
-    }
-
-    .panel {
-        padding: 10px;
-        font-size: 14px;
-        border: 1px solid #ddd;
-        border-radius: 8px;
-        margin-top: 10px;
-    }
-
-    .panel .bills {
-        display: flex;
-        justify-content: space-between;
-        margin-bottom: 10px;
-    }
-
-    .panel .bills .bill-name {
-        font-weight: bold;
-        flex: 1;
-    }
-
-    .panel .bills .bill-amount {
-        color: #f44336;
-        font-weight: bold;
+    .table-container, .chart-container {
+        overflow-x: auto;
     }
 
     .view-mode {
-        display: none; /* Hide the view mode dropdown on mobile */
+        justify-content: center;
+        flex-wrap: wrap;
     }
 
-    /* Adjust button styles for mobile */
-    .primary-btn {
-        font-size: 14px;
-        padding: 8px 16px;
+    .buttons {
+        flex-direction: column;
+        align-items: flex-start;
     }
 
-    .secondary-btn {
+    .buttons .left-buttons, .buttons .right-buttons {
+        flex-direction: column;
+        gap: 5px;
+        width: 100%;
+    }
+    
+    /* Pay Cycle View Mobile Styles */
+    .pay-cycle {
+        margin: 10px 0;
+        padding: 15px;
+        border-radius: 8px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        background-color: #fff;
+    }
+
+    .pay-cycle-header {
+        font-weight: bold;
+        margin-bottom: 10px;
+    }
+
+    .pay-cycle-summary {
+        display: flex;
+        justify-content: space-between;
+        padding: 10px 0;
+        border-bottom: 1px solid #ddd;
+    }
+
+    .pay-cycle-summary div {
+        flex: 1;
+        text-align: center;
+    }
+
+    .pay-cycle-summary div span {
+        display: block;
+    }
+
+    .pay-cycle-summary div span:first-child {
         font-size: 14px;
+        color: #666;
+    }
+
+    .pay-cycle-summary div span:last-child {
+        font-size: 16px;
+        font-weight: bold;
+    }
+
+    .pay-cycle-accordion {
+        padding: 10px 0;
+    }
+
+    .pay-cycle-accordion div {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 5px;
+    }
+
+    .pay-cycle-accordion div span:first-child {
+        font-weight: bold;
+    }
+
+    .next-cycle-date {
+        font-size: 14px;
+        color: #666;
+        margin-bottom: 5px;
     }
 }
-
