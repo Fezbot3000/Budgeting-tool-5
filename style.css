@@ -465,14 +465,14 @@ body.dark-mode {
     flex: 1;
 }
 
-.accordion-btn .arrow {
-    transition: transform 0.3s;
-    flex-shrink: 0; /* Prevent the arrow from shrinking */
-    content: '\25B6'; /* Right-pointing triangle */
+.accordion-btn .arrow::after {
+    content: '\25B6'; /* Unicode for right-pointing triangle */
     color: #000; /* Ensure the color is black */
+    font-size: 16px; /* Adjust size if necessary */
+    transition: transform 0.3s;
 }
 
-.accordion-btn.active .arrow {
+.accordion-btn.active .arrow::after {
     transform: rotate(90deg);
 }
 
