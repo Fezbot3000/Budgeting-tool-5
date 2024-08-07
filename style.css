@@ -452,8 +452,8 @@ body.dark-mode {
     text-align: left;
     padding: 20px;
     display: flex;
-    justify-content: space-between;
-    align-items: right; /* Ensure items are centered vertically */
+    justify-content: space-between; /* Ensure items are spaced apart */
+    align-items: center; /* Ensure items are vertically centered */
     border-radius: 8px;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
     margin-bottom: 10px;
@@ -465,19 +465,17 @@ body.dark-mode {
     flex: 1;
 }
 
-.accordion-btn .arrow::after {
-    content: '\25B6'; /* Unicode for right-pointing triangle */
-    color: #000; /* Ensure the color is black */
+.accordion-btn .arrow {
     font-size: 16px; /* Adjust size if necessary */
-    transition: transform 0.3s;
     margin-left: auto; /* Align the arrow to the right */
+    transition: transform 0.3s; /* Ensure smooth rotation */
 }
 
-.accordion-btn.active .arrow::after {
-    transform: rotate(90deg);
+.accordion-btn.active .arrow {
+    transform: rotate(90deg); /* Rotate the arrow when active */
 }
 
-/* Remove blue color on mobile */
+/* Remove blue color on hover and focus */
 .accordion-btn:focus, .accordion-btn:hover {
     outline: none; /* Remove default focus outline */
     background: #fff; /* Ensure background remains white */
