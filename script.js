@@ -369,9 +369,11 @@ function calculateMonthlyView() {
 
         // Calculate total income for the month
         payDates.forEach(payDate => {
-            if (payDate >= startDate && payDate <= endDate) {
+            const payDateStartOfDay = new Date(payDate.getFullYear(), payDate.getMonth(), payDate getDate())
+
+            if (payDateStartOfDay >= startDate && payDateStartofDay <= endDate) {
                 monthIncome += income;
-                monthPayDates.push(payDate.toDateString());
+                monthPayDates- push(payDate.toDateString());
             }
         });
 
