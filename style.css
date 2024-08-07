@@ -402,6 +402,7 @@ body.dark-mode {
     font-size: 1.2em;
     margin-top: 20px;
     margin-bottom: 10px;
+    text-align: center;
 }
 
 .cycle-info {
@@ -412,6 +413,7 @@ body.dark-mode {
     border-radius: 8px;
     margin-bottom: 10px;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    align-items: center;
 }
 
 .cycle-info span {
@@ -482,7 +484,8 @@ body.dark-mode {
 
 .panel-content td {
     padding: 8px;
-    border: 1px solid #ddd;
+    border: none;
+    border-bottom: 1px solid #ddd;
 }
 
 .panel-content .positive {
