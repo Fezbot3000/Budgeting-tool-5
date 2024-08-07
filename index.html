@@ -36,18 +36,18 @@
                     <button type="button" class="primary-btn" onclick="goToStep2()">Next Step</button>
                 </form>
             </div>
-            <div class="table-container hidden" id="step2">
-                <div class="controls">
-                    <h2>Your Financial Overview</h2>
-                    <div class="buttons">
-                        <div class="left-buttons">
-                            <button class="secondary-btn" onclick="toggleBillList()">Hide/Show Bill List</button>
-                            <button class="secondary-btn" onclick="openIncomeModal()">Edit Income</button>
-                        </div>
-                        <div class="right-buttons">
-                            <button class="primary-btn" onclick="openModal()">Add a Bill</button>
-                        </div>
-                    </div>
+            <div class="table-container">
+                    <table id="billsTable">
+                        <tr>
+                            <th>Bill Name</th>
+                            <th class="right-align">Bill Amount</th>
+                            <th>Bill Frequency</th>
+                            <th>Next Due Date</th>
+                            <th class="right-align">12-Monthly Total Amount</th>
+                            <th>Actions</th>
+                        </tr>
+                        <!-- Table rows will be dynamically generated here -->
+                    </table>
                 </div>
                 <table id="incomeTable">
                     <tr>
