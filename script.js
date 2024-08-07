@@ -49,6 +49,7 @@ function calculateYearlyIncome(frequency, income) {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+
     if (income) {
         const yearlyIncome = calculateYearlyIncome(payFrequency, income);
         const formattedPayday = new Date(payday).toLocaleDateString('en-US', {
@@ -62,7 +63,7 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('step2').classList.remove('hidden');
     }
     updateBillsTable();
-    deleteOldPayCycles();
+    deleteOldPayCycles(); // Call the function to delete old pay cycles
     updateAccordion();
 
     // Set dark mode if enabled
@@ -216,26 +217,18 @@ function updateAccordion() {
                 year: 'numeric'
             });
             accordionContainer.innerHTML += `
-                <div>
-                    <p>Next cycle: ${formattedStartDate} - ${formattedEndDate}</p>
-                    <div class="summary">
-                        <div><span>Income:</span> <span class="positive-amount">$${income.toFixed(2)}</span></div>
-                        <div><span>Estimated to pay:</span> <span class="negative-amount">-$${cycleTotal.toFixed(2)}</span></div>
-                        <div><span>Leftover:</span> <span class="positive-amount">$${leftoverAmount.toFixed(2)}</span></div>
-                    </div>
-                    <button class="accordion">
-                        <span>${formattedStartDate} - ${formattedEndDate}</span>
-                        <span class="leftover">Leftover: <span class="amount">$${leftoverAmount.toFixed(2)}</span></span>
-                        <span class="arrow">▶</span>
-                    </button>
-                    <div class="panel">
-                        <div class="pay-cycle">
-                            <table>
-                                <tr><td colspan="2">Income:</td><td class="positive right-align">$${income.toFixed(2)}</td></tr>
-                                <tr><td colspan="2">Estimated to pay:</td><td class="negative right-align">-$${cycleTotal.toFixed(2)}</td></tr>
-                                ${cycleBills}
-                            </table>
-                        </div>
+                <button class="accordion">
+                    <span>${formattedStartDate} - ${formattedEndDate}</span>
+                    <span class="leftover">Leftover: <span class="amount">$${leftoverAmount.toFixed(2)}</span></span>
+                    <span class="arrow">▶</span>
+                </button>
+                <div class="panel">
+                    <div class="pay-cycle">
+                        <table>
+                            <tr><td colspan="2">Income:</td><td class="positive right-align">$${income.toFixed(2)}</td></tr>
+                            <tr><td colspan="2">Total Bills:</td><td class="negative right-align">-$${cycleTotal.toFixed(2)}</td></tr>
+                            ${cycleBills}
+                        </table>
                     </div>
                 </div>
             `;
@@ -266,7 +259,7 @@ function updateAccordion() {
                                 <td colspan="2">Income (${payDatesForMonth.map(date => new Date(date).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: '2-digit', year: 'numeric' })).join(', ')}):</td>
                                 <td class="positive right-align">$${monthIncome.toFixed(2)}</td>
                             </tr>
-                            <tr><td colspan="2">Estimated to pay:</td><td class="negative right-align">-$${monthTotal.toFixed(2)}</td></tr>
+                            <tr><td colspan="2">Total Bills:</td><td class="negative right-align">-$${monthTotal.toFixed(2)}</td></tr>
                             ${billsForMonth}
                         </table>
                     </div>
