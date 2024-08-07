@@ -49,72 +49,32 @@
                         </div>
                     </div>
                 </div>
-                <div class="pay-cycle">
-                    <div class="next-cycle-date">Next cycle: 8th August 2024 - 14th August 2024</div>
-                    <div class="pay-cycle-summary">
-                        <div>
-                            <span>Income:</span>
-                            <span>$249.00</span>
-                        </div>
-                        <div>
-                            <span>Estimated to pay:</span>
-                            <span style="color: red;">-$249.00</span>
-                        </div>
-                        <div>
-                            <span>Leftover:</span>
-                            <span style="color: green;">$75.00</span>
-                        </div>
-                    </div>
-                    <div class="pay-cycle-accordion">
-                        <div>
-                            <span>Tue 13th</span>
-                            <span>▼</span>
-                        </div>
-                        <div class="panel">
-                            <div class="bills">
-                                <span>Telstra</span>
-                                <span style="color: red;">-$249.00</span>
-                            </div>
-                            <div class="bills">
-                                <span>Pet Insurance</span>
-                                <span style="color: red;">-$249.00</span>
-                            </div>
-                        </div>
-                    </div>
+                <table id="incomeTable">
+                    <tr>
+                        <th>Income Frequency</th>
+                        <th class="right-align">Income Amount</th>
+                        <th>Next Pay Day</th>
+                        <th class="right-align">Yearly Income</th>
+                    </tr>
+                </table>
+                <table id="billsTable">
+                    <tr>
+                        <th>Bill Name</th>
+                        <th class="right-align">Bill Amount</th>
+                        <th>Bill Frequency</th>
+                        <th>Next Due Date</th>
+                        <th class="right-align">12-Monthly Total Amount</th>
+                        <th>Actions</th>
+                    </tr>
+                </table>
+                <div class="view-mode">
+                    <label for="viewMode">View Mode:</label>
+                    <select id="viewMode" onchange="toggleViewMode()">
+                        <option value="payCycle">Pay Cycle View</option>
+                        <option value="monthly">Month-to-Month View</option>
+                    </select>
                 </div>
-                <div class="pay-cycle">
-                    <div class="next-cycle-date">Next cycle: 15th August 2024 - 21th August 2024</div>
-                    <div class="pay-cycle-summary">
-                        <div>
-                            <span>Income:</span>
-                            <span>$249.00</span>
-                        </div>
-                        <div>
-                            <span>Estimated to pay:</span>
-                            <span style="color: red;">-$249.00</span>
-                        </div>
-                        <div>
-                            <span>Leftover:</span>
-                            <span style="color: green;">$75.00</span>
-                        </div>
-                    </div>
-                    <div class="pay-cycle-accordion">
-                        <div>
-                            <span>Tue 13th</span>
-                            <span>▼</span>
-                        </div>
-                        <div class="panel">
-                            <div class="bills">
-                                <span>Telstra</span>
-                                <span style="color: red;">-$249.00</span>
-                            </div>
-                            <div class="bills">
-                                <span>Pet Insurance</span>
-                                <span style="color: red;">-$249.00</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                <div id="accordionContainer"></div>
                 <button class="primary-btn" onclick="loadMorePayCycles()">Load 3 More Pay Cycles</button>
                 <div id="yearlyBillsSection"></div>
             </div>
