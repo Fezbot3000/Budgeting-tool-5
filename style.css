@@ -453,7 +453,7 @@ body.dark-mode {
     padding: 20px;
     display: flex;
     justify-content: space-between;
-    align-items: center; /* Ensure items are centered vertically */
+    align-items: right; /* Ensure items are centered vertically */
     border-radius: 8px;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
     margin-bottom: 10px;
