@@ -15,6 +15,10 @@ h1 {
     color: #333;
 }
 
+.cycle-summary {
+ padding-top:15px; 
+}
+
 .container {
     max-width: 900px;
     margin: 0 auto;
