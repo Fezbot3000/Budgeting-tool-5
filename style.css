@@ -235,6 +235,23 @@ th {
     max-width: 800px;
 }
 
+/* Mobile View Styling */
+@media (max-width: 768px) {
+    .accordion .leftover {
+        display: none;
+    }
+
+    .accordion span {
+        flex: 1;
+        text-align: center;
+    }
+
+    .accordion.active .leftover {
+        display: block;
+        text-align: right;
+    }
+}
+
 /* Modal Styles */
 .modal {
     display: none;
@@ -394,42 +411,4 @@ body.dark-mode {
 .dark-mode .modal-content {
     background-color: #333;
     color: #e0e0e0;
-}
-
-/* Additional styles for new design */
-.pay-cycle-summary {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 10px 0;
-}
-
-.pay-cycle-summary div {
-    text-align: center;
-}
-
-.next-cycle {
-    font-weight: bold;
-    margin-top: 20px;
-    text-align: center;
-    color: #333;
-}
-
-.panel .pay-cycle table {
-    width: 100%;
-    border-collapse: collapse;
-}
-
-.panel .pay-cycle table th, .panel .pay-cycle table td {
-    padding: 10px;
-    border-bottom: 1px solid #ddd;
-}
-
-.panel .pay-cycle table th {
-    background-color: #f9f9f9;
-    font-weight: 500;
-}
-
-.panel .pay-cycle table td {
-    background-color: #fff;
 }
