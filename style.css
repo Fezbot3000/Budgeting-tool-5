@@ -14,7 +14,7 @@ h1 {
 }
 
 .cycle-summary {
- padding-top:15px; 
+    padding-top: 15px;
 }
 
 .container {
@@ -550,4 +550,40 @@ body.dark-mode {
 
     #billsTable td {
     }
+}
+
+/* Data Management Styles */
+.data-management {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 20px 0;
+}
+
+.data-management button {
+    margin: 5px 0;
+    width: 200px; /* Adjust width as needed */
+}
+
+.primary-btn {
+    background-color: #007bff;
+    color: #fff;
+}
+
+.primary-btn:hover {
+    background-color: #0056b3;
+}
+
+.reset-btn, .dark-mode-btn {
+    background-color: #f44336;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.reset-btn:hover, .dark-mode-btn:hover {
+    background-color: #d32f2f;
 }
