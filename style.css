@@ -445,6 +445,7 @@ body.dark-mode {
 }
 
 /* Styling for the accordion button */
+/* Styling for the accordion button */
 .accordion-btn {
     background: #fff;
     border: none;
@@ -453,19 +454,20 @@ body.dark-mode {
     padding: 20px;
     display: flex;
     justify-content: space-between;
-    align-items: center;
+    align-items: center; /* Ensure items are centered vertically */
     border-radius: 8px;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
     margin-bottom: 10px;
     cursor: pointer;
 }
 
-.accordion-btn:hover, .accordion-btn.active {
-    background: #f9f9f9;
+.accordion-btn span {
+    flex: 1;
 }
 
 .accordion-btn .arrow {
     transition: transform 0.3s;
+    flex-shrink: 0; /* Prevent the arrow from shrinking */
 }
 
 .accordion-btn.active .arrow {
