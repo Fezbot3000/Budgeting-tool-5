@@ -465,14 +465,10 @@ body.dark-mode {
     flex: 1;
 }
 
-.accordion-btn .arrow {
+.accordion-btn .toggle-text {
     font-size: 16px; /* Adjust size if necessary */
-    margin-left: auto; /* Align the arrow to the right */
-    transition: transform 0.3s; /* Ensure smooth rotation */
-}
-
-.accordion-btn.active .arrow {
-    transform: rotate(90deg); /* Rotate the arrow when active */
+    margin-left: auto; /* Align the text to the right */
+    transition: transform 0.3s; /* Ensure smooth transition */
 }
 
 /* Remove blue color on hover and focus */
