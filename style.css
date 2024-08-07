@@ -459,7 +459,6 @@ body.dark-mode {
     margin-bottom: 10px;
     cursor: pointer;
     appearance: none; /* Reset default styles */
-    position: relative; /* Required for the arrow positioning */
 }
 
 .accordion-btn span {
@@ -470,8 +469,6 @@ body.dark-mode {
     font-size: 16px; /* Adjust size if necessary */
     margin-left: auto; /* Align the arrow to the right */
     transition: transform 0.3s; /* Ensure smooth rotation */
-    position: absolute; /* Absolute positioning to align it to the right */
-    right: 20px; /* Adjust this value as needed to align the arrow */
 }
 
 .accordion-btn.active .arrow {
