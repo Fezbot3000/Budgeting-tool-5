@@ -11,8 +11,6 @@
     <div class="container">
         <header>
             <h1>Budgeting Tool</h1>
-            <button class="reset-btn" onclick="resetLocalStorage()">Reset Data</button>
-            <button class="dark-mode-btn" onclick="toggleDarkMode()">Toggle Dark Mode</button>
         </header>
         <main>
             <div class="form-container" id="step1">
@@ -153,13 +151,14 @@
         </div>
     </div>
 
-    <!-- Data Management -->
+  <!-- Data Management -->
     <div class="data-management">
         <button class="primary-btn" onclick="exportData()">Export Data</button>
         <input type="file" id="importFile" style="display:none;" onchange="importData(event)">
         <button class="primary-btn" onclick="document.getElementById('importFile').click()">Import Data</button>
-    </div>
-    
+        <button class="reset-btn" onclick="resetLocalStorage()">Reset Data</button>
+        <button class="dark-mode-btn" onclick="toggleDarkMode()">Toggle Dark Mode</button>
+    </div>    
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="script.js"></script>
 </body>
