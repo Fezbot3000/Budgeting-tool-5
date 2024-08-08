@@ -7,9 +7,16 @@ let viewMode = localStorage.getItem('viewMode') || 'payCycle';
 let darkMode = localStorage.getItem('darkMode') === 'true';
 let generatedPayCycles = 12; // Generate 12 months of pay cycles
 let revealedPayCycles = 3; // Initially reveal 3 pay cycles
+let tags = JSON.parse(localStorage.getItem('tags')) || ['default'];
 
 // Constants
-const frequencyMultipliers = { weekly: 52, fortnightly: 26, monthly: 12, yearly: 1 };
+const frequencyMultipliers = { 
+    weekly: 52, 
+    fortnightly: 26, 
+    monthly: 12, 
+    quarterly: 4,  // Added Quarterly
+    yearly: 1 
+};
 
 function saveToLocalStorage() {
     localStorage.setItem('bills', JSON.stringify(bills));
@@ -18,7 +25,26 @@ function saveToLocalStorage() {
     localStorage.setItem('payday', payday);
     localStorage.setItem('viewMode', viewMode);
     localStorage.setItem('darkMode', darkMode);
+    localStorage.setItem('tags', JSON.stringify(tags)); // Save tags
 }
+
+function autocompleteTag() {
+    const tagInput = document.getElementById('billTag');
+    const tagList = document.getElementById('tagList');
+    tagList.innerHTML = ''; // Clear previous suggestions
+
+    const inputValue = tagInput.value.toLowerCase();
+    if (inputValue) {
+        const filteredTags = tags.filter(tag => tag.toLowerCase().includes(inputValue));
+        filteredTags.forEach(tag => {
+            const option = document.createElement('option');
+            option.value = tag;
+            tagList.appendChild(option);
+        });
+    }
+}
+
+document.getElementById('billTag').addEventListener('input', autocompleteTag);
 
 function exportData() {
     const data = {
@@ -27,7 +53,8 @@ function exportData() {
         income: income,
         payday: payday,
         viewMode: viewMode,
-        darkMode: darkMode
+        darkMode: darkMode,
+        tags: tags
     };
     const dataStr = JSON.stringify(data, null, 2);
     const blob = new Blob([dataStr], { type: "application/json" });
@@ -52,6 +79,7 @@ function importData(event) {
             payday = data.payday || '';
             viewMode = data.viewMode || 'payCycle';
             darkMode = data.darkMode === true;
+            tags = data.tags || ['default']; // Import tags
 
             saveToLocalStorage();
             updateBillsTable();
@@ -126,6 +154,7 @@ document.addEventListener('DOMContentLoaded', () => {
     updateBillsTable();
     deleteOldPayCycles(); // Call the function to delete old pay cycles
     updateAccordion();
+    updateTagDropdown();
 
     // Set dark mode if enabled
     if (darkMode) {
@@ -155,17 +184,24 @@ document.getElementById('billsForm').addEventListener('submit', function(event) 
         billName = document.getElementById('billName').value,
         billAmount = parseFloat(document.getElementById('billAmount').value),
         billFrequency = document.getElementById('billFrequency').value,
-        billDate = document.getElementById('billDate').value;
+        billDate = document.getElementById('billDate').value,
+        billTag = document.getElementById('billTag').value.trim();
 
     if (isNaN(billAmount) || billAmount <= 0) {
         alert("Please enter a valid positive bill amount.");
         return;
     }
 
+    if (!tags.includes(billTag)) {
+        tags.push(billTag); // Add new tag to tags array
+    }
+
+    const newBill = { name: billName, amount: billAmount, frequency: billFrequency, date: billDate, tag: billTag };
+
     if (billIndex === '') {
-        bills.push({ name: billName, amount: billAmount, frequency: billFrequency, date: billDate });
+        bills.push(newBill);
     } else {
-        bills[billIndex] = { name: billName, amount: billAmount, frequency: billFrequency, date: billDate };
+        bills[billIndex] = newBill;
     }
 
     saveToLocalStorage();
@@ -183,7 +219,8 @@ function updateBillsTable() {
                                     <th>Name</th>
                                     <th class="right-align">Amount</th>
                                     <th>Frequency</th>
-                                    <th>Due</th>
+                                    <th>Due Date</th>
+                                    <th>Tag</th> <!-- New column for Tag -->
                                     <th class="right-align">Yearly Total</th>
                                     <th>Actions</th>
                                 </tr>
@@ -198,16 +235,15 @@ function updateBillsTable() {
             <td class="bills negative right-align">-$${bill.amount.toFixed(2)}</td>
             <td>${bill.frequency}</td>
             <td>${new Date(bill.date).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: '2-digit', year: 'numeric' })}</td>
+            <td>${bill.tag}</td> <!-- New cell for Tag -->
             <td class="right-align">-$${yearlyAmount.toFixed(2)}</td>
             <td><button class="secondary-btn" onclick="editBill(${index})">Edit</button> <button class="delete-btn" onclick="removeBill(${index})">Delete</button></td>
         </tr>`;
     });
 
-    const totalRow = `<tr><td colspan="4" class="total-label">Total Yearly Amount:</td><td class="right-align total-amount">-$${totalYearlyAmount.toFixed(2)}</td><td></td></tr>`;
+    const totalRow = `<tr><td colspan="5" class="total-label">Total Yearly Amount:</td><td class="right-align total-amount">-$${totalYearlyAmount.toFixed(2)}</td><td></td></tr>`;
     billsTable.querySelector('tbody').insertAdjacentHTML('beforeend', totalRow);
 }
-
-
 
 function calculateYearlyAmount(amount, frequency) {
     return amount * (frequencyMultipliers[frequency] || 0);
@@ -244,6 +280,7 @@ function editBill(index) {
     document.getElementById('billAmount').value = bill.amount;
     document.getElementById('billFrequency').value = bill.frequency;
     document.getElementById('billDate').value = bill.date;
+    document.getElementById('billTag').value = bill.tag;
     document.getElementById('submitBill').textContent = 'Save';
     openModal();
 }
@@ -254,6 +291,7 @@ function resetBillForm() {
     document.getElementById('billAmount').value = '';
     document.getElementById('billFrequency').value = '';
     document.getElementById('billDate').value = '';
+    document.getElementById('billTag').value = 'default';
     document.getElementById('submitBill').textContent = 'Add Bill';
 }
 
@@ -381,7 +419,9 @@ function getCycleLength(frequency) {
     switch (frequency) {
         case 'weekly': return 7;
         case 'fortnightly': return 14;
-        case 'monthly': return (new Date(new Date().setMonth(new Date().getMonth() + 1)) - new Date()) / (1000 * 60 * 60 * 24);
+        case 'monthly': return 30; // Average days in a month
+        case 'quarterly': return 90; // Average days in a quarter
+        case 'yearly': return 365;
         default: return 0;
     }
 }
@@ -514,8 +554,12 @@ function adjustDate(date) {
 
 function getNextBillDate(date, frequency) {
     switch (frequency) {
-        case 'weekly': date.setDate(date.getDate() + 7); break;
-        case 'fortnightly': date.setDate(date.getDate() + 14); break;
+        case 'weekly': 
+            date.setDate(date.getDate() + 7); 
+            break;
+        case 'fortnightly': 
+            date.setDate(date.getDate() + 14); 
+            break;
         case 'monthly': 
             let currentDay = date.getDate();
             date.setMonth(date.getMonth() + 1);
@@ -523,7 +567,16 @@ function getNextBillDate(date, frequency) {
                 date.setDate(0); // This sets the date to the last day of the previous month
             }
             break;
-        case 'yearly': date.setFullYear(date.getFullYear() + 1); break;
+        case 'quarterly': 
+            let currentQuarterDay = date.getDate();
+            date.setMonth(date.getMonth() + 3);
+            if (date.getDate() < currentQuarterDay) {
+                date.setDate(0); // This sets the date to the last day of the previous month
+            }
+            break;
+        case 'yearly': 
+            date.setFullYear(date.getFullYear() + 1); 
+            break;
     }
     return adjustDate(date);
 }
@@ -608,6 +661,7 @@ function resetLocalStorage() {
 // Modal functions
 function openModal() {
     document.getElementById('billModal').style.display = 'block';
+    updateTagDropdown();
 }
 
 function closeModal() {
@@ -653,6 +707,9 @@ window.onclick = function(event) {
     if (event.target == document.getElementById('incomeModal')) {
         closeIncomeModal();
     }
+    if (event.target == document.getElementById('tagModal')) {
+        closeTagModal();
+    }
 }
 
 // Dark mode toggle function
@@ -676,6 +733,146 @@ function deleteOldPayCycles() {
     }
 }
 
+// Tag Management Functions
+
+function openTagModal() {
+    document.getElementById('tagModal').style.display = 'block';
+    updateTagDropdown();
+}
+
+function closeTagModal() {
+    document.getElementById('tagModal').style.display = 'none';
+}
+
+function renameTag() {
+    const oldTag = document.getElementById('existingTag').value;
+    const newTag = document.getElementById('newTagName').value.trim();
+
+    if (!newTag) {
+        alert("New tag name cannot be empty.");
+        return;
+    }
+
+    const tagIndex = tags.indexOf(oldTag);
+    if (tagIndex > -1) {
+        tags[tagIndex] = newTag;
+
+        bills.forEach(bill => {
+            if (bill.tag === oldTag) {
+                bill.tag = newTag;
+            }
+        });
+
+        saveToLocalStorage();
+        updateBillsTable();
+        updateTagDropdown();
+        alert("Tag renamed successfully.");
+    }
+}
+
+function deleteTag() {
+    const tagToDelete = document.getElementById('existingTag').value;
+
+    if (tagToDelete === 'default') {
+        alert("Cannot delete the default tag.");
+        return;
+    }
+
+    tags = tags.filter(tag => tag !== tagToDelete);
+
+    bills.forEach(bill => {
+        if (bill.tag === tagToDelete) {
+            bill.tag = 'default';
+        }
+    });
+
+    saveToLocalStorage();
+    updateBillsTable();
+    updateTagDropdown();
+    alert("Tag deleted successfully.");
+
+    // Close the tag modal
+    closeTagModal();
+}
+
+function updateTagDropdown() {
+    const tagList = document.getElementById('tagList');
+    const existingTagSelect = document.getElementById('existingTag');
+    const tagFilter = document.getElementById('tagFilter');
+    
+    tagList.innerHTML = '';
+    existingTagSelect.innerHTML = '';
+    tagFilter.innerHTML = '<option value="all">All</option>'; // Reset and add "All" option
+
+    tags.forEach(tag => {
+        const option = document.createElement('option');
+        option.value = tag;
+        tagList.appendChild(option);
+
+        const selectOption = document.createElement('option');
+        selectOption.value = tag;
+        selectOption.textContent = tag;
+        existingTagSelect.appendChild(selectOption);
+
+        const filterOption = document.createElement('option');
+        filterOption.value = tag;
+        filterOption.textContent = tag;
+        tagFilter.appendChild(filterOption);
+    });
+}
+
+function filterByTag() {
+    const selectedTag = document.getElementById('tagFilter').value;
+    const billsTable = document.getElementById('billsTable');
+    const filteredBills = selectedTag === 'all' ? bills : bills.filter(bill => bill.tag === selectedTag);
+
+    let totalYearlyAmount = 0;
+    billsTable.innerHTML = `<thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th class="right-align">Amount</th>
+                                    <th>Frequency</th>
+                                    <th>Due Date</th>
+                                    <th>Tag</th>
+                                    <th class="right-align">Yearly Total</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>`;
+
+    filteredBills.forEach((bill, index) => {
+        const yearlyAmount = calculateYearlyAmount(bill.amount, bill.frequency);
+        totalYearlyAmount += yearlyAmount;
+        billsTable.querySelector('tbody').innerHTML += `<tr>
+            <td>${bill.name}</td>
+            <td class="bills negative right-align">-$${bill.amount.toFixed(2)}</td>
+            <td>${bill.frequency}</td>
+            <td>${new Date(bill.date).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: '2-digit', year: 'numeric' })}</td>
+            <td>${bill.tag}</td>
+            <td class="right-align">-$${yearlyAmount.toFixed(2)}</td>
+            <td><button class="secondary-btn" onclick="editBill(${index})">Edit</button> <button class="delete-btn" onclick="removeBill(${index})">Delete</button></td>
+        </tr>`;
+    });
+
+    const totalRow = `<tr><td colspan="5" class="total-label">Total Yearly Amount:</td><td class="right-align total-amount">-$${totalYearlyAmount.toFixed(2)}</td><td></td></tr>`;
+    billsTable.querySelector('tbody').insertAdjacentHTML('beforeend', totalRow);
+}
+
+function loadTagInfo() {
+    const existingTag = document.getElementById('existingTag').value;
+    document.getElementById('newTagName').value = existingTag;
+}
+
+function openManageTagsModal() {
+    document.getElementById('manageTagsModal').style.display = 'block';
+    updateTagDropdown();
+}
+
+function closeTagModal() {
+    document.getElementById('tagModal').style.display = 'none';
+}
+
+// Load initial data
 document.addEventListener('DOMContentLoaded', () => {
     if (income) {
         const yearlyIncome = calculateYearlyIncome(payFrequency, income);
@@ -690,6 +887,8 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('step2').classList.remove('hidden');
     }
     updateBillsTable();
-    deleteOldPayCycles(); // Call the function to delete old pay cycles
+    deleteOldPayCycles();
     updateAccordion();
+    updateTagDropdown();
+    filterByTag();
 });
