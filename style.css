@@ -76,11 +76,10 @@ header .reset-btn:hover, header .dark-mode-btn:hover {
 }
 
 .hidden {
-    display: none;
+    display: none; !important
 }
 
 button {
-    margin: 10px 0;
     padding: 10px 20px;
     font-size: 16px;
     cursor: pointer;
@@ -99,6 +98,7 @@ button:hover {
     color: #007bff;
     text-decoration: underline;
     border: none;
+    margin-bottom: 10px;
 }
 
 .secondary-btn:hover {
@@ -210,6 +210,8 @@ th {
 
 .bill-summary-header .primary-btn {
     align-self: flex-start;
+    margin-right: 10px;
+    margin-bottom: 10px;
 }
 
 .bill-summary-header .view-mode {
@@ -365,8 +367,26 @@ th {
     gap: 10px; /* Add space between elements */
 }
 
-.right-buttons .secondary-btn {
-    align-self: center;
+.right-buttons .filter-by-tag {
+    display: flex;
+    align-items: center;
+}
+
+.right-buttons .filter-by-tag label {
+    margin-right: 5px;
+    font-weight: bold;
+}
+
+.right-buttons .filter-by-tag select {
+    padding: 5px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+.left-buttons {
+    display: flex;
+    align-items: center;
 }
 
 button[type="submit"] {
@@ -575,7 +595,23 @@ body.dark-mode {
     font-weight: bold;
 }
 
-/* Responsive Table */
+.edit-income {
+    text-align: right;
+    display: block; /* Ensure it takes the full width */
+}
+
+.edit-income-container {
+    display: flex;
+    justify-content: flex-end;
+    width: 100%;
+}
+
+/* Hidden class for toggling visibility */
+.hidden {
+    display: none !important;
+}
+
+/* Ensure the scrollable styling is always applied */
 @media (max-width: 768px) {
     #billsTable {
         display: block;
@@ -599,11 +635,16 @@ body.dark-mode {
         font-weight: bold;
     }
 
-    #billsTable td {
-    }
-     .buttons-container {
+    .buttons-container {
         flex-direction: column;
         align-items: flex-start;
+    }
+
+    .left-buttons {
+        flex-direction: row;
+        justify-content: space-between;
+        width: 100%;
+        margin-top: 10px;
     }
 
     .right-buttons {
@@ -611,11 +652,15 @@ body.dark-mode {
         justify-content: space-between;
         width: 100%;
         margin-top: 10px;
+        margin-left: 0; /* Reset margin for mobile */
     }
 
     .filter-by-tag {
         margin-top: 10px;
         width: 100%;
+        display: flex;
+        justify-content: flex-end; /* Ensure right alignment */
+        padding-bottom: 10px; /* Add bottom padding */
     }
 }
 
