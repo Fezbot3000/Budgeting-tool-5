@@ -155,6 +155,7 @@ document.addEventListener('DOMContentLoaded', () => {
     deleteOldPayCycles(); // Call the function to delete old pay cycles
     updateAccordion();
     updateTagDropdown();
+    location.reload(); 
 
     // Set dark mode if enabled
     if (darkMode) {
