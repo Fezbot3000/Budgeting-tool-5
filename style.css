@@ -601,6 +601,22 @@ body.dark-mode {
 
     #billsTable td {
     }
+     .buttons-container {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .right-buttons {
+        flex-direction: row;
+        justify-content: space-between;
+        width: 100%;
+        margin-top: 10px;
+    }
+
+    .filter-by-tag {
+        margin-top: 10px;
+        width: 100%;
+    }
 }
 
 /* Data Management Styles */
