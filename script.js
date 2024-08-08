@@ -270,7 +270,7 @@ function removeBill(index) {
 
 function toggleBillList() {
     const billsTable = document.getElementById('billsTable');
-    billsTable.style.display = billsTable.style.display === 'none' ? 'table' : 'none';
+    billsTable.classList.toggle('hidden');
 }
 
 function editBill(index) {
