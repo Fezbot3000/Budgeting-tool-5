@@ -100,7 +100,6 @@ function importData(event) {
                 year: 'numeric'
             });
             document.getElementById('incomeTable').innerHTML = `<tr><td>${payFrequency}</td><td class="right-align">$${income.toFixed(2)}</td><td>${formattedPayday}</td><td class="right-align">$${yearlyIncome.toFixed(2)}</td></tr>`;
-            location.reload();
         };
         reader.readAsText(file);
     }
@@ -156,6 +155,7 @@ document.addEventListener('DOMContentLoaded', () => {
     deleteOldPayCycles(); // Call the function to delete old pay cycles
     updateAccordion();
     updateTagDropdown();
+    locationt.reload();
 
     // Set dark mode if enabled
     if (darkMode) {
@@ -210,6 +210,7 @@ document.getElementById('billsForm').addEventListener('submit', function(event) 
     updateAccordion();
     resetBillForm();
     closeModal();
+    locationt.reload();
 });
 
 function updateBillsTable() {
