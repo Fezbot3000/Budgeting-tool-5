@@ -155,7 +155,6 @@ document.addEventListener('DOMContentLoaded', () => {
     deleteOldPayCycles(); // Call the function to delete old pay cycles
     updateAccordion();
     updateTagDropdown();
-    locationt.reload();
 
     // Set dark mode if enabled
     if (darkMode) {
@@ -210,7 +209,6 @@ document.getElementById('billsForm').addEventListener('submit', function(event) 
     updateAccordion();
     resetBillForm();
     closeModal();
-    locationt.reload();
 });
 
 function updateBillsTable() {
