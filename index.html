@@ -35,73 +35,77 @@
                 </form>
             </div>
             <div class="table-container hidden" id="step2">
-    <div class="controls">
-        <h2>Your Financial Overview</h2>
-        <div class="buttons">
-            <div class="left-buttons">
-                <button class="secondary-btn" onclick="openIncomeModal()">Edit Income</button>
-            </div>
-        </div>
-    </div>
-    <table id="incomeTable">
-        <thead>
-            <tr>
-                <th>Pay Frequency</th>
-                <th>Income Amount</th>
-                <th>12-Month Income</th>
-            </tr>
-        </thead>
-        <tbody>
-            <!-- Dynamic content will be inserted here -->
-        </tbody>
-    </table>
-    <div class="bill-summary-header">
-        <h2>Bills summary</h2>
-        <div class="buttons-container">
-            <button class="primary-btn" onclick="openModal()">Add a Bill</button>
-            <div class="right-buttons">
-                <button class="secondary-btn" onclick="toggleBillList()">Hide/Show Bill List</button>
-                <div class="filter-by-tag">
-                    <label for="tagFilter">Filter by Tag:</label>
-                    <select id="tagFilter" onchange="filterByTag()">
-                        <option value="all">All</option>
+                <div class="controls">
+                    <h2>Your Financial Overview</h2>
+                    <div class="buttons">
+                        <div class="edit-income-container">
+                            <button class="secondary-btn" onclick="openIncomeModal()">Edit Income</button>
+                        </div>
+                    </div>
+                </div>
+                <table id="incomeTable">
+                    <thead>
+                        <tr>
+                            <th>Pay Frequency</th>
+                            <th>Income Amount</th>
+                            <th>12-Month Income</th>
+                        </tr>
+                    </thead>
+                    <tbody>
                         <!-- Dynamic content will be inserted here -->
+                    </tbody>
+                </table>
+                <div class="bill-summary-header">
+                    <h2>Bills summary</h2>
+                    <div class="buttons-container">
+                        <div class="left-buttons">
+                            <button class="primary-btn" onclick="openModal()">Add a Bill</button>
+                            <button class="secondary-btn" onclick="toggleBillList()">Hide/Show Bill List</button>
+                        </div>
+                        <div class="right-buttons">
+                            <div class="filter-by-tag">
+                                <label for="tagFilter">Filter by Tag:</label>
+                                <select id="tagFilter" onchange="filterByTag()">
+                                    <option value="all">All</option>
+                                    <!-- Dynamic content will be inserted here -->
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div id="billsTableContainer">
+                    <table id="billsTable" class="your-container-class">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th class="right-align">Amount</th>
+                                <th>Frequency</th>
+                                <th>Due Date</th>
+                                <th>Tag</th>
+                                <th class="right-align">12-Monthly Total</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Dynamic content will be inserted here -->
+                        </tbody>
+                    </table>
+                </div>
+                <h2>Pay Cycle</h2>
+                <div class="view-mode">
+                    <label for="viewMode">View Mode:</label>
+                    <select id="viewMode" onchange="toggleViewMode()">
+                        <option value="payCycle">Pay Cycle View</option>
+                        <option value="monthly">Month-to-Month View</option>
                     </select>
                 </div>
+                <div id="accordionContainer"></div>
+                <button class="primary-btn" onclick="loadMorePayCycles()">Load 3 More Pay Cycles</button>
+                <div id="yearlyBillsSection"></div>
             </div>
-        </div>
-    </div>
-    <table id="billsTable">
-        <thead>
-            <tr>
-                <th>Name</th>
-                <th class="right-align">Amount</th>
-                <th>Frequency</th>
-                <th>Due Date</th>
-                <th>Tag</th>
-                <th class="right-align">12-Monthly Total</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            <!-- Dynamic content will be inserted here -->
-        </tbody>
-    </table>
-    <h2>Pay Cycle</h2>
-    <div class="view-mode">
-        <label for="viewMode">View Mode:</label>
-        <select id="viewMode" onchange="toggleViewMode()">
-            <option value="payCycle">Pay Cycle View</option>
-            <option value="monthly">Month-to-Month View</option>
-        </select>
-    </div>
-    <div id="accordionContainer"></div>
-    <button class="primary-btn" onclick="loadMorePayCycles()">Load 3 More Pay Cycles</button>
-    <div id="yearlyBillsSection"></div>
-</div>
-<div class="chart-container">
-    <canvas id="financialChart"></canvas>
-</div>
+            <div class="chart-container">
+                <canvas id="financialChart"></canvas>
+            </div>
         </main>
     </div>
 
