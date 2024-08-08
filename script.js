@@ -127,6 +127,8 @@ function goToStep2() {
     document.getElementById('step2').classList.remove('hidden');
     saveToLocalStorage();
     updateAccordion();
+    localStorage.setItem('reloadNeeded', 'true'); // Set the flag for reload
+    location.reload();
 }
 
 function calculateYearlyIncome(frequency, income) {
@@ -134,6 +136,9 @@ function calculateYearlyIncome(frequency, income) {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+    // Initialize variables and load data from localStorage
+    let reloadNeeded = localStorage.getItem('reloadNeeded') === 'true';
+
     // Check if income is already set
     if (income) {
         const yearlyIncome = calculateYearlyIncome(payFrequency, income);
@@ -155,7 +160,12 @@ document.addEventListener('DOMContentLoaded', () => {
     deleteOldPayCycles(); // Call the function to delete old pay cycles
     updateAccordion();
     updateTagDropdown();
-    location.reload(); 
+
+    // Reload the page if needed
+    if (!reloadNeeded) {
+        localStorage.setItem('reloadNeeded', 'true');
+        location.reload();
+    }
 
     // Set dark mode if enabled
     if (darkMode) {
@@ -210,6 +220,7 @@ document.getElementById('billsForm').addEventListener('submit', function(event) 
     updateAccordion();
     resetBillForm();
     closeModal();
+    location.reload();
 });
 
 function updateBillsTable() {
@@ -875,6 +886,8 @@ function closeTagModal() {
 
 // Load initial data
 document.addEventListener('DOMContentLoaded', () => {
+    let reloadNeeded = localStorage.getItem('reloadNeeded') === 'true';
+
     if (income) {
         const yearlyIncome = calculateYearlyIncome(payFrequency, income);
         const formattedPayday = new Date(payday).toLocaleDateString('en-US', {
@@ -892,4 +905,10 @@ document.addEventListener('DOMContentLoaded', () => {
     updateAccordion();
     updateTagDropdown();
     filterByTag();
+
+    // Reload the page if needed
+    if (!reloadNeeded) {
+        localStorage.setItem('reloadNeeded', 'true');
+        location.reload();
+    }
 });
