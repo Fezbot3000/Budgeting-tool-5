@@ -100,6 +100,7 @@ function importData(event) {
                 year: 'numeric'
             });
             document.getElementById('incomeTable').innerHTML = `<tr><td>${payFrequency}</td><td class="right-align">$${income.toFixed(2)}</td><td>${formattedPayday}</td><td class="right-align">$${yearlyIncome.toFixed(2)}</td></tr>`;
+            location.reload();
         };
         reader.readAsText(file);
     }
