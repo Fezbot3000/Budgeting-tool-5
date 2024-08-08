@@ -51,7 +51,15 @@ header .reset-btn:hover, header .dark-mode-btn:hover {
     background-color: #d32f2f;
 }
 
-/* Add these styles to your CSS file */
+.filter-controls {
+    display: flex;
+    align-items: center;
+}
+
+.filter-controls label {
+    margin-right: 5px;
+}
+
 .pay-cycle-header {
     display: flex;
     justify-content: space-between;
@@ -185,9 +193,15 @@ th {
 
 .bill-summary-header {
     display: flex;
-    align-items: center;
+    flex-direction: column;
+}
+
+.buttons-container {
+    display: flex;
     justify-content: space-between;
-    margin-top: 20px;
+    align-items: center;
+    width: 100%;
+    margin-top: 10px;
 }
 
 .bill-summary-header h2 {
@@ -195,7 +209,30 @@ th {
 }
 
 .bill-summary-header .primary-btn {
-    margin-left: 20px; /* Optional: Adjust the space between the heading and the button */
+    align-self: flex-start;
+}
+
+.bill-summary-header .view-mode {
+    margin-right: 0;
+}
+
+/* Styling for Dropdowns */
+.view-mode, .filter-by-tag {
+    display: flex;
+    align-items: center;
+    margin-top: 20px;
+}
+
+.view-mode label, .filter-by-tag label {
+    margin-right: 5px;
+    font-weight: bold;
+}
+
+.view-mode select, .filter-by-tag select {
+    padding: 5px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 14px;
 }
 
 .accordion {
@@ -310,6 +347,29 @@ th {
     flex-direction: column;
 }
 
+/* Adjustments for buttons container */
+.buttons-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    margin-top: 10px;
+}
+
+.bill-summary-header .primary-btn {
+    align-self: flex-start;
+}
+
+.right-buttons {
+    display: flex;
+    align-items: center;
+    gap: 10px; /* Add space between elements */
+}
+
+.right-buttons .secondary-btn {
+    align-self: center;
+}
+
 button[type="submit"] {
     background-color: #007bff;
     color: #fff;
@@ -345,27 +405,19 @@ button[type="submit"]:hover {
 .view-mode {
     display: flex;
     justify-content: flex-end;
-    align-items: center;
     margin-top: 20px;
 }
 
 .view-mode label {
-    margin-right: 10px;
-    font-size: 14px;
+    margin-right: 5px;
+    font-weight: bold;
 }
 
 .view-mode select {
-    background: url('data:image/svg+xml;utf8,<svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M6 9l6 6 6-6"></path></svg>') no-repeat right 10px center;
-    background-size: 10px;
-    background-position: right 10px center;
-    padding-right: 20px;
-    font-size: 14px;
-    border: 1px solid #ddd;
+    padding: 5px;
+    border: 1px solid #ccc;
     border-radius: 4px;
-    padding: 10px;
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    appearance: none;
+    font-size: 14px;
 }
 
 /* Dark Mode Styles */
