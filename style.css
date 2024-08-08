@@ -220,7 +220,6 @@ th {
 .view-mode, .filter-by-tag {
     display: flex;
     align-items: center;
-    margin-top: 20px;
 }
 
 .view-mode label, .filter-by-tag label {
