@@ -791,7 +791,7 @@ function deleteTag() {
     updateTagDropdown();
     alert("Tag deleted successfully.");
 
-    // Close the tag modal
+    // Close the tag modal after deletion
     closeTagModal();
 }
 
@@ -869,7 +869,7 @@ function openManageTagsModal() {
 }
 
 function closeTagModal() {
-    document.getElementById('tagModal').style.display = 'none';
+    document.getElementById('manageTagsModal').style.display = 'none';
 }
 
 // Load initial data
