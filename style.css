@@ -587,7 +587,6 @@ body.dark-mode {
 .panel-content table th,
 .panel-content table td {
     padding: 10px;
-    text-align: left;
 }
 
 .panel-content table th {
