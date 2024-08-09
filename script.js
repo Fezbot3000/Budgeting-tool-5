@@ -254,7 +254,7 @@ function updateBillsTable() {
             <td>${bill.name}</td>
             <td class="bills negative right-align">-$${bill.amount.toFixed(2)}</td>
             <td>${bill.frequency}</td>
-            <td>${new Date(bill.date).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: '2-digit', year: 'numeric' })}</td>
+            <td>${formatDate(bill.date)}</td>
             <td>${bill.tag}</td> <!-- New cell for Tag -->
             <td class="right-align">-$${yearlyAmount.toFixed(2)}</td>
             <td><button class="secondary-btn" onclick="editBill(${index})">Edit</button> <button class="delete-btn" onclick="removeBill(${index})">Delete</button></td>
@@ -341,18 +341,8 @@ function updateAccordion() {
             });
             const leftoverAmount = income - cycleTotal;
             const leftoverClass = leftoverAmount >= 0 ? 'positive' : 'negative';
-            const formattedStartDate = dates.start.toLocaleDateString('en-US', {
-                weekday: 'short',
-                month: 'short',
-                day: '2-digit',
-                year: 'numeric'
-            });
-            const formattedEndDate = dates.end.toLocaleDateString('en-US', {
-                weekday: 'short',
-                month: 'short',
-                day: '2-digit',
-                year: 'numeric'
-            });
+            const formattedStartDate = formatDate(dates.start);
+            const formattedEndDate = formatDate(dates.end);
 
             accordionContainer.innerHTML += `
                 <div class="cycle-summary">
@@ -397,7 +387,7 @@ function updateAccordion() {
                         <span class="right-align">${monthYear}</span>
                     </div>
                     <div class="income-summary">
-                        <p>Income (${payDatesForMonth.map(date => new Date(date).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: '2-digit', year: 'numeric' })).join(', ')}): <span class="positive">$${monthIncome.toFixed(2)}</span></p>
+                        <p>Income (${payDatesForMonth.map(date => formatDate(date)).join(', ')}): <span class="positive">$${monthIncome.toFixed(2)}</span></p>
                         <p>Estimated to pay: <span class="negative">-$${monthTotal.toFixed(2)}</span></p>
                         <p>Leftover: <span class="${leftoverClass}">$${leftoverAmount.toFixed(2)}</span></p>
                     </div>
@@ -467,12 +457,12 @@ function getBillRowsForCycle(bill, dates) {
     let rows = '', billDueDate = new Date(bill.date);
     if (bill.frequency === 'yearly') {
         if (billDueDate >= dates.start && billDueDate <= dates.end) {
-            rows += `<tr><td>${bill.name}</td><td>${billDueDate.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: '2-digit', year: 'numeric' })}</td><td class="bills negative right-align">-$${bill.amount.toFixed(2)}</td></tr>`;
+            rows += `<tr><td>${bill.name}</td><td>${formatDate(billDueDate)}</td><td class="bills negative right-align">-$${bill.amount.toFixed(2)}</td></tr>`;
         }
     } else {
         while (billDueDate <= dates.end) {
             if (billDueDate >= dates.start && billDueDate <= dates.end) {
-                rows += `<tr><td>${bill.name}</td><td>${billDueDate.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: '2-digit', year: 'numeric' })}</td><td class="bills negative right-align">-$${bill.amount.toFixed(2)}</td></tr>`;
+                rows += `<tr><td>${bill.name}</td><td>${formatDate(billDueDate)}</td><td class="bills negative right-align">-$${bill.amount.toFixed(2)}</td></tr>`;
             }
             billDueDate = adjustDate(getNextBillDate(billDueDate, bill.frequency));
         }
@@ -538,7 +528,7 @@ function calculateMonthlyView() {
             while (billDueDate <= endDate) {
                 if (billDueDate >= startDate && billDueDate <= endDate) {
                     billDueDate = adjustDate(billDueDate); // Ensure the bill date is adjusted
-                    monthBills += `<tr><td>${bill.name}</td><td>${billDueDate.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: '2-digit', year: 'numeric' })}</td><td class="bills negative right-align">-$${bill.amount.toFixed(2)}</td></tr>`;
+                    monthBills += `<tr><td>${bill.name}</td><td>${formatDate(billDueDate)}</td><td class="bills negative right-align">-$${bill.amount.toFixed(2)}</td></tr>`;
                     monthTotal += bill.amount;
                 }
                 billDueDate = getNextBillDate(billDueDate, bill.frequency);
@@ -616,12 +606,7 @@ function loadMorePayCycles() {
             sortedBills.forEach(bill => {
                 cycleTotal += getBillTotalForCycle(bill, dates);
             });
-            const formattedStartDate = dates.start.toLocaleDateString('en-US', {
-                weekday: 'short',
-                month: 'short',
-                day: '2-digit',
-                year: 'numeric'
-            });
+            const formattedStartDate = formatDate(dates.start);
             chartData.dates.push(formattedStartDate);
             chartData.totals.push(cycleTotal);
         });
@@ -839,6 +824,26 @@ function updateTagDropdown() {
     });
 }
 
+function formatDate(date) {
+    const options = { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' };
+    const formattedDate = new Date(date).toLocaleDateString('en-GB', options);
+
+    const day = new Date(date).getDate();
+    let daySuffix;
+
+    if (day > 3 && day < 21) daySuffix = 'th'; // 'th' for 4-20
+    else switch (day % 10) {
+        case 1:  daySuffix = "st"; break;
+        case 2:  daySuffix = "nd"; break;
+        case 3:  daySuffix = "rd"; break;
+        default: daySuffix = "th";
+    }
+
+    const [weekday, month, year] = formattedDate.split(' ');
+
+    return `${weekday} ${day}${daySuffix} ${month} - ${year}`;
+}
+
 function filterByTag() {
     const selectedTag = document.getElementById('tagFilter').value;
     const billsTable = document.getElementById('billsTable');
@@ -865,7 +870,7 @@ function filterByTag() {
             <td>${bill.name}</td>
             <td class="bills negative right-align">-$${bill.amount.toFixed(2)}</td>
             <td>${bill.frequency}</td>
-            <td>${new Date(bill.date).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: '2-digit', year: 'numeric' })}</td>
+            <td>${formatDate(bill.date)}</td>
             <td>${bill.tag}</td>
             <td class="right-align">-$${yearlyAmount.toFixed(2)}</td>
             <td><button class="secondary-btn" onclick="editBill(${index})">Edit</button> <button class="delete-btn" onclick="removeBill(${index})">Delete</button></td>
