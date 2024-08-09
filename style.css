@@ -1,4 +1,6 @@
-/* General Styles */
+/* ========================================
+   General Styles
+======================================== */
 body {
     font-family: 'Roboto', sans-serif;
     margin: 0;
@@ -26,6 +28,26 @@ h1 {
     transition: background-color 0.3s, color 0.3s;
 }
 
+.hidden {
+    display: none !important;
+}
+
+.right-align {
+    text-align: right;
+}
+
+.positive {
+    color: green;
+}
+
+.negative {
+    color: #f44336 !important;
+    background-color: #ffeeee; /* Debugging background */
+}
+
+/* ========================================
+   Header Styles
+======================================== */
 header {
     display: flex;
     justify-content: space-between;
@@ -51,34 +73,9 @@ header .reset-btn:hover, header .dark-mode-btn:hover {
     background-color: #d32f2f;
 }
 
-.filter-controls {
-    display: flex;
-    align-items: center;
-}
-
-.filter-controls label {
-    margin-right: 5px;
-}
-
-.pay-cycle-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-top: 20px;
-}
-
-.pay-cycle-header h2 {
-    margin: 0;
-}
-
-.main {
-    margin-top: 20px;
-}
-
-.hidden {
-    display: none; !important
-}
-
+/* ========================================
+   Button Styles
+======================================== */
 button {
     padding: 10px 12px;
     font-size: 16px;
@@ -91,6 +88,26 @@ button {
 
 button:hover {
     background-color: #1565c0;
+}
+
+button[type="submit"] {
+    background-color: #007bff;
+    color: #fff;
+    padding: 10px 20px;
+    font-size: 14px;
+}
+
+button[type="submit"]:hover {
+    background-color: #0056b3;
+}
+
+.primary-btn {
+    background-color: #007bff;
+    color: #fff;
+}
+
+.primary-btn:hover {
+    background-color: #0056b3;
 }
 
 .secondary-btn {
@@ -106,15 +123,6 @@ button:hover {
     background-color: #007bff;
 }
 
-.primary-btn {
-    background-color: #007bff;
-    color: #fff;
-}
-
-.primary-btn:hover {
-    background-color: #0056b3;
-}
-
 .delete-btn {
     background-color: #fff;
     color: #f44336;
@@ -125,6 +133,9 @@ button:hover {
     background-color: #fdecea;
 }
 
+/* ========================================
+   Form Styles
+======================================== */
 .form-container {
     margin-bottom: 20px;
 }
@@ -161,6 +172,9 @@ button:hover {
     padding-right: 30px;
 }
 
+/* ========================================
+   Table Styles
+======================================== */
 .table-container {
     margin-top: 20px;
 }
@@ -191,17 +205,12 @@ th {
     background-color: #ffeeee;
 }
 
+/* ========================================
+   Bill Summary Header Styles
+======================================== */
 .bill-summary-header {
     display: flex;
     flex-direction: column;
-}
-
-.buttons-container {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    width: 100%;
-    margin-top: 10px;
 }
 
 .bill-summary-header h2 {
@@ -218,24 +227,9 @@ th {
     margin-right: 0;
 }
 
-/* Styling for Dropdowns */
-.view-mode, .filter-by-tag {
-    display: flex;
-    align-items: center;
-}
-
-.view-mode label, .filter-by-tag label {
-    margin-right: 5px;
-    font-weight: bold;
-}
-
-.view-mode select, .filter-by-tag select {
-    padding: 5px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    font-size: 14px;
-}
-
+/* ========================================
+   Accordion Styles
+======================================== */
 .accordion {
     background-color: #f5f5f5;
     color: #333;
@@ -259,14 +253,6 @@ th {
     color: #333;
 }
 
-.accordion .leftover .amount {
-    color: #333;
-}
-
-.accordion .arrow {
-    margin-left: 10px;
-}
-
 .accordion.active, .accordion:hover {
     background-color: #e5e5e5;
 }
@@ -280,25 +266,86 @@ th {
     border-bottom-right-radius: 8px;
 }
 
-.right-align {
-    text-align: right;
+/* ========================================
+   Dropdown Styles
+======================================== */
+.view-mode, .filter-by-tag {
+    display: flex;
+    align-items: center;
 }
 
-.positive {
-    color: green;
+.view-mode label, .filter-by-tag label {
+    margin-right: 5px;
+    font-weight: bold;
 }
 
-.negative {
-    color: #f44336 !important;
-    background-color: #ffeeee; /* Debugging background */
+.view-mode select, .filter-by-tag select {
+    padding: 5px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 14px;
 }
 
+.view-mode {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    margin-top: 20px;
+    text-align: right; /* Ensure text alignment within the container */
+}
+
+.view-mode label {
+    margin-right: 5px;
+    font-weight: bold;
+    text-align: right; /* Align label text to the right */
+}
+
+.view-mode select {
+    padding: 5px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 14px;
+    text-align: right; /* Align dropdown text to the right */
+}
+
+/* ========================================
+   Button Container Styles
+======================================== */
+.buttons-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    margin-top: 10px;
+}
+
+.right-buttons {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.right-buttons .filter-by-tag {
+    display: flex;
+    align-items: center;
+}
+
+.left-buttons {
+    display: flex;
+    align-items: center;
+}
+
+/* ========================================
+   Chart Styles
+======================================== */
 .chart-container {
     margin: 20px auto;
     max-width: 800px;
 }
 
-/* Modal Styles */
+/* ========================================
+   Modal Styles
+======================================== */
 .modal {
     display: none;
     position: fixed;
@@ -331,115 +378,14 @@ th {
     cursor: pointer;
 }
 
-.modal-content .close:hover,
-.modal-content .close:focus {
+.modal-content .close:hover, .modal-content .close:focus {
     color: black;
     text-decoration: none;
 }
 
-.modal-content form {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-}
-
-.modal-content form .form-group {
-    display: flex;
-    flex-direction: column;
-}
-
-/* Adjustments for buttons container */
-.buttons-container {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    width: 100%;
-    margin-top: 10px;
-}
-
-.bill-summary-header .primary-btn {
-    align-self: flex-start;
-}
-
-.right-buttons {
-    display: flex;
-    align-items: center;
-    gap: 10px; /* Add space between elements */
-}
-
-.right-buttons .filter-by-tag {
-    display: flex;
-    align-items: center;
-}
-
-.right-buttons .filter-by-tag label {
-    margin-right: 5px;
-    font-weight: bold;
-}
-
-.right-buttons .filter-by-tag select {
-    padding: 5px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    font-size: 14px;
-}
-
-.left-buttons {
-    display: flex;
-    align-items: center;
-}
-
-button[type="submit"] {
-    background-color: #007bff;
-    color: #fff;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 14px;
-    white-space: nowrap;
-}
-
-button[type="submit"]:hover {
-    background-color: #0056b3;
-}
-
-.buttons {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.buttons .left-buttons {
-    display: flex;
-    gap: 10px;
-}
-
-.buttons .right-buttons {
-    display: flex;
-    gap: 10px;
-}
-
-/* Styling for View Mode dropdown */
-.view-mode {
-    display: flex;
-    justify-content: flex-end;
-    margin-top: 20px;
-}
-
-.view-mode label {
-    margin-right: 5px;
-    font-weight: bold;
-}
-
-.view-mode select {
-    padding: 5px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    font-size: 14px;
-}
-
-/* Dark Mode Styles */
+/* ========================================
+   Dark Mode Styles
+======================================== */
 body.dark-mode {
     background-color: #121212;
     color: #e0e0e0;
@@ -495,140 +441,24 @@ body.dark-mode {
     color: #e0e0e0;
 }
 
-/* New Styles for Updated Design */
-.cycle-info {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 10px 0;
-    margin-bottom: 10px;
+.dark-mode .negative {
+    color: #f44336 !important;
+    background-color: #1e1e1e; 
 }
 
-.cycle-info .left-align {
-    text-align: left;
-    font-weight: bold;
+.dark-mode .accordion-btn {
+    background: #1e1e1e;
+    color: #e0e0e0;
 }
 
-.cycle-info .right-align {
-    text-align: right;
-    font-weight: bold;
+.dark-mode .accordion-btn:focus .accordion-btn:hover{
+    background: #1e1e1e;
+    color: #e0e0e0;
 }
 
-/* Additional styles for income summary */
-.income-summary {
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    padding: 20px;
-    margin-bottom: 10px;
-}
-
-.income-summary p {
-    margin: 10px 0;
-    display: flex;
-    justify-content: space-between;
-}
-
-.income-summary span {
-    text-align: right;
-    margin-left: auto;
-}
-
-.positive {
-    color: #4caf50;
-}
-
-.negative {
-    color: #f44336;
-}
-
-/* Styling for the accordion button */
-.accordion-btn {
-    border: 1px solid #ddd;
-    width: 100%;
-    text-align: left;
-    padding: 20px;
-    display: flex;
-    justify-content: space-between; /* Ensure items are spaced apart */
-    align-items: center; /* Ensure items are vertically centered */
-    border-radius: 8px;
-    margin-bottom: 10px;
-    cursor: pointer;
-    appearance: none; /* Reset default styles */
-}
-
-.accordion-btn span {
-    flex: 1;
-}
-
-.accordion-btn .toggle-text {
-    font-size: 16px; /* Adjust size if necessary */
-    text-align: right; /* Align text to the right */
-}
-
-/* Remove blue color on hover and focus */
-.accordion-btn:focus, .accordion-btn:hover {
-    outline: none; /* Remove default focus outline */
-    background: #fff; /* Ensure background remains white */
-}
-
-/* Styling for the panel content */
-.panel-content {
-    margin-bottom: 10px;
-    overflow: hidden;
-}
-
-/* Ensure the table inside the accordion matches the width of the accordion */
-.panel-content table {
-    width: 100%;
-    border-collapse: collapse;
-    box-shadow: none; /* Remove any additional box shadow from the table itself */
-}
-
-.panel-content table td {
-    padding: 10px;
-}
-
-.panel-content table th {
-    background: #f5f5f5;
-    font-weight: bold;
-}
-
-.edit-income {
-    text-align: right;
-    display: block; /* Ensure it takes the full width */
-}
-
-.edit-income-container {
-    display: flex;
-    justify-content: flex-end;
-    width: 100%;
-}
-
-/* Hidden class for toggling visibility */
-.hidden {
-    display: none !important;
-}
-    #billsTable {
-        overflow-x: auto;
-        white-space: nowrap; /* Prevent text from wrapping */
-    }
-
-    #billsTable table {
-        width: 100%;
-        min-width: 600px; /* Minimum width to prevent collapsing */
-        border-collapse: collapse;
-    }
-
-    #billsTable th, #billsTable td {
-        padding: 10px;
-    }
-
-    #billsTable th {
-        font-weight: bold;
-    }
-
-
-/* Ensure the scrollable styling is always applied */
+/* ========================================
+   Media Queries
+======================================== */
 @media (max-width: 768px) {
     #billsTable {
         display: block;
@@ -645,10 +475,6 @@ body.dark-mode {
 
     #billsTable th, #billsTable td {
         padding: 10px;
-    }
-
-    #billsTable th {
-        font-weight: bold;
     }
 
     .buttons-container {
@@ -675,12 +501,14 @@ body.dark-mode {
         margin-top: 10px;
         width: 100%;
         display: flex;
-        justify-content: flex-end; /* Ensure right alignment */
-        padding-bottom: 10px; /* Add bottom padding */
+        justify-content: flex-end;
+        padding-bottom: 10px;
     }
 }
 
-/* Data Management Styles */
+/* ========================================
+   Data Management Styles
+======================================== */
 .data-management {
     display: flex;
     flex-direction: column;
@@ -714,4 +542,126 @@ body.dark-mode {
 
 .reset-btn:hover, .dark-mode-btn:hover {
     background-color: #d32f2f;
+}
+
+/* ========================================
+   New Styles for Updated Design
+======================================== */
+.cycle-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+    margin-bottom: 10px;
+}
+
+.cycle-info .left-align {
+    text-align: left;
+    font-weight: bold;
+}
+
+.cycle-info .right-align {
+    text-align: right;
+    font-weight: bold;
+}
+
+.income-summary {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 10px;
+}
+
+.income-summary p {
+    margin: 10px 0;
+    display: flex;
+    justify-content: space-between;
+}
+
+.income-summary span {
+    text-align: right;
+    margin-left: auto;
+}
+
+/* ========================================
+   Accordion Button Styles
+======================================== */
+.accordion-btn {
+    border: 1px solid #ddd;
+    width: 100%;
+    text-align: left;
+    padding: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    cursor: pointer;
+    appearance: none;
+}
+
+.accordion-btn span {
+    flex: 1;
+}
+
+.accordion-btn .toggle-text {
+    font-size: 16px;
+    text-align: right;
+}
+
+.accordion-btn:focus, .accordion-btn:hover {
+    outline: none;
+}
+
+.panel-content {
+    margin-bottom: 10px;
+    overflow: hidden;
+}
+
+.panel-content table {
+    width: 100%;
+    border-collapse: collapse;
+    box-shadow: none;
+}
+
+.panel-content table td {
+    padding: 10px;
+}
+
+.panel-content table th {
+    background: #f5f5f5;
+    font-weight: bold;
+}
+
+.edit-income {
+    text-align: right;
+    display: block;
+}
+
+.edit-income-container {
+    display: flex;
+    justify-content: flex-end;
+    width: 100%;
+}
+
+/* ========================================
+   Responsive Bills Table Styles
+======================================== */
+#billsTable {
+    overflow-x: auto;
+    white-space: nowrap;
+}
+
+#billsTable table {
+    width: 100%;
+    min-width: 600px;
+    border-collapse: collapse;
+}
+
+#billsTable th, #billsTable td {
+    padding: 10px;
+}
+
+#billsTable th {
+    font-weight: bold;
 }
