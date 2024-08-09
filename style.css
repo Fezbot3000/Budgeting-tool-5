@@ -626,7 +626,6 @@ body.dark-mode {
 
     #billsTable th, #billsTable td {
         padding: 10px;
-        text-align: left;
     }
 
     #billsTable th {
