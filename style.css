@@ -584,7 +584,6 @@ body.dark-mode {
     box-shadow: none; /* Remove any additional box shadow from the table itself */
 }
 
-.panel-content table th,
 .panel-content table td {
     padding: 10px;
 }
