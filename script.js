@@ -14,7 +14,7 @@ const frequencyMultipliers = {
     weekly: 52, 
     fortnightly: 26, 
     monthly: 12, 
-    quarterly: 4,  // Added Quarterly
+    quarterly: 4,  
     yearly: 1 
 };
 
@@ -27,6 +27,47 @@ function saveToLocalStorage() {
     localStorage.setItem('darkMode', darkMode);
     localStorage.setItem('tags', JSON.stringify(tags)); // Save tags
 }
+
+function calculateYearlyIncome(frequency, income) {
+    return income * (frequencyMultipliers[frequency] || 0);
+}
+
+function updateIncomeTable(payFrequency, income, yearlyIncome) {
+    const incomeTable = document.getElementById('incomeTable');
+
+    // Ensure thead is in place
+    if (!incomeTable.querySelector('thead')) {
+        incomeTable.innerHTML = `
+            <thead>
+                <tr>
+                    <th>Pay Frequency</th>
+                    <th class="right-align">Income Amount</th>
+                    <th class="right-align">12-Month Income</th>
+                </tr>
+            </thead>
+            <tbody></tbody>`;
+    }
+
+    // Ensure yearlyIncome is a number
+    yearlyIncome = parseFloat(yearlyIncome) || 0;
+
+    // Update the tbody without including the "Next Payday" column
+    const incomeTableBody = incomeTable.querySelector('tbody');
+    incomeTableBody.innerHTML = `
+        <tr>
+            <td>${payFrequency}</td>
+            <td class="right-align">$${income.toFixed(2)}</td>
+            <td class="right-align">$${yearlyIncome.toFixed(2)}</td>
+        </tr>`;
+}
+
+// Example usage on page load
+document.addEventListener('DOMContentLoaded', () => {
+    if (income) {
+        const yearlyIncome = calculateYearlyIncome(payFrequency, income);
+        updateIncomeTable(payFrequency, income, yearlyIncome);
+    }
+});
 
 function autocompleteTag() {
     const tagInput = document.getElementById('billTag');
@@ -93,13 +134,7 @@ function importData(event) {
             }
 
             const yearlyIncome = calculateYearlyIncome(payFrequency, income);
-            const formattedPayday = new Date(payday).toLocaleDateString('en-US', {
-                weekday: 'short',
-                month: 'short',
-                day: '2-digit',
-                year: 'numeric'
-            });
-            document.getElementById('incomeTable').innerHTML = `<tr><td>${payFrequency}</td><td class="right-align">$${income.toFixed(2)}</td><td>${formattedPayday}</td><td class="right-align">$${yearlyIncome.toFixed(2)}</td></tr>`;
+            updateIncomeTable(payFrequency, income, yearlyIncome);
         };
         reader.readAsText(file);
     }
@@ -116,39 +151,19 @@ function goToStep2() {
     }
 
     const yearlyIncome = calculateYearlyIncome(payFrequency, income);
-    const formattedPayday = new Date(payday).toLocaleDateString('en-US', {
-        weekday: 'short',
-        month: 'short',
-        day: '2-digit',
-        year: 'numeric'
-    });
-    document.getElementById('incomeTable').innerHTML = `<tr><td>${payFrequency}</td><td class="right-align">$${income.toFixed(2)}</td><td>${formattedPayday}</td><td class="right-align">$${yearlyIncome.toFixed(2)}</td></tr>`;
+    updateIncomeTable(payFrequency, income, yearlyIncome);
+
     document.getElementById('step1').classList.add('hidden');
     document.getElementById('step2').classList.remove('hidden');
     saveToLocalStorage();
     updateAccordion();
-    localStorage.setItem('reloadNeeded', 'true'); // Set the flag for reload
-    location.reload();
-}
-
-function calculateYearlyIncome(frequency, income) {
-    return income * (frequencyMultipliers[frequency] || 0);
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-    // Initialize variables and load data from localStorage
-    let reloadNeeded = localStorage.getItem('reloadNeeded') === 'true';
-
     // Check if income is already set
     if (income) {
         const yearlyIncome = calculateYearlyIncome(payFrequency, income);
-        const formattedPayday = new Date(payday).toLocaleDateString('en-US', {
-            weekday: 'short',
-            month: 'short',
-            day: '2-digit',
-            year: 'numeric'
-        });
-        document.getElementById('incomeTable').innerHTML = `<tr><td>${payFrequency}</td><td class="right-align">$${income.toFixed(2)}</td><td>${formattedPayday}</td><td class="right-align">$${yearlyIncome.toFixed(2)}</td></tr>`;
+        updateIncomeTable(payFrequency, income, yearlyIncome);
         document.getElementById('step1').classList.add('hidden');
         document.getElementById('step2').classList.remove('hidden');
     }
@@ -160,12 +175,6 @@ document.addEventListener('DOMContentLoaded', () => {
     deleteOldPayCycles(); // Call the function to delete old pay cycles
     updateAccordion();
     updateTagDropdown();
-
-    // Reload the page if needed
-    if (!reloadNeeded) {
-        localStorage.setItem('reloadNeeded', 'true');
-        location.reload();
-    }
 
     // Set dark mode if enabled
     if (darkMode) {
@@ -220,7 +229,6 @@ document.getElementById('billsForm').addEventListener('submit', function(event) 
     updateAccordion();
     resetBillForm();
     closeModal();
-    location.reload();
 });
 
 function updateBillsTable() {
@@ -699,13 +707,7 @@ function updateIncome() {
 
     // Update the income table without reloading
     const yearlyIncome = calculateYearlyIncome(payFrequency, income);
-    const formattedPayday = new Date(payday).toLocaleDateString('en-US', {
-        weekday: 'short',
-        month: 'short',
-        day: '2-digit',
-        year: 'numeric'
-    });
-    document.getElementById('incomeTable').innerHTML = `<tr><td>${payFrequency}</td><td class="right-align">$${income.toFixed(2)}</td><td>${formattedPayday}</td><td class="right-align">$${yearlyIncome.toFixed(2)}</td></tr>`;
+    updateIncomeTable(payFrequency, income, yearlyIncome);
 
     // Close modal
     closeIncomeModal();
@@ -886,17 +888,9 @@ function closeTagModal() {
 
 // Load initial data
 document.addEventListener('DOMContentLoaded', () => {
-    let reloadNeeded = localStorage.getItem('reloadNeeded') === 'true';
-
     if (income) {
         const yearlyIncome = calculateYearlyIncome(payFrequency, income);
-        const formattedPayday = new Date(payday).toLocaleDateString('en-US', {
-            weekday: 'short',
-            month: 'short',
-            day: '2-digit',
-            year: 'numeric'
-        });
-        document.getElementById('incomeTable').innerHTML = `<tr><td>${payFrequency}</td><td class="right-align">$${income.toFixed(2)}</td><td>${formattedPayday}</td><td class="right-align">$${yearlyIncome.toFixed(2)}</td></tr>`;
+        updateIncomeTable(payFrequency, income, yearlyIncome);
         document.getElementById('step1').classList.add('hidden');
         document.getElementById('step2').classList.remove('hidden');
     }
@@ -905,10 +899,4 @@ document.addEventListener('DOMContentLoaded', () => {
     updateAccordion();
     updateTagDropdown();
     filterByTag();
-
-    // Reload the page if needed
-    if (!reloadNeeded) {
-        localStorage.setItem('reloadNeeded', 'true');
-        location.reload();
-    }
 });
