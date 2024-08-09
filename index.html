@@ -129,7 +129,7 @@
                         <option value="weekly">Weekly</option>
                         <option value="fortnightly">Fortnightly</option>
                         <option value="monthly">Monthly</option>
-                        <option value="quarterly">Quarterly</option> <!-- Added Quarterly -->
+                        <option value="quarterly">Quarterly</option>
                         <option value="yearly">Yearly</option>
                     </select>
                 </div>
@@ -177,26 +177,6 @@
     <div id="manageTagsModal" class="modal">
         <div class="modal-content">
             <span class="close" onclick="closeManageTagsModal()">&times;</span>
-            <h2>Manage Tags</h2>
-            <div class="form-group">
-                <label for="existingTag">Existing Tag:</label>
-                <select id="existingTag" name="existingTag" onchange="loadTagInfo()">
-                    <!-- Dynamic content will be inserted here -->
-                </select>
-            </div>
-            <div class="form-group">
-                <label for="newTagName">New Tag Name:</label>
-                <input type="text" id="newTagName" name="newTagName">
-            </div>
-            <button class="primary-btn" onclick="renameTag()">Rename Tag</button>
-            <button class="delete-btn" onclick="deleteTag()">Delete Tag</button>
-        </div>
-    </div>
-
-    <!-- Manage Tags Modal Structure -->
-    <div id="manageTagsModal" class="modal">
-        <div class="modal-content">
-            <span class="close" onclick="closeTagModal()">&times;</span>
             <h2>Manage Tags</h2>
             <div class="form-group">
                 <label for="existingTag">Existing Tag:</label>
