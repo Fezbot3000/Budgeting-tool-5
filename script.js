@@ -688,6 +688,10 @@ function closeModal() {
     document.getElementById('billModal').style.display = 'none';
 }
 
+function closeManageTagsModal() {
+    document.getElementById('manageTagsModal').style.display = 'none';
+}
+
 function openIncomeModal() {
     document.getElementById('editFrequency').value = payFrequency;
     document.getElementById('editIncome').value = income;
