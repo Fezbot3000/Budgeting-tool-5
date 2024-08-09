@@ -80,7 +80,7 @@ header .reset-btn:hover, header .dark-mode-btn:hover {
 }
 
 button {
-    padding: 10px 20px;
+    padding: 10px 12px;
     font-size: 16px;
     cursor: pointer;
     border: none;
@@ -608,6 +608,26 @@ body.dark-mode {
 .hidden {
     display: none !important;
 }
+    #billsTable {
+        display: block;
+        overflow-x: auto;
+        white-space: nowrap; /* Prevent text from wrapping */
+    }
+
+    #billsTable table {
+        width: 100%;
+        min-width: 600px; /* Minimum width to prevent collapsing */
+        border-collapse: collapse;
+    }
+
+    #billsTable th, #billsTable td {
+        padding: 10px;
+    }
+
+    #billsTable th {
+        font-weight: bold;
+    }
+
 
 /* Ensure the scrollable styling is always applied */
 @media (max-width: 768px) {
