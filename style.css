@@ -609,7 +609,6 @@ body.dark-mode {
     display: none !important;
 }
     #billsTable {
-        display: block;
         overflow-x: auto;
         white-space: nowrap; /* Prevent text from wrapping */
     }
