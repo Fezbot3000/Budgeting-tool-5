@@ -42,7 +42,6 @@ h1 {
 
 .negative {
     color: #f44336 !important;
-    background-color: #ffeeee; /* Debugging background */
 }
 
 /* ========================================
@@ -188,7 +187,6 @@ table {
 }
 
 th, td {
-    border: 1px solid #ddd;
     padding: 12px;
     text-align: left;
     transition: background-color 0.3s, color 0.3s;
@@ -198,11 +196,19 @@ th {
     background-color: #f5f5f5;
     color: #333;
     font-weight: 500;
+    padding: 12px;
+}
+
+tr:nth-child(even) {
+    background-color: #f9f9f9; /* Subtle grey for every second row */
+}
+
+tr:nth-child(odd) {
+    background-color: #ffffff; /* White for the other rows */
 }
 
 .bills.negative {
     color: #f44336 !important;
-    background-color: #ffeeee;
 }
 
 /* ========================================
@@ -280,10 +286,12 @@ th {
 }
 
 .view-mode select, .filter-by-tag select {
-    padding: 5px;
+    padding: 12px;
     border: 1px solid #ccc;
     border-radius: 4px;
-    font-size: 14px;
+    font-size: 16px;
+    text-align: right;
+    margin-left: 10px;
 }
 
 .view-mode {
@@ -301,11 +309,12 @@ th {
 }
 
 .view-mode select {
-    padding: 5px;
+    padding: 12px;
     border: 1px solid #ccc;
     border-radius: 4px;
-    font-size: 14px;
-    text-align: right; /* Align dropdown text to the right */
+    font-size: 16px;
+    text-align: right;
+    margin-left: 10px;
 }
 
 /* ========================================
@@ -333,6 +342,8 @@ th {
 .left-buttons {
     display: flex;
     align-items: center;
+    margin-top: 15px;
+    margin-bottom: 15px;
 }
 
 /* ========================================
@@ -432,18 +443,28 @@ body.dark-mode {
     color: #e0e0e0;
 }
 
-.dark-mode th, .dark-mode td {
-    border-color: #333;
+.dark-mode th, td {
+    padding: 12px;
+    text-align: left;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.dark-mode th {
+    font-weight: 500;
+    padding: 12px;
+}
+
+.dark-mode tr:nth-child(even) {
+    background-color: #1e1e1e; /* Subtle grey for every second row */
+}
+
+.dark-mode tr:nth-child(odd) {
+    background-color: #121212; /* White for the other rows */
 }
 
 .dark-mode .modal-content {
     background-color: #e5e5e5;
     color: #e0e0e0;
-}
-
-.dark-mode .negative {
-    color: #f44336 !important;
-    background-color: #1e1e1e; 
 }
 
 .dark-mode .accordion-btn {
@@ -474,7 +495,8 @@ body.dark-mode {
     }
 
     #billsTable th, #billsTable td {
-        padding: 10px;
+        padding-top: 20px;
+        padding-bottom: 20px;
     }
 
     .buttons-container {
@@ -553,6 +575,7 @@ body.dark-mode {
     align-items: center;
     padding: 10px 0;
     margin-bottom: 10px;
+    margin-left: 22px;
 }
 
 .cycle-info .left-align {
@@ -562,7 +585,6 @@ body.dark-mode {
 
 .cycle-info .right-align {
     text-align: right;
-    font-weight: bold;
 }
 
 .income-summary {
@@ -576,11 +598,13 @@ body.dark-mode {
     margin: 10px 0;
     display: flex;
     justify-content: space-between;
+    font-size: 18px;
 }
 
 .income-summary span {
     text-align: right;
     margin-left: auto;
+    font-size: 18px;
 }
 
 /* ========================================
@@ -661,7 +685,8 @@ body.dark-mode {
 }
 
 #billsTable th, #billsTable td {
-    padding: 10px;
+    padding-top: 20px;
+    padding-bottom: 20px;
 }
 
 #billsTable th {
