@@ -825,23 +825,29 @@ function updateTagDropdown() {
 }
 
 function formatDate(date) {
-    const options = { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' };
-    const formattedDate = new Date(date).toLocaleDateString('en-GB', options);
+    const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    
+    const d = new Date(date);
+    const dayOfWeek = days[d.getDay()];
+    const day = d.getDate();
+    const month = months[d.getMonth()];
+    const year = d.getFullYear();
 
-    const day = new Date(date).getDate();
     let daySuffix;
 
-    if (day > 3 && day < 21) daySuffix = 'th'; // 'th' for 4-20
-    else switch (day % 10) {
-        case 1:  daySuffix = "st"; break;
-        case 2:  daySuffix = "nd"; break;
-        case 3:  daySuffix = "rd"; break;
-        default: daySuffix = "th";
+    if (day > 3 && day < 21) {
+        daySuffix = 'th'; // 'th' for 4-20
+    } else {
+        switch (day % 10) {
+            case 1:  daySuffix = "st"; break;
+            case 2:  daySuffix = "nd"; break;
+            case 3:  daySuffix = "rd"; break;
+            default: daySuffix = "th";
+        }
     }
 
-    const [weekday, month, year] = formattedDate.split(' ');
-
-    return `${weekday} ${day}${daySuffix} ${month} - ${year}`;
+    return `${dayOfWeek} ${day}${daySuffix} ${month} - ${year}`;
 }
 
 function filterByTag() {
