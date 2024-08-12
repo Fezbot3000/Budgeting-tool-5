@@ -86,6 +86,13 @@ function goToStep2() {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+    // Restore the view mode from localStorage
+    const savedViewMode = localStorage.getItem('viewMode') || 'payCycle';
+    document.getElementById('viewMode').value = savedViewMode;
+
+    // Update the UI based on the saved view mode
+    toggleViewMode(); // Call the function to update the UI according to the saved view mode
+
     // Restore the state of the bills list visibility
     const billsListHidden = localStorage.getItem('billsListHidden') === 'true';
     const billsTable = document.getElementById('billsTable');
@@ -99,7 +106,7 @@ document.addEventListener('DOMContentLoaded', () => {
         filterByTag.classList.remove('hidden');
     }
 
-    // Other initializations
+    // Other initializations...
     if (income) {
         updateIncomeTable(payFrequency, income);
         document.getElementById('step1').classList.add('hidden');
@@ -107,7 +114,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     updateBillsTable();
     deleteOldPayCycles();
-    updateAccordion();
     updateTagDropdown();
 
     // Set dark mode if enabled
@@ -116,7 +122,6 @@ document.addEventListener('DOMContentLoaded', () => {
         document.querySelector('.container').classList.add('dark-mode');
     }
 });
-
 
 document.getElementById('billsForm').addEventListener('submit', function(event) {
     event.preventDefault();
@@ -209,7 +214,19 @@ function toggleBillList() {
     localStorage.setItem('billsListHidden', isHidden);
 }
 
+function toggleViewMode() {
+    const viewMode = document.getElementById('viewMode').value;
+    localStorage.setItem('viewMode', viewMode);
 
+    // Update the UI based on the selected view mode
+    if (viewMode === 'payCycle') {
+        // Call the function to update the UI to Pay Cycle View
+        updateAccordion();
+    } else if (viewMode === 'monthly') {
+        // Call the function to update the UI to Monthly View
+        updateAccordion(); // Assuming updateAccordion also handles monthly view; modify if needed
+    }
+}
 
 function editBill(index) {
     const bill = bills[index];
