@@ -44,16 +44,36 @@
                     </div>
                 </div>
                 <table id="incomeTable">
-                    <thead>
-                        <tr>
-                            <th>Pay Frequency</th>
-                            <th>Income Amount</th>
-                            <th>12-Month Income</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <!-- Dynamic content will be inserted here -->
-                    </tbody>
+                    <tr>
+                        <th></th>
+                        <th class="right-align">Amount</th>
+                        <th class="right-align">Percentage</th>
+                    </tr>
+                    <tr>
+                        <td>Income Frequency</td>
+                        <td class="right-align" id="incomeFrequency"></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>Income Amount</td>
+                        <td class="right-align" id="incomeAmount"></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>12-Month Income</td>
+                        <td class="right-align" id="yearlyIncomeAmount"></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>Yearly Bills</td>
+                        <td class="right-align" id="yearlyBillsAmount"></td>
+                        <td class="right-align" id="yearlyBillsPercentage"></td>
+                    </tr>
+                    <tr>
+                        <td>Yearly Savings</td>
+                        <td class="right-align" id="yearlySavingsAmount"></td>
+                        <td class="right-align" id="yearlySavingsPercentage"></td>
+                    </tr>
                 </table>
                 <div class="bill-summary-header">
                     <h2>Bills summary</h2>
@@ -91,7 +111,7 @@
                         </tbody>
                     </table>
                 </div>
-                <h2>Pay Cycle</h2>
+                <h2 style="margin-top: 50px;">Pay Cycle</h2>
                 <div class="view-mode">
                     <label for="viewMode">View Mode:</label>
                     <select id="viewMode" onchange="toggleViewMode()">

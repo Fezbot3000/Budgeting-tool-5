@@ -20,7 +20,7 @@ h1 {
 }
 
 .container {
-    max-width: 900px;
+    max-width: 924px;
     margin: 0 auto;
     padding: 20px;
     background: #fff;
@@ -135,6 +135,12 @@ button[type="submit"]:hover {
 /* ========================================
    Form Styles
 ======================================== */
+.controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
 .form-container {
     margin-bottom: 20px;
 }
@@ -188,7 +194,6 @@ table {
 
 th, td {
     padding: 12px;
-    text-align: left;
     transition: background-color 0.3s, color 0.3s;
 }
 
@@ -220,7 +225,8 @@ tr:nth-child(odd) {
 }
 
 .bill-summary-header h2 {
-    margin: 0;
+    margin-top: 50px;
+    margin-bottom: 0px;
 }
 
 .bill-summary-header .primary-btn {
@@ -343,7 +349,6 @@ tr:nth-child(odd) {
     display: flex;
     align-items: center;
     margin-top: 15px;
-    margin-bottom: 15px;
 }
 
 /* ========================================
@@ -445,7 +450,6 @@ body.dark-mode {
 
 .dark-mode th, td {
     padding: 12px;
-    text-align: left;
     transition: background-color 0.3s, color 0.3s;
 }
 
@@ -668,6 +672,10 @@ body.dark-mode {
     display: flex;
     justify-content: flex-end;
     width: 100%;
+}
+
+.edit-income-container buttons {
+    margin: 0;
 }
 
 /* ========================================

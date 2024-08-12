@@ -32,113 +32,41 @@ function calculateYearlyIncome(frequency, income) {
     return income * (frequencyMultipliers[frequency] || 0);
 }
 
-function updateIncomeTable(payFrequency, income, yearlyIncome) {
-    const incomeTable = document.getElementById('incomeTable');
-
-    // Ensure thead is in place
-    if (!incomeTable.querySelector('thead')) {
-        incomeTable.innerHTML = `
-            <thead>
-                <tr>
-                    <th>Pay Frequency</th>
-                    <th class="right-align">Income Amount</th>
-                    <th class="right-align">12-Month Income</th>
-                </tr>
-            </thead>
-            <tbody></tbody>`;
-    }
-
-    // Ensure yearlyIncome is a number
-    yearlyIncome = parseFloat(yearlyIncome) || 0;
-
-    // Update the tbody without including the "Next Payday" column
-    const incomeTableBody = incomeTable.querySelector('tbody');
-    incomeTableBody.innerHTML = `
-        <tr>
-            <td>${payFrequency}</td>
-            <td class="right-align">$${income.toFixed(2)}</td>
-            <td class="right-align">$${yearlyIncome.toFixed(2)}</td>
-        </tr>`;
+function calculateYearlyBills() {
+    let yearlyTotal = 0;
+    bills.forEach(bill => {
+        yearlyTotal += calculateYearlyAmount(bill.amount, bill.frequency);
+    });
+    return yearlyTotal;
 }
 
-// Example usage on page load
-document.addEventListener('DOMContentLoaded', () => {
-    if (income) {
-        const yearlyIncome = calculateYearlyIncome(payFrequency, income);
-        updateIncomeTable(payFrequency, income, yearlyIncome);
-    }
-});
-
-function autocompleteTag() {
-    const tagInput = document.getElementById('billTag');
-    const tagList = document.getElementById('tagList');
-    tagList.innerHTML = ''; // Clear previous suggestions
-
-    const inputValue = tagInput.value.toLowerCase();
-    if (inputValue) {
-        const filteredTags = tags.filter(tag => tag.toLowerCase().includes(inputValue));
-        filteredTags.forEach(tag => {
-            const option = document.createElement('option');
-            option.value = tag;
-            tagList.appendChild(option);
-        });
-    }
+function calculateYearlyAmount(amount, frequency) {
+    return amount * (frequencyMultipliers[frequency] || 0);
 }
 
-document.getElementById('billTag').addEventListener('input', autocompleteTag);
+function updateIncomeTable(payFrequency, income) {
+    const yearlyIncome = calculateYearlyIncome(payFrequency, income);
+    const yearlyBills = calculateYearlyBills();
+    const potentialSavings = yearlyIncome - yearlyBills;
+    const billPercentage = yearlyIncome > 0 ? (yearlyBills / yearlyIncome) * 100 : 0;
+    const savingsPercentage = yearlyIncome > 0 ? (potentialSavings / yearlyIncome) * 100 : 0;
 
-function exportData() {
-    const data = {
-        bills: bills,
-        payFrequency: payFrequency,
-        income: income,
-        payday: payday,
-        viewMode: viewMode,
-        darkMode: darkMode,
-        tags: tags
-    };
-    const dataStr = JSON.stringify(data, null, 2);
-    const blob = new Blob([dataStr], { type: "application/json" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = "budget_data.json";
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
+    document.getElementById('incomeFrequency').className = 'right-align';
+    document.getElementById('incomeFrequency').textContent = payFrequency;
+    document.getElementById('incomeAmount').className = 'right-align';
+    document.getElementById('incomeAmount').textContent = `$${income.toFixed(2)}`;
+    document.getElementById('yearlyIncomeAmount').className = 'right-align';
+    document.getElementById('yearlyIncomeAmount').textContent = `$${yearlyIncome.toFixed(2)}`;
+    document.getElementById('yearlyBillsAmount').className = 'right-align';
+    document.getElementById('yearlyBillsAmount').textContent = `-$${yearlyBills.toFixed(2)}`;
+    document.getElementById('yearlyBillsPercentage').className = 'right-align';
+    document.getElementById('yearlyBillsPercentage').textContent = `${billPercentage.toFixed(2)}%`;
+    document.getElementById('yearlySavingsAmount').className = 'right-align';
+    document.getElementById('yearlySavingsAmount').textContent = `$${potentialSavings.toFixed(2)}`;
+    document.getElementById('yearlySavingsPercentage').className = 'right-align';
+    document.getElementById('yearlySavingsPercentage').textContent = `${savingsPercentage.toFixed(2)}%`;
 }
 
-function importData(event) {
-    const file = event.target.files[0];
-    if (file) {
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            const data = JSON.parse(e.target.result);
-            bills = data.bills || [];
-            payFrequency = data.payFrequency || '';
-            income = parseFloat(data.income) || 0;
-            payday = data.payday || '';
-            viewMode = data.viewMode || 'payCycle';
-            darkMode = data.darkMode === true;
-            tags = data.tags || ['default']; // Import tags
-
-            saveToLocalStorage();
-            updateBillsTable();
-            updateAccordion();
-            if (darkMode) {
-                document.body.classList.add('dark-mode');
-                document.querySelector('.container').classList.add('dark-mode');
-            } else {
-                document.body.classList.remove('dark-mode');
-                document.querySelector('.container').classList.remove('dark-mode');
-            }
-
-            const yearlyIncome = calculateYearlyIncome(payFrequency, income);
-            updateIncomeTable(payFrequency, income, yearlyIncome);
-        };
-        reader.readAsText(file);
-    }
-}
 
 function goToStep2() {
     payFrequency = document.getElementById('frequency').value;
@@ -150,8 +78,7 @@ function goToStep2() {
         return;
     }
 
-    const yearlyIncome = calculateYearlyIncome(payFrequency, income);
-    updateIncomeTable(payFrequency, income, yearlyIncome);
+    updateIncomeTable(payFrequency, income);
 
     document.getElementById('step1').classList.add('hidden');
     document.getElementById('step2').classList.remove('hidden');
@@ -160,16 +87,11 @@ function goToStep2() {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-    // Check if income is already set
     if (income) {
-        const yearlyIncome = calculateYearlyIncome(payFrequency, income);
-        updateIncomeTable(payFrequency, income, yearlyIncome);
+        updateIncomeTable(payFrequency, income);
         document.getElementById('step1').classList.add('hidden');
         document.getElementById('step2').classList.remove('hidden');
     }
-    // Update the view mode dropdown to match the stored value
-    document.getElementById('viewMode').value = viewMode;
-
     // Update other elements and data
     updateBillsTable();
     deleteOldPayCycles(); // Call the function to delete old pay cycles
@@ -181,21 +103,6 @@ document.addEventListener('DOMContentLoaded', () => {
         document.body.classList.add('dark-mode');
         document.querySelector('.container').classList.add('dark-mode');
     }
-
-    // Add event listeners here
-    const addBillButton = document.getElementById('addBillButton');
-    const closeBillModal = document.getElementById('closeBillModal');
-    const addIncomeButton = document.getElementById('addIncomeButton');
-    const closeIncomeModal = document.getElementById('closeIncomeModal');
-    const loadMoreButton = document.getElementById('loadMoreButton');
-    const resetLocalStorageButton = document.getElementById('resetLocalStorageButton');
-
-    if (addBillButton) addBillButton.addEventListener('click', openModal);
-    if (closeBillModal) closeBillModal.addEventListener('click', closeModal);
-    if (addIncomeButton) addIncomeButton.addEventListener('click', openIncomeModal);
-    if (closeIncomeModal) closeIncomeModal.addEventListener('click', closeIncomeModal);
-    if (loadMoreButton) loadMoreButton.addEventListener('click', loadMorePayCycles);
-    if (resetLocalStorageButton) resetLocalStorageButton.addEventListener('click', resetLocalStorage);
 });
 
 document.getElementById('billsForm').addEventListener('submit', function(event) {
@@ -240,7 +147,7 @@ function updateBillsTable() {
                                     <th class="right-align">Amount</th>
                                     <th>Frequency</th>
                                     <th>Due Date</th>
-                                    <th>Tag</th> <!-- New column for Tag -->
+                                    <th>Tag</th>
                                     <th class="right-align">Yearly Total</th>
                                     <th>Actions</th>
                                 </tr>
@@ -255,7 +162,7 @@ function updateBillsTable() {
             <td class="bills negative right-align">-$${bill.amount.toFixed(2)}</td>
             <td>${bill.frequency}</td>
             <td>${formatDate(bill.date)}</td>
-            <td>${bill.tag}</td> <!-- New cell for Tag -->
+            <td>${bill.tag}</td>
             <td class="right-align">-$${yearlyAmount.toFixed(2)}</td>
             <td><button class="secondary-btn" onclick="editBill(${index})">Edit</button> <button class="delete-btn" onclick="removeBill(${index})">Delete</button></td>
         </tr>`;
@@ -263,21 +170,6 @@ function updateBillsTable() {
 
     const totalRow = `<tr><td colspan="5" class="total-label">Total Yearly Amount:</td><td class="right-align total-amount">-$${totalYearlyAmount.toFixed(2)}</td><td></td></tr>`;
     billsTable.querySelector('tbody').insertAdjacentHTML('beforeend', totalRow);
-}
-
-function calculateYearlyAmount(amount, frequency) {
-    return amount * (frequencyMultipliers[frequency] || 0);
-}
-
-function calculateYearlyBills() {
-    let yearlyTotal = 0;
-    bills.forEach(bill => {
-        yearlyTotal += calculateYearlyAmount(bill.amount, bill.frequency);
-    });
-    const yearlyBillsAmountElement = document.getElementById('yearlyBillsAmount');
-    if (yearlyBillsAmountElement) {
-        yearlyBillsAmountElement.innerText = `Total Yearly Bill Amount: $${yearlyTotal.toFixed(2)}`;
-    }
 }
 
 function removeBill(index) {
@@ -290,8 +182,12 @@ function removeBill(index) {
 
 function toggleBillList() {
     const billsTable = document.getElementById('billsTable');
+    const filterByTag = document.querySelector('.filter-by-tag');
+    
     billsTable.classList.toggle('hidden');
+    filterByTag.classList.toggle('hidden');
 }
+
 
 function editBill(index) {
     const bill = bills[index];
@@ -313,12 +209,6 @@ function resetBillForm() {
     document.getElementById('billDate').value = '';
     document.getElementById('billTag').value = 'default';
     document.getElementById('submitBill').textContent = 'Add Bill';
-}
-
-function toggleViewMode() {
-    viewMode = document.getElementById('viewMode').value;
-    saveToLocalStorage();
-    updateAccordion();
 }
 
 function updateAccordion() {
@@ -425,14 +315,22 @@ function sortBillsByDate(bills) {
     return bills.sort((a, b) => new Date(a.date) - new Date(b.date));
 }
 
-function getCycleLength(frequency) {
+function getCycleLength(frequency, referenceDate) {
     switch (frequency) {
-        case 'weekly': return 7;
-        case 'fortnightly': return 14;
-        case 'monthly': return 30; // Average days in a month
-        case 'quarterly': return 90; // Average days in a quarter
-        case 'yearly': return 365;
-        default: return 0;
+        case 'weekly': 
+            return 7;
+        case 'fortnightly': 
+            return 14;
+        case 'monthly': 
+            const currentMonth = referenceDate.getMonth();
+            const currentYear = referenceDate.getFullYear();
+            return new Date(currentYear, currentMonth + 1, 0).getDate();
+        case 'quarterly': 
+            return 90; // Average days in a quarter
+        case 'yearly': 
+            return 365;
+        default: 
+            return 0;
     }
 }
 
@@ -492,7 +390,6 @@ function calculateMonthlyView() {
     let currentDate = new Date(payday);
     let payDates = [];
 
-    // Generate all pay dates within the view range
     let date = new Date(payday);
     let endViewDate = new Date(currentDate.getFullYear(), currentDate.getMonth() + generatedPayCycles, 0);
     while (date <= endViewDate) {
@@ -511,18 +408,14 @@ function calculateMonthlyView() {
         let monthIncome = 0;
         let monthPayDates = [];
 
-        // Calculate total income for the month
         payDates.forEach(payDate => {
-            const payDateStartOfDay = new Date(payDate.getFullYear(), payDate.getMonth(), payDate.getDate());
-
-            if (payDateStartOfDay >= startDate && payDateStartOfDay <= endDate) {
+            if (payDate >= startDate && payDate <= endDate) {
                 monthIncome += income;
                 monthPayDates.push(payDate.toDateString());
             }
         });
 
-        // Calculate total bills for the month
-        const sortedBills = sortBillsByDate(bills); // Ensure bills are sorted by date
+        const sortedBills = sortBillsByDate(bills);
         sortedBills.forEach(bill => {
             let billDueDate = new Date(bill.date);
             while (billDueDate <= endDate) {
@@ -532,7 +425,7 @@ function calculateMonthlyView() {
                     monthTotal += bill.amount;
                 }
                 billDueDate = getNextBillDate(billDueDate, bill.frequency);
-                if (billDueDate > endDate) break; // Break the loop if the next due date is beyond the end of the month
+                if (billDueDate > endDate) break;
             }
         });
 
@@ -563,6 +456,8 @@ function adjustDate(date) {
 }
 
 function getNextBillDate(date, frequency) {
+    const originalDay = date.getDate();
+    
     switch (frequency) {
         case 'weekly': 
             date.setDate(date.getDate() + 7); 
@@ -571,24 +466,23 @@ function getNextBillDate(date, frequency) {
             date.setDate(date.getDate() + 14); 
             break;
         case 'monthly': 
-            let currentDay = date.getDate();
             date.setMonth(date.getMonth() + 1);
-            if (date.getDate() < currentDay) {
-                date.setDate(0); // This sets the date to the last day of the previous month
+            if (date.getDate() < originalDay) {
+                // Adjust to the last day of the month if the original day doesn't exist
+                date.setDate(new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate());
             }
             break;
         case 'quarterly': 
-            let currentQuarterDay = date.getDate();
             date.setMonth(date.getMonth() + 3);
-            if (date.getDate() < currentQuarterDay) {
-                date.setDate(0); // This sets the date to the last day of the previous month
+            if (date.getDate() < originalDay) {
+                date.setDate(new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate());
             }
             break;
         case 'yearly': 
             date.setFullYear(date.getFullYear() + 1); 
             break;
     }
-    return adjustDate(date);
+    return date;
 }
 
 function loadMorePayCycles() {
@@ -673,10 +567,6 @@ function closeModal() {
     document.getElementById('billModal').style.display = 'none';
 }
 
-function closeManageTagsModal() {
-    document.getElementById('manageTagsModal').style.display = 'none';
-}
-
 function openIncomeModal() {
     document.getElementById('editFrequency').value = payFrequency;
     document.getElementById('editIncome').value = income;
@@ -695,8 +585,7 @@ function updateIncome() {
     saveToLocalStorage();
 
     // Update the income table without reloading
-    const yearlyIncome = calculateYearlyIncome(payFrequency, income);
-    updateIncomeTable(payFrequency, income, yearlyIncome);
+    updateIncomeTable(payFrequency, income);
 
     // Close modal
     closeIncomeModal();
@@ -710,12 +599,8 @@ window.onclick = function(event) {
     if (event.target == document.getElementById('incomeModal')) {
         closeIncomeModal();
     }
-    if (event.target == document.getElementById('tagModal')) {
-        closeTagModal();
-    }
 }
 
-// Dark mode toggle function
 function toggleDarkMode() {
     darkMode = !darkMode;
     document.body.classList.toggle('dark-mode');
@@ -723,7 +608,6 @@ function toggleDarkMode() {
     saveToLocalStorage();
 }
 
-// Function to delete old pay cycles
 function deleteOldPayCycles() {
     const today = new Date();
     const payCycles = getCycleDates(new Date(payday), getCycleLength(payFrequency), generatedPayCycles);
@@ -737,14 +621,44 @@ function deleteOldPayCycles() {
 }
 
 // Tag Management Functions
+function updateTagDropdown() {
+    const tagList = document.getElementById('tagList');
+    const existingTagSelect = document.getElementById('existingTag');
+    const tagFilter = document.getElementById('tagFilter');
+    
+    tagList.innerHTML = '';
+    existingTagSelect.innerHTML = '';
+    tagFilter.innerHTML = '<option value="all">All</option>'; // Reset and add "All" option
 
-function openTagModal() {
-    document.getElementById('tagModal').style.display = 'block';
+    tags.forEach(tag => {
+        const option = document.createElement('option');
+        option.value = tag;
+        tagList.appendChild(option);
+
+        const selectOption = document.createElement('option');
+        selectOption.value = tag;
+        selectOption.textContent = tag;
+        existingTagSelect.appendChild(selectOption);
+
+        const filterOption = document.createElement('option');
+        filterOption.value = tag;
+        filterOption.textContent = tag;
+        tagFilter.appendChild(filterOption);
+    });
+}
+
+function loadTagInfo() {
+    const existingTag = document.getElementById('existingTag').value;
+    document.getElementById('newTagName').value = existingTag;
+}
+
+function openManageTagsModal() {
+    document.getElementById('manageTagsModal').style.display = 'block';
     updateTagDropdown();
 }
 
 function closeTagModal() {
-    document.getElementById('tagModal').style.display = 'none';
+    document.getElementById('manageTagsModal').style.display = 'none';
 }
 
 function renameTag() {
@@ -796,32 +710,6 @@ function deleteTag() {
 
     // Close the tag modal after deletion
     closeTagModal();
-}
-
-function updateTagDropdown() {
-    const tagList = document.getElementById('tagList');
-    const existingTagSelect = document.getElementById('existingTag');
-    const tagFilter = document.getElementById('tagFilter');
-    
-    tagList.innerHTML = '';
-    existingTagSelect.innerHTML = '';
-    tagFilter.innerHTML = '<option value="all">All</option>'; // Reset and add "All" option
-
-    tags.forEach(tag => {
-        const option = document.createElement('option');
-        option.value = tag;
-        tagList.appendChild(option);
-
-        const selectOption = document.createElement('option');
-        selectOption.value = tag;
-        selectOption.textContent = tag;
-        existingTagSelect.appendChild(selectOption);
-
-        const filterOption = document.createElement('option');
-        filterOption.value = tag;
-        filterOption.textContent = tag;
-        tagFilter.appendChild(filterOption);
-    });
 }
 
 function formatDate(date) {
@@ -887,31 +775,72 @@ function filterByTag() {
     billsTable.querySelector('tbody').insertAdjacentHTML('beforeend', totalRow);
 }
 
-function loadTagInfo() {
-    const existingTag = document.getElementById('existingTag').value;
-    document.getElementById('newTagName').value = existingTag;
+function exportData() {
+    const data = {
+        bills: bills,
+        payFrequency: payFrequency,
+        income: income,
+        payday: payday,
+        viewMode: viewMode,
+        darkMode: darkMode,
+        tags: tags
+    };
+    const dataStr = JSON.stringify(data, null, 2);
+    const blob = new Blob([dataStr], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "budget_data.json";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
 }
 
-function openManageTagsModal() {
-    document.getElementById('manageTagsModal').style.display = 'block';
-    updateTagDropdown();
-}
+function importData(event) {
+    const file = event.target.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const data = JSON.parse(e.target.result);
+            bills = data.bills || [];
+            payFrequency = data.payFrequency || '';
+            income = parseFloat(data.income) || 0;
+            payday = data.payday || '';
+            viewMode = data.viewMode || 'payCycle';
+            darkMode = data.darkMode === true;
+            tags = data.tags || ['default']; // Import tags
 
-function closeTagModal() {
-    document.getElementById('manageTagsModal').style.display = 'none';
-}
+            saveToLocalStorage();
+            updateBillsTable();
+            updateAccordion();
+            if (darkMode) {
+                document.body.classList.add('dark-mode');
+                document.querySelector('.container').classList.add('dark-mode');
+            } else {
+                document.body.classList.remove('dark-mode');
+                document.querySelector('.container').classList.remove('dark-mode');
+            }
 
-// Load initial data
-document.addEventListener('DOMContentLoaded', () => {
-    if (income) {
-        const yearlyIncome = calculateYearlyIncome(payFrequency, income);
-        updateIncomeTable(payFrequency, income, yearlyIncome);
-        document.getElementById('step1').classList.add('hidden');
-        document.getElementById('step2').classList.remove('hidden');
+            updateIncomeTable(payFrequency, income);
+        };
+        reader.readAsText(file);
     }
-    updateBillsTable();
-    deleteOldPayCycles();
-    updateAccordion();
-    updateTagDropdown();
-    filterByTag();
-});
+}
+
+function autocompleteTag() {
+    const tagInput = document.getElementById('billTag');
+    const tagList = document.getElementById('tagList');
+    tagList.innerHTML = ''; // Clear previous suggestions
+
+    const inputValue = tagInput.value.toLowerCase();
+    if (inputValue) {
+        const filteredTags = tags.filter(tag => tag.toLowerCase().includes(inputValue));
+        filteredTags.forEach(tag => {
+            const option = document.createElement('option');
+            option.value = tag;
+            tagList.appendChild(option);
+        });
+    }
+}
+
+document.getElementById('billTag').addEventListener('input', autocompleteTag);
