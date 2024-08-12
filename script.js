@@ -67,7 +67,6 @@ function updateIncomeTable(payFrequency, income) {
     document.getElementById('yearlySavingsPercentage').textContent = `${savingsPercentage.toFixed(2)}%`;
 }
 
-
 function goToStep2() {
     payFrequency = document.getElementById('frequency').value;
     income = parseFloat(document.getElementById('income').value);
@@ -170,6 +169,9 @@ function updateBillsTable() {
 
     const totalRow = `<tr><td colspan="5" class="total-label">Total Yearly Amount:</td><td class="right-align total-amount">-$${totalYearlyAmount.toFixed(2)}</td><td></td></tr>`;
     billsTable.querySelector('tbody').insertAdjacentHTML('beforeend', totalRow);
+
+    // Automatically update the income table after updating bills
+    updateIncomeTable(payFrequency, income);
 }
 
 function removeBill(index) {
