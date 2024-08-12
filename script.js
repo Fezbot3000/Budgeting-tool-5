@@ -249,7 +249,7 @@ function resetBillForm() {
     document.getElementById('billAmount').value = '';
     document.getElementById('billFrequency').value = '';
     document.getElementById('billDate').value = '';
-    document.getElementById('billTag').value = 'default';
+    document.getElementById('billTag').value = 'default'; // or whatever default tag you want
     document.getElementById('submitBill').textContent = 'Add Bill';
 }
 
@@ -650,9 +650,11 @@ function resetLocalStorage() {
 
 // Modal functions
 function openModal() {
+    resetBillForm();  // Reset form fields before displaying the modal
     document.getElementById('billModal').style.display = 'block';
     updateTagDropdown();
 }
+
 
 function closeModal() {
     document.getElementById('billModal').style.display = 'none';
