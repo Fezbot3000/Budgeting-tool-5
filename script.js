@@ -464,30 +464,47 @@ function calculateMonthlyView() {
         monthlyData.incomes.push(monthIncome);
         monthlyData.payDates.push(monthPayDates);
 
+        // Process monthly bills first
         bills.forEach(bill => {
             let billDueDate = new Date(bill.date);
-            let shouldAddBill = false;
-            let billAmount = bill.amount;
-
-            if (bill.frequency === 'monthly' || bill.frequency === 'fortnightly') {
-                shouldAddBill = true;
-            } else if (bill.frequency === 'quarterly') {
-                if ((billDueDate.getMonth() % 3 === startDate.getMonth() % 3) &&
-                    billDueDate.getFullYear() === startDate.getFullYear()) {
-                    shouldAddBill = true;
-                }
-            } else if (bill.frequency === 'yearly') {
-                if (billDueDate.getMonth() === startDate.getMonth()) {
-                    shouldAddBill = true;
-                }
-            }
-
-            if (shouldAddBill) {
+            if (bill.frequency === 'monthly') {
+                // Ensure the bill shows up in every month
                 if (billDueDate.getDate() > endDate.getDate()) {
                     billDueDate.setDate(endDate.getDate());
                 }
-                monthBills += `<tr><td>${bill.name}</td><td>${formatDate(billDueDate)}</td><td class="bills negative right-align">-$${billAmount.toFixed(2)}</td></tr>`;
-                monthTotal += billAmount;
+                monthBills += `<tr><td>${bill.name}</td><td>${formatDate(billDueDate)}</td><td class="bills negative right-align">-$${bill.amount.toFixed(2)}</td></tr>`;
+                monthTotal += bill.amount;
+            }
+        });
+
+        // Process weekly and fortnightly bills, showing them multiple times within the month
+        bills.forEach(bill => {
+            if (bill.frequency === 'weekly' || bill.frequency === 'fortnightly') {
+                let billDueDate = new Date(bill.date);
+                while (billDueDate <= endDate) {
+                    if (billDueDate >= startDate && billDueDate <= endDate) {
+                        monthBills += `<tr><td>${bill.name}</td><td>${formatDate(billDueDate)}</td><td class="bills negative right-align">-$${bill.amount.toFixed(2)}</td></tr>`;
+                        monthTotal += bill.amount;
+                    }
+                    billDueDate = adjustDate(getNextBillDate(billDueDate, bill.frequency));
+                }
+            }
+        });
+
+        // Process quarterly and yearly bills, showing them only in the correct month
+        bills.forEach(bill => {
+            let billDueDate = new Date(bill.date);
+            if (bill.frequency === 'quarterly') {
+                if ((billDueDate.getMonth() % 3 === startDate.getMonth() % 3) &&
+                    billDueDate.getFullYear() === startDate.getFullYear()) {
+                    monthBills += `<tr><td>${bill.name}</td><td>${formatDate(billDueDate)}</td><td class="bills negative right-align">-$${bill.amount.toFixed(2)}</td></tr>`;
+                    monthTotal += bill.amount;
+                }
+            } else if (bill.frequency === 'yearly') {
+                if (billDueDate.getMonth() === startDate.getMonth()) {
+                    monthBills += `<tr><td>${bill.name}</td><td>${formatDate(billDueDate)}</td><td class="bills negative right-align">-$${bill.amount.toFixed(2)}</td></tr>`;
+                    monthTotal += bill.amount;
+                }
             }
         });
 
