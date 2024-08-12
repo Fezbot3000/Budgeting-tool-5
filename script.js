@@ -15,7 +15,8 @@ const frequencyMultipliers = {
     fortnightly: 26, 
     monthly: 12, 
     quarterly: 4,  
-    yearly: 1 
+    yearly: 1,
+    "one-off": 0 // No multiplier for one-off bills
 };
 
 function saveToLocalStorage() {
@@ -100,7 +101,6 @@ function toggleViewMode() {
     // Update the UI based on the selected view mode
     updateAccordion();
 }
-
 
 document.addEventListener('DOMContentLoaded', () => {
     // Restore the view mode from localStorage
@@ -415,7 +415,7 @@ function getCycleDates(startDate, cycleLength, cycles) {
 
 function getBillRowsForCycle(bill, dates) {
     let rows = '', billDueDate = new Date(bill.date);
-    if (bill.frequency === 'yearly') {
+    if (bill.frequency === 'yearly' || bill.frequency === 'one-off') {
         if (billDueDate >= dates.start && billDueDate <= dates.end) {
             rows += `<tr><td>${bill.name}</td><td>${formatDate(billDueDate)}</td><td class="bills negative right-align">-$${bill.amount.toFixed(2)}</td></tr>`;
         }
@@ -432,7 +432,7 @@ function getBillRowsForCycle(bill, dates) {
 
 function getBillTotalForCycle(bill, dates) {
     let total = 0, billDueDate = new Date(bill.date);
-    if (bill.frequency === 'yearly') {
+    if (bill.frequency === 'yearly' || bill.frequency === 'one-off') {
         if (billDueDate >= dates.start && billDueDate <= dates.end) {
             total += bill.amount;
         }
@@ -512,7 +512,7 @@ function calculateMonthlyView() {
             }
         });
 
-        // Process quarterly and yearly bills, showing them only in the correct month
+        // Process quarterly, yearly, and one-off bills, showing them only in the correct month
         bills.forEach(bill => {
             let billDueDate = new Date(bill.date);
             if (bill.frequency === 'quarterly') {
@@ -520,7 +520,7 @@ function calculateMonthlyView() {
                     billDueDate.getFullYear() === startDate.getFullYear()) {
                     billsInMonth.push({ name: bill.name, dueDate: new Date(billDueDate), amount: bill.amount });
                 }
-            } else if (bill.frequency === 'yearly') {
+            } else if (bill.frequency === 'yearly' || bill.frequency === 'one-off') {
                 if (billDueDate.getMonth() === startDate.getMonth()) {
                     billsInMonth.push({ name: bill.name, dueDate: new Date(billDueDate), amount: bill.amount });
                 }
@@ -654,7 +654,6 @@ function openModal() {
     document.getElementById('billModal').style.display = 'block';
     updateTagDropdown();
 }
-
 
 function closeModal() {
     document.getElementById('billModal').style.display = 'none';
@@ -812,7 +811,7 @@ function formatDate(date) {
     const d = new Date(date);
     const dayOfWeek = days[d.getDay()];
     const day = d.getDate();
-    const month = months[d.getMonth()];
+    const month = d.getMonth();
     const year = d.getFullYear();
 
     let daySuffix;
@@ -828,7 +827,7 @@ function formatDate(date) {
         }
     }
 
-    return `${dayOfWeek} ${day}${daySuffix} ${month} - ${year}`;
+    return `${dayOfWeek} ${day}${daySuffix} ${months[month]} - ${year}`;
 }
 
 function formatDayOnly(date) {
