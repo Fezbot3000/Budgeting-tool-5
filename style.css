@@ -572,7 +572,7 @@ body.dark-mode {
 
 /* Dark Mode Styles */
 body.dark-mode #billModal {
-    background-color: #333;
+    background-color: ;
     color: #f5f5f5;
     border: 1px solid #555;
 }
