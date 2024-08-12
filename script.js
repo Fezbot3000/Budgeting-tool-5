@@ -429,14 +429,18 @@ function calculateMonthlyView() {
     let currentDate = new Date(payday);
     let payDates = [];
 
+    const totalMonths = 18; // Adjust this value as needed
+
     let date = new Date(payday);
-    let endViewDate = new Date(currentDate.getFullYear(), currentDate.getMonth() + generatedPayCycles, 0);
+    let endViewDate = new Date(currentDate.getFullYear(), currentDate.getMonth() + totalMonths, 0);
+
+    // Generate all pay dates within the range
     while (date <= endViewDate) {
         payDates.push(new Date(date));
         date = adjustDate(getNextBillDate(new Date(date), payFrequency));
     }
 
-    for (let i = 0; i < generatedPayCycles; i++) {
+    for (let i = 0; i < totalMonths; i++) {
         let startDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
         let endDate = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
         let monthName = startDate.toLocaleString('default', { month: 'long' });
@@ -447,32 +451,48 @@ function calculateMonthlyView() {
         let monthIncome = 0;
         let monthPayDates = [];
 
+        // Calculate income for the month based on pay dates
         payDates.forEach(payDate => {
-            if (payDate >= startDate && payDate <= endDate) {
+            const payDateStartOfDay = new Date(payDate.getFullYear(), payDate.getMonth(), payDate.getDate());
+
+            if (payDateStartOfDay >= startDate && payDateStartOfDay <= endDate) {
                 monthIncome += income;
                 monthPayDates.push(payDate.toDateString());
             }
         });
 
-        const sortedBills = sortBillsByDate(bills);
-        sortedBills.forEach(bill => {
+        monthlyData.incomes.push(monthIncome);
+        monthlyData.payDates.push(monthPayDates);
+
+        bills.forEach(bill => {
             let billDueDate = new Date(bill.date);
-            while (billDueDate <= endDate) {
-                if (billDueDate >= startDate && billDueDate <= endDate) {
-                    billDueDate = adjustDate(billDueDate); // Ensure the bill date is adjusted
-                    monthBills += `<tr><td>${bill.name}</td><td>${formatDate(billDueDate)}</td><td class="bills negative right-align">-$${bill.amount.toFixed(2)}</td></tr>`;
-                    monthTotal += bill.amount;
+            let shouldAddBill = false;
+            let billAmount = bill.amount;
+
+            if (bill.frequency === 'monthly' || bill.frequency === 'fortnightly') {
+                shouldAddBill = true;
+            } else if (bill.frequency === 'quarterly') {
+                if ((billDueDate.getMonth() % 3 === startDate.getMonth() % 3) &&
+                    billDueDate.getFullYear() === startDate.getFullYear()) {
+                    shouldAddBill = true;
                 }
-                billDueDate = getNextBillDate(billDueDate, bill.frequency);
-                if (billDueDate > endDate) break;
+            } else if (bill.frequency === 'yearly') {
+                if (billDueDate.getMonth() === startDate.getMonth()) {
+                    shouldAddBill = true;
+                }
+            }
+
+            if (shouldAddBill) {
+                if (billDueDate.getDate() > endDate.getDate()) {
+                    billDueDate.setDate(endDate.getDate());
+                }
+                monthBills += `<tr><td>${bill.name}</td><td>${formatDate(billDueDate)}</td><td class="bills negative right-align">-$${billAmount.toFixed(2)}</td></tr>`;
+                monthTotal += billAmount;
             }
         });
 
         monthlyData.totals.push(monthTotal);
         monthlyData.bills.push(monthBills);
-        monthlyData.incomes.push(monthIncome);
-        monthlyData.payDates.push(monthPayDates);
-
         currentDate.setMonth(currentDate.getMonth() + 1);
     }
 
