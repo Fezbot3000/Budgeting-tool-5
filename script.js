@@ -85,6 +85,15 @@ function goToStep2() {
     updateAccordion();
 }
 
+function toggleViewMode() {
+    viewMode = document.getElementById('viewMode').value;
+    localStorage.setItem('viewMode', viewMode);
+
+    // Update the UI based on the selected view mode
+    updateAccordion();
+}
+
+
 document.addEventListener('DOMContentLoaded', () => {
     // Restore the view mode from localStorage
     const savedViewMode = localStorage.getItem('viewMode') || 'payCycle';
@@ -214,20 +223,6 @@ function toggleBillList() {
     localStorage.setItem('billsListHidden', isHidden);
 }
 
-function toggleViewMode() {
-    const viewMode = document.getElementById('viewMode').value;
-    localStorage.setItem('viewMode', viewMode);
-
-    // Update the UI based on the selected view mode
-    if (viewMode === 'payCycle') {
-        // Call the function to update the UI to Pay Cycle View
-        updateAccordion();
-    } else if (viewMode === 'monthly') {
-        // Call the function to update the UI to Monthly View
-        updateAccordion(); // Assuming updateAccordion also handles monthly view; modify if needed
-    }
-}
-
 function editBill(index) {
     const bill = bills[index];
     document.getElementById('billIndex').value = index;
@@ -252,7 +247,8 @@ function resetBillForm() {
 
 function updateAccordion() {
     const accordionContainer = document.getElementById('accordionContainer');
-    accordionContainer.innerHTML = '';
+    accordionContainer.innerHTML = ''; // Clear existing content
+
     let cycleDates, chartData;
 
     if (viewMode === 'payCycle') {
@@ -261,6 +257,7 @@ function updateAccordion() {
 
         cycleDates.forEach((dates, index) => {
             if (index >= revealedPayCycles) return;
+
             let cycleTotal = 0,
                 cycleBills = '';
             const sortedBills = sortBillsByDate(bills);
@@ -268,6 +265,7 @@ function updateAccordion() {
                 cycleBills += getBillRowsForCycle(bill, dates);
                 cycleTotal += getBillTotalForCycle(bill, dates);
             });
+
             const leftoverAmount = income - cycleTotal;
             const leftoverClass = leftoverAmount >= 0 ? 'positive' : 'negative';
             const formattedStartDate = formatDate(dates.start);
@@ -301,14 +299,14 @@ function updateAccordion() {
     } else if (viewMode === 'monthly') {
         chartData = calculateMonthlyView();
         chartData.dates.forEach((monthYear, index) => {
+            if (index >= revealedPayCycles) return;
+
             const monthTotal = chartData.totals[index],
                 billsForMonth = chartData.bills[index],
                 monthIncome = chartData.incomes[index],
-                payDatesForMonth = chartData.payDates[index],
                 leftoverAmount = monthIncome - monthTotal,
                 leftoverClass = leftoverAmount >= 0 ? 'positive' : 'negative';
 
-            if (index >= revealedPayCycles) return;
             accordionContainer.innerHTML += `
                 <div class="cycle-summary">
                     <div class="cycle-info">
@@ -316,7 +314,7 @@ function updateAccordion() {
                         <span class="right-align">${monthYear}</span>
                     </div>
                     <div class="income-summary">
-                        <p>Income (${payDatesForMonth.map(date => formatDate(date)).join(', ')}): <span class="positive">$${monthIncome.toFixed(2)}</span></p>
+                        <p>Income: <span class="positive">$${monthIncome.toFixed(2)}</span></p>
                         <p>Estimated to pay: <span class="negative">-$${monthTotal.toFixed(2)}</span></p>
                         <p>Leftover: <span class="${leftoverClass}">$${leftoverAmount.toFixed(2)}</span></p>
                     </div>
@@ -334,6 +332,7 @@ function updateAccordion() {
         });
     }
 
+    // Re-attach event listeners to newly created accordion buttons
     document.querySelectorAll('.accordion-btn').forEach(button => {
         button.addEventListener('click', function () {
             const panel = this.nextElementSibling;
@@ -347,6 +346,7 @@ function updateAccordion() {
         });
     });
 
+    // Update the chart with the new data
     updateChart(chartData);
 }
 
