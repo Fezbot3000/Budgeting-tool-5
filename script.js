@@ -245,6 +245,21 @@ function resetBillForm() {
     document.getElementById('submitBill').textContent = 'Add Bill';
 }
 
+function adjustDate(date) {
+    const day = date.getDate();
+    const month = date.getMonth();
+    const year = date.getFullYear();
+
+    // Move date to the last valid date of the month if it exceeds the number of days in the month
+    const lastDayOfMonth = new Date(year, month + 1, 0).getDate();
+
+    if (day > lastDayOfMonth) {
+        date.setDate(lastDayOfMonth);
+    }
+
+    return date;
+}
+
 function updateAccordion() {
     const accordionContainer = document.getElementById('accordionContainer');
     accordionContainer.innerHTML = ''; // Clear existing content
@@ -429,7 +444,7 @@ function calculateMonthlyView() {
     let currentDate = new Date(payday);
     let payDates = [];
 
-    const totalMonths = 18; // Adjust this value as needed
+    const totalMonths = 18;
 
     let date = new Date(payday);
     let endViewDate = new Date(currentDate.getFullYear(), currentDate.getMonth() + totalMonths, 0);
@@ -450,6 +465,7 @@ function calculateMonthlyView() {
         let monthBills = '';
         let monthIncome = 0;
         let monthPayDates = [];
+        let billsInMonth = [];
 
         // Calculate income for the month based on pay dates
         payDates.forEach(payDate => {
@@ -468,12 +484,10 @@ function calculateMonthlyView() {
         bills.forEach(bill => {
             let billDueDate = new Date(bill.date);
             if (bill.frequency === 'monthly') {
-                // Ensure the bill shows up in every month
                 if (billDueDate.getDate() > endDate.getDate()) {
                     billDueDate.setDate(endDate.getDate());
                 }
-                monthBills += `<tr><td>${bill.name}</td><td>${formatDate(billDueDate)}</td><td class="bills negative right-align">-$${bill.amount.toFixed(2)}</td></tr>`;
-                monthTotal += bill.amount;
+                billsInMonth.push({ name: bill.name, dueDate: new Date(billDueDate), amount: bill.amount });
             }
         });
 
@@ -483,10 +497,9 @@ function calculateMonthlyView() {
                 let billDueDate = new Date(bill.date);
                 while (billDueDate <= endDate) {
                     if (billDueDate >= startDate && billDueDate <= endDate) {
-                        monthBills += `<tr><td>${bill.name}</td><td>${formatDate(billDueDate)}</td><td class="bills negative right-align">-$${bill.amount.toFixed(2)}</td></tr>`;
-                        monthTotal += bill.amount;
+                        billsInMonth.push({ name: bill.name, dueDate: new Date(billDueDate), amount: bill.amount });
                     }
-                    billDueDate = adjustDate(getNextBillDate(billDueDate, bill.frequency));
+                    billDueDate = getNextBillDate(billDueDate, bill.frequency);
                 }
             }
         });
@@ -497,15 +510,22 @@ function calculateMonthlyView() {
             if (bill.frequency === 'quarterly') {
                 if ((billDueDate.getMonth() % 3 === startDate.getMonth() % 3) &&
                     billDueDate.getFullYear() === startDate.getFullYear()) {
-                    monthBills += `<tr><td>${bill.name}</td><td>${formatDate(billDueDate)}</td><td class="bills negative right-align">-$${bill.amount.toFixed(2)}</td></tr>`;
-                    monthTotal += bill.amount;
+                    billsInMonth.push({ name: bill.name, dueDate: new Date(billDueDate), amount: bill.amount });
                 }
             } else if (bill.frequency === 'yearly') {
                 if (billDueDate.getMonth() === startDate.getMonth()) {
-                    monthBills += `<tr><td>${bill.name}</td><td>${formatDate(billDueDate)}</td><td class="bills negative right-align">-$${bill.amount.toFixed(2)}</td></tr>`;
-                    monthTotal += bill.amount;
+                    billsInMonth.push({ name: bill.name, dueDate: new Date(billDueDate), amount: bill.amount });
                 }
             }
+        });
+
+        // Sort bills by due date within the current month
+        billsInMonth.sort((a, b) => a.dueDate - b.dueDate);
+
+        // Add sorted bills to the monthBills string
+        billsInMonth.forEach(bill => {
+            monthBills += `<tr><td>${bill.name}</td><td>${formatDayOnly(bill.dueDate)}</td><td class="bills negative right-align">-$${bill.amount.toFixed(2)}</td></tr>`;
+            monthTotal += bill.amount;
         });
 
         monthlyData.totals.push(monthTotal);
@@ -513,22 +533,9 @@ function calculateMonthlyView() {
         currentDate.setMonth(currentDate.getMonth() + 1);
     }
 
+    console.log(monthlyData); // Log the entire monthlyData object to the console
+
     return monthlyData;
-}
-
-function adjustDate(date) {
-    const day = date.getDate();
-    const month = date.getMonth();
-    const year = date.getFullYear();
-
-    // Move date to the last valid date of the month if it exceeds the number of days in the month
-    const lastDayOfMonth = new Date(year, month + 1, 0).getDate();
-
-    if (day > lastDayOfMonth) {
-        date.setDate(lastDayOfMonth);
-    }
-
-    return date;
 }
 
 function getNextBillDate(date, frequency) {
@@ -812,6 +819,24 @@ function formatDate(date) {
     }
 
     return `${dayOfWeek} ${day}${daySuffix} ${month} - ${year}`;
+}
+
+function formatDayOnly(date) {
+    const day = date.getDate();
+
+    let daySuffix;
+    if (day > 3 && day < 21) {
+        daySuffix = 'th'; // 'th' for 4-20
+    } else {
+        switch (day % 10) {
+            case 1:  daySuffix = "st"; break;
+            case 2:  daySuffix = "nd"; break;
+            case 3:  daySuffix = "rd"; break;
+            default: daySuffix = "th";
+        }
+    }
+
+    return `${day}${daySuffix}`;
 }
 
 function filterByTag() {
