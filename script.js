@@ -78,11 +78,19 @@ function goToStep2() {
     }
 
     updateIncomeTable(payFrequency, income);
+    saveToLocalStorage();
 
     document.getElementById('step1').classList.add('hidden');
     document.getElementById('step2').classList.remove('hidden');
-    saveToLocalStorage();
-    updateAccordion();
+
+    // Show the chart when moving to Step 2
+    const chartContainer = document.getElementById('chartContainer');
+    if (chartContainer) {
+        chartContainer.style.display = 'block';
+    }
+
+    // Reload the page to ensure the pay cycles are shown correctly
+    location.reload();
 }
 
 function toggleViewMode() {
