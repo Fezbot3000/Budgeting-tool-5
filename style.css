@@ -467,8 +467,8 @@ body.dark-mode {
 }
 
 .dark-mode .modal-content {
-    background-color: #e5e5e5;
-    color: #e0e0e0;
+    background-color: #1E1E1E;
+    color: white;
 }
 
 .dark-mode .accordion-btn {
@@ -569,6 +569,54 @@ body.dark-mode {
 .reset-btn:hover, .dark-mode-btn:hover {
     background-color: #d32f2f;
 }
+
+/* Dark Mode Styles */
+body.dark-mode #billModal {
+    background-color: #333;
+    color: #f5f5f5;
+    border: 1px solid #555;
+}
+
+body.dark-mode #billModal .modal-header {
+    background-color: #444;
+    border-bottom: 1px solid #555;
+}
+
+body.dark-mode #billModal .modal-header h2 {
+    color: #f5f5f5;
+}
+
+body.dark-mode #billModal .modal-body {
+    background-color: #333;
+    color: #f5f5f5;
+}
+
+body.dark-mode #billModal input,
+body.dark-mode #billModal select {
+    background-color: #444;
+    color: #f5f5f5;
+    border: 1px solid #555;
+}
+
+body.dark-mode #billModal input::placeholder {
+    color: #ccc;
+}
+
+body.dark-mode #billModal .modal-footer {
+    background-color: #444;
+    border-top: 1px solid #555;
+}
+
+body.dark-mode #billModal .modal-footer button {
+    background-color: #555;
+    color: #f5f5f5;
+    border: none;
+}
+
+body.dark-mode #billModal .modal-footer button:hover {
+    background-color: #666;
+}
+
 
 /* ========================================
    New Styles for Updated Design
