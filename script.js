@@ -86,14 +86,27 @@ function goToStep2() {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+    // Restore the state of the bills list visibility
+    const billsListHidden = localStorage.getItem('billsListHidden') === 'true';
+    const billsTable = document.getElementById('billsTable');
+    const filterByTag = document.querySelector('.filter-by-tag');
+
+    if (billsListHidden) {
+        billsTable.classList.add('hidden');
+        filterByTag.classList.add('hidden');
+    } else {
+        billsTable.classList.remove('hidden');
+        filterByTag.classList.remove('hidden');
+    }
+
+    // Other initializations
     if (income) {
         updateIncomeTable(payFrequency, income);
         document.getElementById('step1').classList.add('hidden');
         document.getElementById('step2').classList.remove('hidden');
     }
-    // Update other elements and data
     updateBillsTable();
-    deleteOldPayCycles(); // Call the function to delete old pay cycles
+    deleteOldPayCycles();
     updateAccordion();
     updateTagDropdown();
 
@@ -103,6 +116,7 @@ document.addEventListener('DOMContentLoaded', () => {
         document.querySelector('.container').classList.add('dark-mode');
     }
 });
+
 
 document.getElementById('billsForm').addEventListener('submit', function(event) {
     event.preventDefault();
@@ -185,10 +199,16 @@ function removeBill(index) {
 function toggleBillList() {
     const billsTable = document.getElementById('billsTable');
     const filterByTag = document.querySelector('.filter-by-tag');
-    
+
+    // Toggle visibility
     billsTable.classList.toggle('hidden');
     filterByTag.classList.toggle('hidden');
+
+    // Save the current state in localStorage
+    const isHidden = billsTable.classList.contains('hidden');
+    localStorage.setItem('billsListHidden', isHidden);
 }
+
 
 
 function editBill(index) {
