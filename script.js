@@ -233,15 +233,26 @@ function toggleBillList() {
 
 function editBill(index) {
     const bill = bills[index];
-    document.getElementById('billIndex').value = index;
-    document.getElementById('billName').value = bill.name;
-    document.getElementById('billAmount').value = bill.amount;
-    document.getElementById('billFrequency').value = bill.frequency;
-    document.getElementById('billDate').value = bill.date;
-    document.getElementById('billTag').value = bill.tag;
-    document.getElementById('submitBill').textContent = 'Save';
-    openModal();
+
+    if (bill) {
+        // Populate the form fields with the existing bill data
+        document.getElementById('billIndex').value = index;
+        document.getElementById('billName').value = bill.name;
+        document.getElementById('billAmount').value = bill.amount;
+        document.getElementById('billFrequency').value = bill.frequency;
+        document.getElementById('billDate').value = bill.date;
+        document.getElementById('billTag').value = bill.tag;
+
+        // Change the button text to indicate that the user is editing a bill
+        document.getElementById('submitBill').textContent = 'Save';
+
+        // Open the modal to allow the user to edit the bill
+        openModal();
+    } else {
+        console.error("Bill not found for index:", index);
+    }
 }
+
 
 function resetBillForm() {
     document.getElementById('billIndex').value = '';
