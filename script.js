@@ -138,6 +138,17 @@ document.addEventListener('DOMContentLoaded', () => {
         document.body.classList.add('dark-mode');
         document.querySelector('.container').classList.add('dark-mode');
     }
+
+    // Check if the browser supports service workers and register one
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('/service-worker.js')
+            .then(registration => {
+                console.log('Service Worker registered with scope:', registration.scope);
+            })
+            .catch(error => {
+                console.log('Service Worker registration failed:', error);
+            });
+    }
 });
 
 document.getElementById('billsForm').addEventListener('submit', function(event) {
