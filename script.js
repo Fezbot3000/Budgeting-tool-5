@@ -247,12 +247,11 @@ function editBill(index) {
         document.getElementById('submitBill').textContent = 'Save';
 
         // Open the modal to allow the user to edit the bill
-        openModal();
+        openModal(true);  // Pass true to indicate this is an edit
     } else {
         console.error("Bill not found for index:", index);
     }
 }
-
 
 function resetBillForm() {
     document.getElementById('billIndex').value = '';
@@ -660,8 +659,10 @@ function resetLocalStorage() {
 }
 
 // Modal functions
-function openModal() {
-    resetBillForm();  // Reset form fields before displaying the modal
+function openModal(isEditMode = false) {
+    if (!isEditMode) {
+        resetBillForm();  // Reset form fields only if not in edit mode
+    }
     document.getElementById('billModal').style.display = 'block';
     updateTagDropdown();
 }
