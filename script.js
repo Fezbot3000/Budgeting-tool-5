@@ -103,6 +103,9 @@ function toggleViewMode() {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+    // Update bill due dates
+    updateBillDueDates();
+
     // Restore the view mode from localStorage
     const savedViewMode = localStorage.getItem('viewMode') || 'payCycle';
     document.getElementById('viewMode').value = savedViewMode;
@@ -977,3 +980,23 @@ function autocompleteTag() {
 }
 
 document.getElementById('billTag').addEventListener('input', autocompleteTag);
+
+// New function to update bill due dates
+function updateBillDueDates() {
+    const today = new Date();
+
+    bills.forEach(bill => {
+        let billDueDate = new Date(bill.date);
+
+        while (billDueDate < today) {
+            billDueDate = getNextBillDate(billDueDate, bill.frequency);
+        }
+
+        // Update the bill's date to the next valid due date
+        bill.date = billDueDate.toISOString().split('T')[0];
+    });
+
+    // Save updated bills back to localStorage
+    saveToLocalStorage();
+    updateBillsTable();
+}
