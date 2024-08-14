@@ -1,4 +1,4 @@
-// Initialize variabless and load data from localStorage
+// Initialize variables and load data from localStorage
 let bills = JSON.parse(localStorage.getItem('bills')) || [];
 let payFrequency = localStorage.getItem('payFrequency') || '';
 let income = parseFloat(localStorage.getItem('income')) || 0;
@@ -19,13 +19,13 @@ const frequencyMultipliers = {
     "one-off": 0 // No multiplier for one-off bills
 };
 
-// Sorting state
 let sortOrder = {
     name: 'asc',
     amount: 'asc',
     frequency: 'asc',
     date: 'asc',
-    tag: 'asc'
+    tag: 'asc',
+    totalAmount: 'asc' // Add this line for the "Yearly Total" column
 };
 
 function saveToLocalStorage() {
@@ -147,7 +147,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Check if the browser supports service workers and register one
     if ('serviceWorker' in navigator) {
-        // Comment out this block during development
         navigator.serviceWorker.register('/service-worker.js')
             .then(registration => {
                 console.log('Service Worker registered with scope:', registration.scope);
@@ -156,12 +155,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 console.log('Service Worker registration failed:', error);
             });
     }
-
-    // Add event listeners to table headers after the table is updated
-    document.querySelectorAll('#billsTable th').forEach((th, index) => {
-        const isNumeric = index === 1 || index === 5; // For Amount and Yearly Total columns
-        th.addEventListener('click', () => sortTable(index, isNumeric));
-    });
 });
 
 document.getElementById('billsForm').addEventListener('submit', function(event) {
@@ -213,21 +206,21 @@ function updateBillDueDatesForDisplay() {
     });
 }
 
-// Updated `updateBillsTable` function to include class for the total row
 function updateBillsTable() {
     const billsTable = document.getElementById('billsTable');
     let totalYearlyAmount = 0;
 
+    // Use the adjusted dates for display only
     const adjustedBills = updateBillDueDatesForDisplay();
 
     billsTable.innerHTML = `<thead>
                                 <tr>
-                                    <th>Name</th>
-                                    <th class="right-align">Amount</th>
-                                    <th>Frequency</th>
-                                    <th>Due Date</th>
-                                    <th>Tag</th>
-                                    <th class="right-align">Yearly Total</th>
+                                    <th onclick="sortTable('name')">Name <span id="nameSortArrow">↑</span></th>
+                                    <th class="right-align" onclick="sortTable('amount')">Amount <span id="amountSortArrow">↑</span></th>
+                                    <th onclick="sortTable('frequency')">Frequency <span id="frequencySortArrow">↑</span></th>
+                                    <th onclick="sortTable('date')">Due Date <span id="dateSortArrow">↑</span></th>
+                                    <th onclick="sortTable('tag')">Tag <span id="tagSortArrow">↑</span></th>
+                                    <th class="right-align" onclick="sortTable('totalAmount')">Yearly Total <span id="totalAmountSortArrow">↑</span></th>
                                     <th>Actions</th>
                                 </tr>
                             </thead>
@@ -248,57 +241,49 @@ function updateBillsTable() {
         </tr>`;
     });
 
-    const totalRow = `<tr class="total-row"><td colspan="5" class="total-label">Total Yearly Amount:</td><td class="right-align total-amount">-$${totalYearlyAmount.toFixed(2)}</td><td></td></tr>`;
+    const totalRow = `<tr><td colspan="5" class="total-label">Total Yearly Amount:</td><td class="right-align total-amount">-$${totalYearlyAmount.toFixed(2)}</td><td></td></tr>`;
     billsTable.querySelector('tbody').insertAdjacentHTML('beforeend', totalRow);
 
-    // Add event listeners to table headers after the table is updated
-    document.querySelectorAll('#billsTable th').forEach((th, index) => {
-        const isNumeric = index === 1 || index === 5; // For Amount and Yearly Total columns
-        th.addEventListener('click', () => sortTable(index, isNumeric));
-    });
+    // Automatically update the income table after updating bills
+    updateIncomeTable(payFrequency, income);
 }
 
-// Sorting function with improvements
-function sortTable(columnIndex, isNumeric = false) {
-    const table = document.getElementById('billsTable');
-    const rows = Array.from(table.querySelectorAll('tbody > tr:not(.total-row)')); // Exclude the total row
+function sortTable(column) {
+    const rows = Array.from(document.querySelector('#billsTable tbody').rows);
+    const totalRow = rows.pop(); // Remove the last row (total row) from sorting
 
-    let sortedRows;
+    rows.sort((a, b) => {
+        let valA = a.querySelector(`td:nth-child(${getColumnIndex(column)})`).textContent.trim();
+        let valB = b.querySelector(`td:nth-child(${getColumnIndex(column)})`).textContent.trim();
 
-    if (isNumeric) {
-        sortedRows = rows.sort((rowA, rowB) => {
-            const cellA = parseFloat(rowA.cells[columnIndex].textContent.replace(/[^0-9.-]+/g,"")) || 0;
-            const cellB = parseFloat(rowB.cells[columnIndex].textContent.replace(/[^0-9.-]+/g,"")) || 0;
-            return cellA - cellB;
-        });
-    } else {
-        sortedRows = rows.sort((rowA, rowB) => {
-            const cellA = rowA.cells[columnIndex].textContent.toLowerCase();
-            const cellB = rowB.cells[columnIndex].textContent.toLowerCase();
-            if (cellA < cellB) return -1;
-            if (cellA > cellB) return 1;
-            return 0;
-        });
-    }
+        // Adjust for numeric columns including negative values and currency symbols
+        if (column === 'amount' || column === 'totalAmount') {
+            valA = parseFloat(valA.replace(/[^0-9.-]+/g, ""));
+            valB = parseFloat(valB.replace(/[^0-9.-]+/g, ""));
+        } else if (column === 'date') {
+            valA = new Date(valA);
+            valB = new Date(valB);
+        }
 
-    // Toggle sorting direction
-    const currentHeader = table.querySelector(`thead th:nth-child(${columnIndex + 1})`);
-    const isAscending = currentHeader.classList.contains('asc');
-    sortedRows.reverse(); // Reverse the order
+        // Handle sorting logic
+        if (sortOrder[column] === 'asc') {
+            return valA > valB ? 1 : -1;
+        } else {
+            return valA < valB ? 1 : -1;
+        }
+    });
 
-    // Remove existing rows
-    table.querySelector('tbody').innerHTML = '';
+    // Toggle sort order for next click
+    sortOrder[column] = sortOrder[column] === 'asc' ? 'desc' : 'asc';
 
-    // Re-attach sorted rows
-    sortedRows.forEach(row => table.querySelector('tbody').appendChild(row));
+    // Apply sorting to the table
+    const tbody = document.querySelector('#billsTable tbody');
+    tbody.innerHTML = '';
+    rows.forEach(row => tbody.appendChild(row));
+    tbody.appendChild(totalRow); // Re-append the total row at the end
 
-    // Re-add the total row at the end
-    const totalRow = document.querySelector('.total-row');
-    table.querySelector('tbody').appendChild(totalRow);
-
-    // Update sort arrow direction
-    table.querySelectorAll('th').forEach(th => th.classList.remove('asc', 'desc'));
-    currentHeader.classList.add(isAscending ? 'desc' : 'asc');
+    // Update sort arrows
+    updateSortArrows(column);
 }
 
 function getColumnIndex(column) {
@@ -308,11 +293,13 @@ function getColumnIndex(column) {
         case 'frequency': return 3;
         case 'date': return 4;
         case 'tag': return 5;
+        case 'totalAmount': return 6; // Correct column index for Yearly Total
+        default: return 0;
     }
 }
 
 function updateSortArrows(column) {
-    const columns = ['name', 'amount', 'frequency', 'date', 'tag'];
+    const columns = ['name', 'amount', 'frequency', 'date', 'tag', 'totalAmount'];
     columns.forEach(col => {
         const arrow = document.getElementById(`${col}SortArrow`);
         arrow.textContent = col === column ? (sortOrder[column] === 'asc' ? '↑' : '↓') : '↑';
@@ -975,7 +962,7 @@ function filterByTag() {
                                     <th onclick="sortTable('frequency')">Frequency <span id="frequencySortArrow">↑</span></th>
                                     <th onclick="sortTable('date')">Due Date <span id="dateSortArrow">↑</span></th>
                                     <th onclick="sortTable('tag')">Tag <span id="tagSortArrow">↑</span></th>
-                                    <th class="right-align">Yearly Total</th>
+                                    <th class="right-align" onclick="sortTable('totalAmount')">Yearly Total <span id="totalAmountSortArrow">↑</span></th>
                                     <th>Actions</th>
                                 </tr>
                             </thead>
