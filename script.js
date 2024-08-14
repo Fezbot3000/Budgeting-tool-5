@@ -187,9 +187,14 @@ document.getElementById('billsForm').addEventListener('submit', function(event) 
     closeModal();
 });
 
+
 function updateBillsTable() {
     const billsTable = document.getElementById('billsTable');
     let totalYearlyAmount = 0;
+
+    // Use adjusted dates for display purposes only
+    const adjustedBills = getAdjustedBillDates(bills);
+
     billsTable.innerHTML = `<thead>
                                 <tr>
                                     <th>Name</th>
@@ -202,7 +207,7 @@ function updateBillsTable() {
                                 </tr>
                             </thead>
                             <tbody></tbody>`;
-    const sortedBills = sortBillsByDate(bills);
+    const sortedBills = sortBillsByDate(adjustedBills);
     sortedBills.forEach((bill, index) => {
         const yearlyAmount = calculateYearlyAmount(bill.amount, bill.frequency);
         totalYearlyAmount += yearlyAmount;
@@ -222,14 +227,6 @@ function updateBillsTable() {
 
     // Automatically update the income table after updating bills
     updateIncomeTable(payFrequency, income);
-}
-
-function removeBill(index) {
-    bills.splice(index, 1);
-    saveToLocalStorage();
-    updateBillsTable();
-    updateAccordion(); // Ensure pay cycles are updated
-    calculateYearlyBills();
 }
 
 function toggleBillList() {
@@ -292,6 +289,7 @@ function adjustDate(date) {
     return date;
 }
 
+// Ensure that the original `bills` array remains unmodified during the pay cycle view update
 function updateAccordion() {
     const accordionContainer = document.getElementById('accordionContainer');
     accordionContainer.innerHTML = ''; // Clear existing content
@@ -307,7 +305,7 @@ function updateAccordion() {
 
             let cycleTotal = 0,
                 cycleBills = '';
-            const sortedBills = sortBillsByDate(bills);
+            const sortedBills = sortBillsByDate(bills);  // Use original bills
             sortedBills.forEach(bill => {
                 cycleBills += getBillRowsForCycle(bill, dates);
                 cycleTotal += getBillTotalForCycle(bill, dates);
@@ -981,22 +979,17 @@ function autocompleteTag() {
 
 document.getElementById('billTag').addEventListener('input', autocompleteTag);
 
-// New function to update bill due dates
-function updateBillDueDates() {
+function getAdjustedBillDates(bills) {
     const today = new Date();
-
-    bills.forEach(bill => {
-        let billDueDate = new Date(bill.date);
+    return bills.map(bill => {
+        let adjustedBill = { ...bill };
+        let billDueDate = new Date(adjustedBill.date);
 
         while (billDueDate < today) {
-            billDueDate = getNextBillDate(billDueDate, bill.frequency);
+            billDueDate = getNextBillDate(billDueDate, adjustedBill.frequency);
         }
 
-        // Update the bill's date to the next valid due date
-        bill.date = billDueDate.toISOString().split('T')[0];
+        adjustedBill.date = billDueDate.toISOString().split('T')[0];
+        return adjustedBill;
     });
-
-    // Save updated bills back to localStorage
-    saveToLocalStorage();
-    updateBillsTable();
 }
