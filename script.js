@@ -19,6 +19,15 @@ const frequencyMultipliers = {
     "one-off": 0 // No multiplier for one-off bills
 };
 
+// Sorting state
+let sortOrder = {
+    name: 'asc',
+    amount: 'asc',
+    frequency: 'asc',
+    date: 'asc',
+    tag: 'asc'
+};
+
 function saveToLocalStorage() {
     localStorage.setItem('bills', JSON.stringify(bills));
     localStorage.setItem('payFrequency', payFrequency);
@@ -103,10 +112,6 @@ function toggleViewMode() {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-    // Comment out or remove this line if it's not needed anymore
-    // updateBillDueDates();
-
-    // Other initialization code...
     const savedViewMode = localStorage.getItem('viewMode') || 'payCycle';
     document.getElementById('viewMode').value = savedViewMode;
     toggleViewMode();
@@ -142,6 +147,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Check if the browser supports service workers and register one
     if ('serviceWorker' in navigator) {
+        // Comment out this block during development
         navigator.serviceWorker.register('/service-worker.js')
             .then(registration => {
                 console.log('Service Worker registered with scope:', registration.scope);
@@ -150,6 +156,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 console.log('Service Worker registration failed:', error);
             });
     }
+
+    // Add event listeners to table headers after the table is updated
+    document.querySelectorAll('#billsTable th').forEach((th, index) => {
+        const isNumeric = index === 1 || index === 5; // For Amount and Yearly Total columns
+        th.addEventListener('click', () => sortTable(index, isNumeric));
+    });
 });
 
 document.getElementById('billsForm').addEventListener('submit', function(event) {
@@ -201,11 +213,11 @@ function updateBillDueDatesForDisplay() {
     });
 }
 
+// Updated `updateBillsTable` function to include class for the total row
 function updateBillsTable() {
     const billsTable = document.getElementById('billsTable');
     let totalYearlyAmount = 0;
 
-    // Use the adjusted dates for display only
     const adjustedBills = updateBillDueDatesForDisplay();
 
     billsTable.innerHTML = `<thead>
@@ -236,24 +248,85 @@ function updateBillsTable() {
         </tr>`;
     });
 
-    const totalRow = `<tr><td colspan="5" class="total-label">Total Yearly Amount:</td><td class="right-align total-amount">-$${totalYearlyAmount.toFixed(2)}</td><td></td></tr>`;
+    const totalRow = `<tr class="total-row"><td colspan="5" class="total-label">Total Yearly Amount:</td><td class="right-align total-amount">-$${totalYearlyAmount.toFixed(2)}</td><td></td></tr>`;
     billsTable.querySelector('tbody').insertAdjacentHTML('beforeend', totalRow);
 
-    // Automatically update the income table after updating bills
-    updateIncomeTable(payFrequency, income);
+    // Add event listeners to table headers after the table is updated
+    document.querySelectorAll('#billsTable th').forEach((th, index) => {
+        const isNumeric = index === 1 || index === 5; // For Amount and Yearly Total columns
+        th.addEventListener('click', () => sortTable(index, isNumeric));
+    });
+}
+
+// Sorting function with improvements
+function sortTable(columnIndex, isNumeric = false) {
+    const table = document.getElementById('billsTable');
+    const rows = Array.from(table.querySelectorAll('tbody > tr:not(.total-row)')); // Exclude the total row
+
+    let sortedRows;
+
+    if (isNumeric) {
+        sortedRows = rows.sort((rowA, rowB) => {
+            const cellA = parseFloat(rowA.cells[columnIndex].textContent.replace(/[^0-9.-]+/g,"")) || 0;
+            const cellB = parseFloat(rowB.cells[columnIndex].textContent.replace(/[^0-9.-]+/g,"")) || 0;
+            return cellA - cellB;
+        });
+    } else {
+        sortedRows = rows.sort((rowA, rowB) => {
+            const cellA = rowA.cells[columnIndex].textContent.toLowerCase();
+            const cellB = rowB.cells[columnIndex].textContent.toLowerCase();
+            if (cellA < cellB) return -1;
+            if (cellA > cellB) return 1;
+            return 0;
+        });
+    }
+
+    // Toggle sorting direction
+    const currentHeader = table.querySelector(`thead th:nth-child(${columnIndex + 1})`);
+    const isAscending = currentHeader.classList.contains('asc');
+    sortedRows.reverse(); // Reverse the order
+
+    // Remove existing rows
+    table.querySelector('tbody').innerHTML = '';
+
+    // Re-attach sorted rows
+    sortedRows.forEach(row => table.querySelector('tbody').appendChild(row));
+
+    // Re-add the total row at the end
+    const totalRow = document.querySelector('.total-row');
+    table.querySelector('tbody').appendChild(totalRow);
+
+    // Update sort arrow direction
+    table.querySelectorAll('th').forEach(th => th.classList.remove('asc', 'desc'));
+    currentHeader.classList.add(isAscending ? 'desc' : 'asc');
+}
+
+function getColumnIndex(column) {
+    switch (column) {
+        case 'name': return 1;
+        case 'amount': return 2;
+        case 'frequency': return 3;
+        case 'date': return 4;
+        case 'tag': return 5;
+    }
+}
+
+function updateSortArrows(column) {
+    const columns = ['name', 'amount', 'frequency', 'date', 'tag'];
+    columns.forEach(col => {
+        const arrow = document.getElementById(`${col}SortArrow`);
+        arrow.textContent = col === column ? (sortOrder[column] === 'asc' ? '↑' : '↓') : '↑';
+    });
 }
 
 function removeBill(index) {
-    // Show a confirmation dialog
     const confirmed = confirm("Are you sure you want to delete this bill? This action cannot be undone.");
-
-    // If the user confirms, proceed with deletion
     if (confirmed) {
-        bills.splice(index, 1);  // Remove the bill from the array
-        saveToLocalStorage();    // Save the updated bills array
-        updateBillsTable();      // Update the UI
-        updateAccordion();       // Ensure pay cycles are updated
-        calculateYearlyBills();  // Recalculate yearly bills
+        bills.splice(index, 1);
+        saveToLocalStorage();
+        updateBillsTable();
+        updateAccordion();
+        calculateYearlyBills();
     }
 }
 
@@ -274,7 +347,6 @@ function editBill(index) {
     const bill = bills[index];
 
     if (bill) {
-        // Populate the form fields with the existing bill data
         document.getElementById('billIndex').value = index;
         document.getElementById('billName').value = bill.name;
         document.getElementById('billAmount').value = bill.amount;
@@ -282,10 +354,8 @@ function editBill(index) {
         document.getElementById('billDate').value = bill.date;
         document.getElementById('billTag').value = bill.tag;
 
-        // Change the button text to indicate that the user is editing a bill
         document.getElementById('submitBill').textContent = 'Save';
 
-        // Open the modal to allow the user to edit the bill
         openModal(true);  // Pass true to indicate this is an edit
     } else {
         console.error("Bill not found for index:", index);
@@ -298,7 +368,7 @@ function resetBillForm() {
     document.getElementById('billAmount').value = '';
     document.getElementById('billFrequency').value = '';
     document.getElementById('billDate').value = '';
-    document.getElementById('billTag').value = 'default'; // or whatever default tag you want
+    document.getElementById('billTag').value = 'default';
     document.getElementById('submitBill').textContent = 'Add Bill';
 }
 
@@ -307,7 +377,6 @@ function adjustDate(date) {
     const month = date.getMonth();
     const year = date.getFullYear();
 
-    // Move date to the last valid date of the month if it exceeds the number of days in the month
     const lastDayOfMonth = new Date(year, month + 1, 0).getDate();
 
     if (day > lastDayOfMonth) {
@@ -317,7 +386,6 @@ function adjustDate(date) {
     return date;
 }
 
-// Ensure that the original `bills` array remains unmodified during the pay cycle view update
 function updateAccordion() {
     const accordionContainer = document.getElementById('accordionContainer');
     accordionContainer.innerHTML = ''; // Clear existing content
@@ -333,7 +401,7 @@ function updateAccordion() {
 
             let cycleTotal = 0,
                 cycleBills = '';
-            const sortedBills = sortBillsByDate(bills);  // Use original bills
+            const sortedBills = sortBillsByDate(bills);
             sortedBills.forEach(bill => {
                 cycleBills += getBillRowsForCycle(bill, dates);
                 cycleTotal += getBillTotalForCycle(bill, dates);
@@ -577,10 +645,8 @@ function calculateMonthlyView() {
             }
         });
 
-        // Sort bills by due date within the current month
         billsInMonth.sort((a, b) => a.dueDate - b.dueDate);
 
-        // Add sorted bills to the monthBills string
         billsInMonth.forEach(bill => {
             monthBills += `<tr><td>${bill.name}</td><td>${formatDayOnly(bill.dueDate)}</td><td class="bills negative right-align">-$${bill.amount.toFixed(2)}</td></tr>`;
             monthTotal += bill.amount;
@@ -590,8 +656,6 @@ function calculateMonthlyView() {
         monthlyData.bills.push(monthBills);
         currentDate.setMonth(currentDate.getMonth() + 1);
     }
-
-    console.log(monthlyData); // Log the entire monthlyData object to the console
 
     return monthlyData;
 }
@@ -609,7 +673,6 @@ function getNextBillDate(date, frequency) {
         case 'monthly': 
             date.setMonth(date.getMonth() + 1);
             if (date.getDate() < originalDay) {
-                // Adjust to the last day of the month if the original day doesn't exist
                 date.setDate(new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate());
             }
             break;
@@ -701,7 +764,7 @@ function resetLocalStorage() {
 // Modal functions
 function openModal(isEditMode = false) {
     if (!isEditMode) {
-        resetBillForm();  // Reset form fields only if not in edit mode
+        resetBillForm();
     }
     document.getElementById('billModal').style.display = 'block';
     updateTagDropdown();
@@ -852,7 +915,6 @@ function deleteTag() {
     updateTagDropdown();
     alert("Tag deleted successfully.");
 
-    // Close the tag modal after deletion
     closeTagModal();
 }
 
@@ -887,7 +949,7 @@ function formatDayOnly(date) {
 
     let daySuffix;
     if (day > 3 && day < 21) {
-        daySuffix = 'th'; // 'th' for 4-20
+        daySuffix = 'th';
     } else {
         switch (day % 10) {
             case 1:  daySuffix = "st"; break;
@@ -908,11 +970,11 @@ function filterByTag() {
     let totalYearlyAmount = 0;
     billsTable.innerHTML = `<thead>
                                 <tr>
-                                    <th>Name</th>
-                                    <th class="right-align">Amount</th>
-                                    <th>Frequency</th>
-                                    <th>Due Date</th>
-                                    <th>Tag</th>
+                                    <th onclick="sortTable('name')">Name <span id="nameSortArrow">↑</span></th>
+                                    <th class="right-align" onclick="sortTable('amount')">Amount <span id="amountSortArrow">↑</span></th>
+                                    <th onclick="sortTable('frequency')">Frequency <span id="frequencySortArrow">↑</span></th>
+                                    <th onclick="sortTable('date')">Due Date <span id="dateSortArrow">↑</span></th>
+                                    <th onclick="sortTable('tag')">Tag <span id="tagSortArrow">↑</span></th>
                                     <th class="right-align">Yearly Total</th>
                                     <th>Actions</th>
                                 </tr>
@@ -970,7 +1032,7 @@ function importData(event) {
             payday = data.payday || '';
             viewMode = data.viewMode || 'payCycle';
             darkMode = data.darkMode === true;
-            tags = data.tags || ['default']; // Import tags
+            tags = data.tags || ['default'];
 
             saveToLocalStorage();
             updateBillsTable();
@@ -992,7 +1054,7 @@ function importData(event) {
 function autocompleteTag() {
     const tagInput = document.getElementById('billTag');
     const tagList = document.getElementById('tagList');
-    tagList.innerHTML = ''; // Clear previous suggestions
+    tagList.innerHTML = '';
 
     const inputValue = tagInput.value.toLowerCase();
     if (inputValue) {
@@ -1006,18 +1068,3 @@ function autocompleteTag() {
 }
 
 document.getElementById('billTag').addEventListener('input', autocompleteTag);
-
-function getAdjustedBillDates(bills) {
-    const today = new Date();
-    return bills.map(bill => {
-        let adjustedBill = { ...bill };
-        let billDueDate = new Date(adjustedBill.date);
-
-        while (billDueDate < today) {
-            billDueDate = getNextBillDate(billDueDate, adjustedBill.frequency);
-        }
-
-        adjustedBill.date = billDueDate.toISOString().split('T')[0];
-        return adjustedBill;
-    });
-}
