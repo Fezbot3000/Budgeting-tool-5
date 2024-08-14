@@ -149,10 +149,10 @@ document.addEventListener('DOMContentLoaded', () => {
     if ('serviceWorker' in navigator) {
         navigator.serviceWorker.register('/service-worker.js')
             .then(registration => {
-                console.log('Service Worker registered with scope:', registration.scope);
+                // Registration successful
             })
             .catch(error => {
-                console.log('Service Worker registration failed:', error);
+                // Registration failed
             });
     }
 });
@@ -253,6 +253,31 @@ function sortTable(column) {
     const totalRow = rows.pop(); // Remove the last row (total row) from sorting
 
     rows.sort((a, b) => {
+        let frequencyA = a.querySelector('td:nth-child(3)').textContent.trim(); // Frequency is in the third column
+        let frequencyB = b.querySelector('td:nth-child(3)').textContent.trim();
+
+        let periodA = getPeriodDays(frequencyA);
+        let periodB = getPeriodDays(frequencyB);
+
+        if (column === 'date') {
+            // Extract the due date text from the table cell
+            let dateTextA = a.querySelector(`td:nth-child(${getColumnIndex('date')})`).textContent.trim();
+            let dateTextB = b.querySelector(`td:nth-child(${getColumnIndex('date')})`).textContent.trim();
+
+            // Parse the date strings into Date objects
+            let dateA = parseDateString(dateTextA);
+            let dateB = parseDateString(dateTextB);
+
+            // First, sort by frequency duration
+            if (periodA !== periodB) {
+                return sortOrder[column] === 'asc' ? periodA - periodB : periodB - periodA;
+            }
+            
+            // Then, sort by due date within the same frequency group
+            return sortOrder[column] === 'asc' ? dateA - dateB : dateB - dateA;
+        }
+
+        // Other sorting logic for non-date columns
         let valA = a.querySelector(`td:nth-child(${getColumnIndex(column)})`).textContent.trim();
         let valB = b.querySelector(`td:nth-child(${getColumnIndex(column)})`).textContent.trim();
 
@@ -260,16 +285,12 @@ function sortTable(column) {
         if (column === 'amount' || column === 'totalAmount') {
             valA = parseFloat(valA.replace(/[^0-9.-]+/g, ""));
             valB = parseFloat(valB.replace(/[^0-9.-]+/g, ""));
-        } else if (column === 'date') {
-            valA = new Date(valA);
-            valB = new Date(valB);
         }
 
-        // Handle sorting logic
         if (sortOrder[column] === 'asc') {
             return valA > valB ? 1 : -1;
         } else {
-            return valA < valB ? 1 : -1;
+            return valA < valB ? -1 : 1;
         }
     });
 
@@ -284,6 +305,52 @@ function sortTable(column) {
 
     // Update sort arrows
     updateSortArrows(column);
+}
+
+function parseDateString(dateStr) {
+    // Assuming dateStr is in the format 'Sat 17th Aug - 2024'
+    const parts = dateStr.split(' ');
+
+    if (parts.length < 4) {
+        return new Date(NaN); // Return an invalid date
+    }
+
+    const day = parseInt(parts[1]); // Extract the day
+    const month = parts[2];
+    const year = parseInt(parts[4]);
+
+    const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+    const monthIndex = monthNames.indexOf(month);
+
+    if (monthIndex === -1) {
+        return new Date(NaN); // Return an invalid date
+    }
+
+    return new Date(year, monthIndex, day);
+}
+
+function parseMonthString(monthString) {
+    const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+    return months.indexOf(monthString) + 1;
+}
+
+function getPeriodDays(frequency) {
+    switch (frequency.toLowerCase()) {
+        case 'weekly':
+            return 7;
+        case 'fortnightly':
+            return 14;
+        case 'monthly':
+            return 30;
+        case 'quarterly':
+            return 90;
+        case 'yearly':
+            return 365;
+        case 'one-off':
+            return Number.MAX_SAFE_INTEGER; // One-off events are considered far in the future
+        default:
+            return 0;
+    }
 }
 
 function getColumnIndex(column) {
@@ -302,7 +369,9 @@ function updateSortArrows(column) {
     const columns = ['name', 'amount', 'frequency', 'date', 'tag', 'totalAmount'];
     columns.forEach(col => {
         const arrow = document.getElementById(`${col}SortArrow`);
-        arrow.textContent = col === column ? (sortOrder[column] === 'asc' ? '↑' : '↓') : '↑';
+        if (arrow) {
+            arrow.textContent = col === column ? (sortOrder[column] === 'asc' ? '↑' : '↓') : '↑';
+        }
     });
 }
 
@@ -344,8 +413,6 @@ function editBill(index) {
         document.getElementById('submitBill').textContent = 'Save';
 
         openModal(true);  // Pass true to indicate this is an edit
-    } else {
-        console.error("Bill not found for index:", index);
     }
 }
 
