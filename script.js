@@ -103,15 +103,13 @@ function toggleViewMode() {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-    // Update bill due dates
-    updateBillDueDates();
+    // Comment out or remove this line if it's not needed anymore
+    // updateBillDueDates();
 
-    // Restore the view mode from localStorage
+    // Other initialization code...
     const savedViewMode = localStorage.getItem('viewMode') || 'payCycle';
     document.getElementById('viewMode').value = savedViewMode;
-
-    // Update the UI based on the saved view mode
-    toggleViewMode(); // Call the function to update the UI according to the saved view mode
+    toggleViewMode();
 
     // Restore the state of the bills list visibility
     const billsListHidden = localStorage.getItem('billsListHidden') === 'true';
@@ -187,13 +185,28 @@ document.getElementById('billsForm').addEventListener('submit', function(event) 
     closeModal();
 });
 
+function updateBillDueDatesForDisplay() {
+    const today = new Date();
+    return bills.map(bill => {
+        let displayBill = { ...bill };  // Clone the original bill object
+        let billDueDate = new Date(displayBill.date);
+
+        // Adjust the date forward if it's in the past
+        while (billDueDate < today) {
+            billDueDate = getNextBillDate(billDueDate, displayBill.frequency);
+        }
+
+        displayBill.displayDate = billDueDate.toISOString().split('T')[0];
+        return displayBill;
+    });
+}
 
 function updateBillsTable() {
     const billsTable = document.getElementById('billsTable');
     let totalYearlyAmount = 0;
 
-    // Use adjusted dates for display purposes only
-    const adjustedBills = getAdjustedBillDates(bills);
+    // Use the adjusted dates for display only
+    const adjustedBills = updateBillDueDatesForDisplay();
 
     billsTable.innerHTML = `<thead>
                                 <tr>
@@ -207,6 +220,7 @@ function updateBillsTable() {
                                 </tr>
                             </thead>
                             <tbody></tbody>`;
+
     const sortedBills = sortBillsByDate(adjustedBills);
     sortedBills.forEach((bill, index) => {
         const yearlyAmount = calculateYearlyAmount(bill.amount, bill.frequency);
@@ -215,7 +229,7 @@ function updateBillsTable() {
             <td>${bill.name}</td>
             <td class="bills negative right-align">-$${bill.amount.toFixed(2)}</td>
             <td>${bill.frequency}</td>
-            <td>${formatDate(bill.date)}</td>
+            <td>${formatDate(bill.displayDate)}</td>
             <td>${bill.tag}</td>
             <td class="right-align">-$${yearlyAmount.toFixed(2)}</td>
             <td><button class="secondary-btn" onclick="editBill(${index})">Edit</button> <button class="delete-btn" onclick="removeBill(${index})">Delete</button></td>
@@ -227,6 +241,20 @@ function updateBillsTable() {
 
     // Automatically update the income table after updating bills
     updateIncomeTable(payFrequency, income);
+}
+
+function removeBill(index) {
+    // Show a confirmation dialog
+    const confirmed = confirm("Are you sure you want to delete this bill? This action cannot be undone.");
+
+    // If the user confirms, proceed with deletion
+    if (confirmed) {
+        bills.splice(index, 1);  // Remove the bill from the array
+        saveToLocalStorage();    // Save the updated bills array
+        updateBillsTable();      // Update the UI
+        updateAccordion();       // Ensure pay cycles are updated
+        calculateYearlyBills();  // Recalculate yearly bills
+    }
 }
 
 function toggleBillList() {
