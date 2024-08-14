@@ -20,7 +20,7 @@ h1 {
 }
 
 .container {
-    max-width: 924px;
+    max-width: 980px;
     margin: 0 auto;
     padding: 20px;
     background: #fff;
@@ -181,7 +181,16 @@ button[type="submit"]:hover {
    Table Styles
 ======================================== */
 .table-container {
-    margin-top: 20px;
+    max-width: 100%;
+    overflow-x: auto; /* Allows horizontal scrolling if needed */
+    white-space: nowrap; /* Prevents text from wrapping */
+    -webkit-overflow-scrolling: touch; /* Smooth scrolling on touch devices */
+}
+
+.table-container table {
+    width: 100%;
+    min-width: 100%; /* Ensures the table is at least as wide as its container */
+    border-collapse: collapse;
 }
 
 table {
