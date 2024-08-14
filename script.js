@@ -441,6 +441,11 @@ function adjustDate(date) {
 }
 
 function updateAccordion() {
+    // Track the open/closed state of each panel before re-rendering
+    const accordionStates = Array.from(document.querySelectorAll('.accordion-btn')).map(button => {
+        return button.nextElementSibling.style.display === 'block';
+    });
+
     const accordionContainer = document.getElementById('accordionContainer');
     accordionContainer.innerHTML = ''; // Clear existing content
 
@@ -528,7 +533,7 @@ function updateAccordion() {
     }
 
     // Re-attach event listeners to newly created accordion buttons
-    document.querySelectorAll('.accordion-btn').forEach(button => {
+    document.querySelectorAll('.accordion-btn').forEach((button, index) => {
         button.addEventListener('click', function () {
             const panel = this.nextElementSibling;
             if (panel.style.display === 'block') {
@@ -539,6 +544,11 @@ function updateAccordion() {
                 this.querySelector('.toggle-text').textContent = 'Hide';
             }
         });
+
+        // Restore the previous open/closed state
+        if (accordionStates[index]) {
+            button.click(); // Programmatically click to open the panel if it was open
+        }
     });
 
     // Update the chart with the new data
