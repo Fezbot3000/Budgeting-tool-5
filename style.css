@@ -528,7 +528,7 @@ body.dark-mode {
 .dark-mode table {
     background-color: #171717;
     color: #e0e0e0;
-}
+} 
 
 .dark-mode th, td {
     transition: background-color 0.3s, color 0.3s;
@@ -756,6 +756,10 @@ body.dark-mode #billModal .modal-footer button {
 
 body.dark-mode #billModal .modal-footer button:hover {
     background-color: #666;
+}
+
+.dark-mode .panel-content table td {
+    color: #fff;
 }
 
 /* ========================================
