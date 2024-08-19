@@ -86,7 +86,7 @@ button {
 }
 
 button:hover {
-//*    background-color: #1565c0; *///
+    background-color: #1565c0;
 }
 
 button[type="submit"] {
@@ -483,7 +483,7 @@ body.dark-mode {
     color: #e0e0e0;
 }
 
-.dark-mode .accordion-btn:focus .accordion-btn:hover{
+.dark-mode .accordion-btn:focus .accordion-btn:hover {
     background-color: #1e1e1e;
     color: #e0e0e0;
 }
@@ -491,6 +491,50 @@ body.dark-mode {
 /* ========================================
    Media Queries
 ======================================== */
+.material-symbols-outlined {
+    font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    display: none; /* Hide the icon by default */
+}
+
+@media (max-width: 768px) {
+    .cycle-info span.left-align {
+        display: none;
+    }
+
+    #incomeTable td:first-child {
+        max-width: 100px; /* Set a maximum width for the first column */
+        white-space: normal; /* Allow text to wrap */
+        word-wrap: break-word; /* Ensure long words break to the next line */
+        word-break: break-word;
+        overflow-wrap: break-word;
+    }
+
+    #incomeTable {
+        table-layout: fixed; /* Ensure the table respects the fixed widths */
+        width: 100%;
+    }
+
+    #incomeTable td {
+        padding: 8px;
+        text-align: left;
+        vertical-align: top; /* Align the text to the top */
+    }
+
+    /* Hide the third column in the table */
+    #incomeTable td:last-child,
+    #incomeTable th:last-child {
+        display: none;
+    }
+
+    .edit-income-text {
+        display: none; /* Hide the text on mobile */
+    }
+
+    .material-symbols-outlined {
+        display: inline-block; /* Show the icon on mobile */
+    }
+}
+
 @media (max-width: 940px) {
     #billsTable {
         display: block;
@@ -505,7 +549,8 @@ body.dark-mode {
         border-collapse: collapse;
     }
 
-    #billsTable th, #billsTable td {
+    #billsTable th,
+    #billsTable td {
         padding-top: 20px;
         padding-bottom: 20px;
     }
@@ -614,7 +659,6 @@ body.dark-mode #billModal .modal-footer button:hover {
     background-color: #666;
 }
 
-
 /* ========================================
    New Styles for Updated Design
 ======================================== */
@@ -701,7 +745,6 @@ input[type="checkbox"] {
     margin-right: 10px;
 }
 
-
 .panel-content table {
     width: 100%;
     border-collapse: collapse;
@@ -724,8 +767,7 @@ input[type="checkbox"] {
 
 .edit-income-container {
     display: flex;
-    justify-content: flex-end;
-    width: 100%;
+    align-items: center;
 }
 
 .edit-income-container buttons {
