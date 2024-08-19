@@ -87,6 +87,11 @@ function goToStep2() {
         return;
     }
 
+    if (!payFrequency || !payday) {
+        alert("Please ensure all fields are filled out correctly.");
+        return;
+    }
+
     updateIncomeTable(payFrequency, income);
     saveToLocalStorage();
 
@@ -112,31 +117,23 @@ function toggleViewMode() {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-    const savedViewMode = localStorage.getItem('viewMode') || 'payCycle';
-    document.getElementById('viewMode').value = savedViewMode;
-    toggleViewMode();
+    // Don't run these functions until the necessary data is available
+    if (payFrequency && payday) {
+        toggleViewMode();
+        updateBillsTable();
+        deleteOldPayCycles();
+        updateAccordion();
 
-    // Restore the state of the bills list visibility
-    const billsListHidden = localStorage.getItem('billsListHidden') === 'true';
-    const billsTable = document.getElementById('billsTable');
-    const filterByTag = document.querySelector('.filter-by-tag');
-
-    if (billsListHidden) {
-        billsTable.classList.add('hidden');
-        filterByTag.classList.add('hidden');
+        if (income > 0) {
+            updateIncomeTable(payFrequency, income);
+            document.getElementById('step1').classList.add('hidden');
+            document.getElementById('step2').classList.remove('hidden');
+        }
     } else {
-        billsTable.classList.remove('hidden');
-        filterByTag.classList.remove('hidden');
+        console.log("Waiting for user input on Step 1...");
     }
 
     // Other initializations...
-    if (income) {
-        updateIncomeTable(payFrequency, income);
-        document.getElementById('step1').classList.add('hidden');
-        document.getElementById('step2').classList.remove('hidden');
-    }
-    updateBillsTable();
-    deleteOldPayCycles();
     updateTagDropdown();
 
     // Set dark mode if enabled
@@ -559,22 +556,29 @@ function sortBillsByDate(bills) {
     return bills.sort((a, b) => new Date(a.date) - new Date(b.date));
 }
 
-function getCycleLength(frequency, referenceDate) {
+function getCycleLength(frequency) {
+    let referenceDate = new Date(localStorage.getItem('payday'));
+
+    // Check if frequency or referenceDate is invalid
+    if (!frequency || isNaN(referenceDate.getTime())) {
+        console.error("Invalid frequency or referenceDate passed to getCycleLength:", frequency, referenceDate);
+        return 0; // Return 0 or some other appropriate default value
+    }
+
     switch (frequency) {
         case 'weekly': 
             return 7;
         case 'fortnightly': 
             return 14;
         case 'monthly': 
-            const currentMonth = referenceDate.getMonth();
-            const currentYear = referenceDate.getFullYear();
-            return new Date(currentYear, currentMonth + 1, 0).getDate();
+            return new Date(referenceDate.getFullYear(), referenceDate.getMonth() + 1, 0).getDate();
         case 'quarterly': 
             return 90; // Average days in a quarter
         case 'yearly': 
             return 365;
         default: 
-            return 0;
+            console.error("Invalid frequency passed to getCycleLength:", frequency);
+            return 0; // Return 0 or some other appropriate default value
     }
 }
 
