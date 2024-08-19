@@ -90,23 +90,23 @@ button:hover {
 }
 
 button[type="submit"] {
-    background-color: #007bff;
+    background-color: #000;
     color: #fff;
     padding: 10px 20px;
     font-size: 14px;
 }
 
 button[type="submit"]:hover {
-    background-color: #0056b3;
+    background-color: #2fa6ff;
 }
 
 .primary-btn {
-    background-color: #007bff;
+    background-color: #000;
     color: #fff;
 }
 
 .primary-btn:hover {
-    background-color: #0056b3;
+    background-color: #2FA6FF;
 }
 
 .secondary-btn {
@@ -118,8 +118,7 @@ button[type="submit"]:hover {
 }
 
 .secondary-btn:hover {
-    color: white;
-    background-color: #007bff;
+    color: #000;
 }
 
 .delete-btn {
@@ -388,7 +387,6 @@ tr:nth-child(odd) {
     background-color: #fff;
     margin: 5% auto;
     padding: 20px;
-    border: 1px solid #888;
     width: 80%;
     max-width: 500px;
     border-radius: 8px;
@@ -556,17 +554,7 @@ body.dark-mode {
     width: 200px; /* Adjust width as needed */
 }
 
-.primary-btn {
-    background-color: #007bff;
-    color: #fff;
-}
-
-.primary-btn:hover {
-    background-color: #0056b3;
-}
-
-.reset-btn, .dark-mode-btn {
-    background-color: #f44336;
+.reset-btn, {
     color: #fff;
     border: none;
     padding: 10px 20px;
@@ -576,7 +564,7 @@ body.dark-mode {
 }
 
 .reset-btn:hover, .dark-mode-btn:hover {
-    background-color: #d32f2f;
+    color: #d32f2f;
 }
 
 /* Dark Mode Styles */
@@ -672,7 +660,6 @@ body.dark-mode #billModal .modal-footer button:hover {
    Accordion Button Styles
 ======================================== */
 .accordion-btn {
-    border: 1px solid #ddd;
     width: 100%;
     text-align: left;
     padding: 20px;
@@ -683,7 +670,6 @@ body.dark-mode #billModal .modal-footer button:hover {
     margin-bottom: 10px;
     cursor: pointer;
     appearance: none;
-    background-color: #f5f5f5; /* Explicit background color */
     color: #333; /* Explicit text color */
 }
 
@@ -704,6 +690,17 @@ body.dark-mode #billModal .modal-footer button:hover {
     margin-bottom: 10px;
     overflow: hidden;
 }
+
+.paid td {
+    text-decoration: line-through;
+    color: grey;
+}
+
+input[type="checkbox"] {
+    transform: scale(1.2);
+    margin-right: 10px;
+}
+
 
 .panel-content table {
     width: 100%;
@@ -756,4 +753,13 @@ body.dark-mode #billModal .modal-footer button:hover {
 
 #billsTable th {
     font-weight: bold;
+}
+
+#divideBillCheckbox {
+    -webkit-appearance: checkbox; /* Ensure checkbox is displayed correctly in Webkit browsers */
+    -moz-appearance: checkbox;    /* Ensure checkbox is displayed correctly in Firefox */
+    appearance: checkbox;         /* Standard appearance */
+    width: auto;                  /* Ensure it doesn’t take up unnecessary space */
+    height: auto;
+    margin-right: 5px;            /* Add some space between the checkbox and the label text */
 }
