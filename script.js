@@ -1101,6 +1101,9 @@ function importData(event) {
             saveToLocalStorage();
             updateBillsTable();
             updateAccordion();
+            updateTagDropdown();
+
+            // Set dark mode if enabled
             if (darkMode) {
                 document.body.classList.add('dark-mode');
                 document.querySelector('.container').classList.add('dark-mode');
@@ -1109,7 +1112,15 @@ function importData(event) {
                 document.querySelector('.container').classList.remove('dark-mode');
             }
 
-            updateIncomeTable(payFrequency, income);
+            // Update the income table after import
+            if (income > 0 && payFrequency) {
+                updateIncomeTable(payFrequency, income);
+                // Automatically navigate to step 2
+                document.getElementById('step1').classList.add('hidden');
+                document.getElementById('step2').classList.remove('hidden');
+            } else {
+                alert("Import failed: Income or pay frequency is missing.");
+            }
         };
         reader.readAsText(file);
     }
