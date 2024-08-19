@@ -24,7 +24,7 @@ h1, h2, h3, h4, h5, h6, p, a, button, input, select, label, th, td, .accordion-b
     max-width: 980px;
     margin: 0 auto;
     padding: 20px;
-    background: #f9f9f9;
+    background: #F5F5F7;
     border-radius: 8px;
     transition: background-color 0.3s, color 0.3s;
 }
@@ -251,9 +251,6 @@ tr:nth-child(odd) {
     margin-bottom: 10px;
 }
 
-.bill-summary-header .view-mode {
-    margin-right: 0;
-}
 
 /* ========================================
    Accordion Styles
@@ -297,22 +294,50 @@ tr:nth-child(odd) {
 /* ========================================
    Dropdown Styles
 ======================================== */
-.view-mode, .filter-by-tag {
+
+.filter-by-tag {
+    position: relative;
     display: flex;
-    align-items: center;
+    justify-content: flex-end;
 }
 
-.view-mode label, .filter-by-tag label {
+.filter-by-tag label {
     margin-right: 5px;
     font-weight: bold;
+    text-align: right; /* Align label text to the right */
 }
 
-.view-mode select, .filter-by-tag select {
-    padding: 12px;
+.filter-by-tag select {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background-color: #ffffff;
+    border: 1px solid #E6E6E6;
     border-radius: 4px;
+    padding: 10px 40px 10px 10px;
     font-size: 16px;
+    box-shadow: inset 0px 0px 4px rgba(0, 0, 0, 0.15);
+    cursor: pointer;
+    outline: none;
     text-align: right;
-    margin-left: 10px;
+    transition: background-color 0.3s, box-shadow 0.3s;
+    width: auto; /* Adjust to fit the content */
+    max-width: 220px; /* Set a maximum width */
+    min-width: 150px; /* Set a minimum width */
+}
+
+.filter-by-tag::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    right: 15px;
+    width: 0;
+    height: 0;
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-top: 5px solid #000;
+    transform: translateY(-50%);
+    pointer-events: none;
 }
 
 .view-mode {
@@ -332,7 +357,7 @@ tr:nth-child(odd) {
     -webkit-appearance: none;
     -moz-appearance: none;
     background-color: #ffffff;
-    border: 1px solid #ccc;
+    border: 1px solid #E6E6E6;
     border-radius: 4px;
     padding: 10px 40px 10px 10px;
     font-size: 16px;
@@ -344,10 +369,6 @@ tr:nth-child(odd) {
     width: auto; /* Adjust to fit the content */
     max-width: 220px; /* Set a maximum width */
     min-width: 150px; /* Set a minimum width */
-}
-
-.view-mode select:hover {
-    box-shadow: inset 0px 0px 6px rgba(0, 0, 0, 0.25); /* Enhance shadow on hover */
 }
 
 .view-mode::after {
@@ -391,48 +412,6 @@ tr:nth-child(odd) {
     align-items: center;
     margin-top: 15px;
 }
-
-.filter-by-tag {
-    position: relative;
-    display: flex;
-    align-items: center;
-}
-
-.filter-by-tag select {
-    appearance: none;
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    background-color: #ffffff;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    padding: 10px 40px 10px 10px;
-    font-size: 16px;
-    box-shadow: inset 0px 0px 4px rgba(0, 0, 0, 0.15);
-    cursor: pointer;
-    outline: none;
-    text-align: right;
-    transition: background-color 0.3s, box-shadow 0.3s;
-    width: auto; /* Adjust to fit the content */
-    max-width: 200px; /* Set a maximum width */
-    min-width: 150px; /* Set a minimum width */
-}
-
-.filter-by-tag::after {
-    content: '';
-    position: absolute;
-    top: 50%;
-    right: 15px;
-    width: 0;
-    height: 0;
-    border-left: 5px solid transparent;
-    border-right: 5px solid transparent;
-    border-top: 5px solid #000;
-    transform: translateY(-50%);
-    pointer-events: none;
-}
-
-
-
 
 /* ========================================
    Chart Styles
@@ -679,7 +658,6 @@ body.dark-mode {
         width: 100%;
         display: flex;
         justify-content: flex-end;
-        padding-bottom: 10px;
     }
 }
 
@@ -760,6 +738,11 @@ body.dark-mode #billModal .modal-footer button:hover {
 
 .dark-mode .panel-content table td {
     color: #fff;
+}
+
+.dark-mode .primary-btn {
+    background-color: #fff;
+    color: #333;
 }
 
 /* ========================================
