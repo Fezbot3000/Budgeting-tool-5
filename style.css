@@ -9,10 +9,11 @@ body {
     background-color: #f5f5f5;
     font-size: 16px;
     transition: background-color 0.3s, color 0.3s;
+    text-transform: lowercase;
 }
 
-h1 {
-    margin: 20px 0;
+h1, h2, h3, h4, h5, h6, p, a, button, input, select, label, th, td, .accordion-btn, .modal-content, .bill-summary-header, .panel-content, .table-container, .right-align, .left-align, .cycle-summary, .income-summary, .reset-btn, .dark-mode-btn, .edit-income, .controls {
+    text-transform: none; /* Disable text-transform for these elements */
 }
 
 .cycle-summary {
@@ -23,7 +24,7 @@ h1 {
     max-width: 980px;
     margin: 0 auto;
     padding: 20px;
-    background: #fff;
+    background: #f9f9f9;
     border-radius: 8px;
     transition: background-color 0.3s, color 0.3s;
 }
@@ -86,7 +87,7 @@ button {
 }
 
 button:hover {
-    background-color: #1565c0;
+    background-color: #fff;
 }
 
 button[type="submit"] {
@@ -176,6 +177,17 @@ button[type="submit"]:hover {
     padding-right: 30px;
 }
 
+select {
+    box-shadow: inset 0px 0px 3px rgba(0, 0, 0, 0.20);
+    border: none;
+    padding: 15px;
+    background-color: #ffffff;
+    border-radius: 6px;
+    font-size: 16px;
+    appearance: none;
+}
+
+
 /* ========================================
    Table Styles
 ======================================== */
@@ -210,10 +222,6 @@ th {
     color: #333;
     font-weight: 500;
     padding: 12px;
-}
-
-tr:nth-child(even) {
-    background-color: #f9f9f9; /* Subtle grey for every second row */
 }
 
 tr:nth-child(odd) {
@@ -301,7 +309,6 @@ tr:nth-child(odd) {
 
 .view-mode select, .filter-by-tag select {
     padding: 12px;
-    border: 1px solid #ccc;
     border-radius: 4px;
     font-size: 16px;
     text-align: right;
@@ -309,11 +316,9 @@ tr:nth-child(odd) {
 }
 
 .view-mode {
+    position: relative;
     display: flex;
     justify-content: flex-end;
-    align-items: center;
-    margin-top: 20px;
-    text-align: right; /* Ensure text alignment within the container */
 }
 
 .view-mode label {
@@ -323,12 +328,40 @@ tr:nth-child(odd) {
 }
 
 .view-mode select {
-    padding: 12px;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background-color: #ffffff;
     border: 1px solid #ccc;
     border-radius: 4px;
+    padding: 10px 40px 10px 10px;
     font-size: 16px;
+    box-shadow: inset 0px 0px 4px rgba(0, 0, 0, 0.15);
+    cursor: pointer;
+    outline: none;
     text-align: right;
-    margin-left: 10px;
+    transition: background-color 0.3s, box-shadow 0.3s;
+    width: auto; /* Adjust to fit the content */
+    max-width: 220px; /* Set a maximum width */
+    min-width: 150px; /* Set a minimum width */
+}
+
+.view-mode select:hover {
+    box-shadow: inset 0px 0px 6px rgba(0, 0, 0, 0.25); /* Enhance shadow on hover */
+}
+
+.view-mode::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    right: 15px;
+    width: 0;
+    height: 0;
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-top: 5px solid #000;
+    transform: translateY(-50%);
+    pointer-events: none;
 }
 
 /* ========================================
@@ -358,6 +391,48 @@ tr:nth-child(odd) {
     align-items: center;
     margin-top: 15px;
 }
+
+.filter-by-tag {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.filter-by-tag select {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background-color: #ffffff;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    padding: 10px 40px 10px 10px;
+    font-size: 16px;
+    box-shadow: inset 0px 0px 4px rgba(0, 0, 0, 0.15);
+    cursor: pointer;
+    outline: none;
+    text-align: right;
+    transition: background-color 0.3s, box-shadow 0.3s;
+    width: auto; /* Adjust to fit the content */
+    max-width: 200px; /* Set a maximum width */
+    min-width: 150px; /* Set a minimum width */
+}
+
+.filter-by-tag::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    right: 15px;
+    width: 0;
+    height: 0;
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-top: 5px solid #000;
+    transform: translateY(-50%);
+    pointer-events: none;
+}
+
+
+
 
 /* ========================================
    Chart Styles
@@ -479,13 +554,27 @@ body.dark-mode {
 }
 
 .dark-mode .accordion-btn {
-    background: #1e1e1e;
+    background: #fff;
     color: #e0e0e0;
 }
 
 .dark-mode .accordion-btn:focus .accordion-btn:hover {
     background-color: #1e1e1e;
     color: #e0e0e0;
+}
+
+#incomeTable td:first-child {
+    text-align: left; /* Keep the first column left-aligned */
+}
+
+#incomeTable td:nth-child(2),
+#incomeTable td:nth-child(3),
+#incomeTable th:nth-child(2),
+#incomeTable th:nth-child(3) {
+    text-align: right; /* Right-align the Amount and % of income columns */
+    padding: 8px;
+    padding-right: 20px;
+    vertical-align: top;
 }
 
 /* ========================================
@@ -516,6 +605,7 @@ body.dark-mode {
 
     #incomeTable td {
         padding: 8px;
+        padding-left: 20px;
         text-align: left;
         vertical-align: top; /* Align the text to the top */
     }
@@ -664,11 +754,11 @@ body.dark-mode #billModal .modal-footer button:hover {
 ======================================== */
 .cycle-info {
     display: flex;
-    justify-content: space-between;
+    justify-content: center; /* Center the content horizontally */
     align-items: center;
     padding: 10px 0;
     margin-bottom: 10px;
-    margin-left: 22px;
+    text-align: center; /* Optional: ensure text is centered */
 }
 
 .cycle-info .left-align {
@@ -681,10 +771,10 @@ body.dark-mode #billModal .modal-footer button:hover {
 }
 
 .income-summary {
-    border: 1px solid #ddd;
     border-radius: 8px;
     padding: 20px;
     margin-bottom: 10px;
+    background-color: #fff;
 }
 
 .income-summary p {
@@ -692,6 +782,7 @@ body.dark-mode #billModal .modal-footer button:hover {
     display: flex;
     justify-content: space-between;
     font-size: 18px;
+    color: #333;
 }
 
 .income-summary span {
@@ -715,6 +806,7 @@ body.dark-mode #billModal .modal-footer button:hover {
     cursor: pointer;
     appearance: none;
     color: #333; /* Explicit text color */
+    background-color: #fff;
 }
 
 .accordion-btn span {
@@ -733,6 +825,7 @@ body.dark-mode #billModal .modal-footer button:hover {
 .panel-content {
     margin-bottom: 10px;
     overflow: hidden;
+    border-radius: 8px;
 }
 
 .paid td {
@@ -753,6 +846,10 @@ input[type="checkbox"] {
 
 .panel-content table td {
     padding: 10px;
+    padding-left: 20px;
+    padding-right: 20px;
+    max-width: 20px;
+    color: #333;
 }
 
 .panel-content table th {
