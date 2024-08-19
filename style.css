@@ -526,18 +526,16 @@ body.dark-mode {
 }
 
 .dark-mode table {
-    background-color: #1e1e1e;
+    background-color: #171717;
     color: #e0e0e0;
 }
 
 .dark-mode th, td {
-    padding: 12px;
     transition: background-color 0.3s, color 0.3s;
 }
 
 .dark-mode th {
     font-weight: 500;
-    padding: 12px;
 }
 
 .dark-mode tr:nth-child(even) {
@@ -545,7 +543,15 @@ body.dark-mode {
 }
 
 .dark-mode tr:nth-child(odd) {
-    background-color: #121212; /* White for the other rows */
+    background-color: #1E1E1E; /* White for the other rows */
+}
+
+.dark-mode .income-summary {
+    background-color: #171717;
+}
+
+.dark-mode .income-summary p {
+    color: #fff;
 }
 
 .dark-mode .modal-content {
@@ -554,7 +560,7 @@ body.dark-mode {
 }
 
 .dark-mode .accordion-btn {
-    background: #fff;
+    background: #171717;
     color: #e0e0e0;
 }
 
@@ -565,6 +571,7 @@ body.dark-mode {
 
 #incomeTable td:first-child {
     text-align: left; /* Keep the first column left-aligned */
+    padding-top: 20px;
 }
 
 #incomeTable td:nth-child(2),
@@ -574,6 +581,7 @@ body.dark-mode {
     text-align: right; /* Right-align the Amount and % of income columns */
     padding: 8px;
     padding-right: 20px;
+    padding-top: 20px;
     vertical-align: top;
 }
 
@@ -642,7 +650,8 @@ body.dark-mode {
     #billsTable th,
     #billsTable td {
         padding-top: 20px;
-        padding-bottom: 20px;
+        padding-left: 20px;
+        padding-right: 20px;
     }
 
     .buttons-container {
@@ -883,11 +892,6 @@ input[type="checkbox"] {
     width: 100%;
     min-width: 600px;
     border-collapse: collapse;
-}
-
-#billsTable th, #billsTable td {
-    padding-top: 20px;
-    padding-bottom: 20px;
 }
 
 #billsTable th {
