@@ -93,7 +93,6 @@
                         </div>
                         <div class="right-buttons">
                             <div class="filter-by-tag">
-                                <label for="tagFilter">Filter by Tag:</label>
                                 <select id="tagFilter" onchange="filterByTag()">
                                     <option value="all">All</option>
                                     <!-- Dynamic content will be inserted here -->
@@ -106,12 +105,12 @@
                     <table id="billsTable" class="your-container-class">
                         <thead>
                             <tr>
-                                <th onclick="sortTable('name')">Name <span id="nameSortArrow">↑</span></th>
-                                <th class="right-align" onclick="sortTable('amount')">Amount <span id="amountSortArrow">↑</span></th>
-                                <th onclick="sortTable('frequency')">Frequency <span id="frequencySortArrow">↑</span></th>
-                                <th onclick="sortTable('date')">Due Date <span id="dateSortArrow">↑</span></th>
-                                <th onclick="sortTable('tag')">Tag <span id="tagSortArrow">↑</span></th>
-                                <th class="right-align" onclick="sortTable('totalAmount')">Yearly Total <span id="totalAmountSortArrow">↑</span></th>
+                                <th onclick="sortTable('name')">Name <span class="sort-arrow asc"></span></th>
+                                <th class="right-align" onclick="sortTable('amount')">Amount <span class="sort-arrow desc"></span></th>
+                                <th onclick="sortTable('frequency')">Frequency <span class="sort-arrow"></span></th>
+                                <th onclick="sortTable('date')">Due Date <span class="sort-arrow"></span></th>
+                                <th onclick="sortTable('tag')">Tag <span class="sort-arrow"></span></th>
+                                <th class="right-align" onclick="sortTable('totalAmount')">Yearly Total <span class="sort-arrow"></span></th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
