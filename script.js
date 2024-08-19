@@ -61,7 +61,7 @@ function updateIncomeTable(payFrequency, income) {
     const billPercentage = yearlyIncome > 0 ? (yearlyBills / yearlyIncome) * 100 : 0;
     const savingsPercentage = yearlyIncome > 0 ? (potentialSavings / yearlyIncome) * 100 : 0;
 
-    document.getElementById('incomeFrequency').className = 'right-align';
+    document.getElementById('incomeFrequency').className = '';
     document.getElementById('incomeFrequency').textContent = payFrequency;
     document.getElementById('incomeAmount').className = 'right-align';
     document.getElementById('incomeAmount').textContent = `$${income.toFixed(2)}`;
@@ -117,6 +117,10 @@ function toggleViewMode() {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+    // Load the saved view mode from localStorage
+    viewMode = localStorage.getItem('viewMode') || 'payCycle'; // Default to 'payCycle' if not set
+    document.getElementById('viewMode').value = viewMode; // Set the dropdown to the saved value
+
     // Don't run these functions until the necessary data is available
     if (payFrequency && payday) {
         toggleViewMode();
@@ -305,7 +309,7 @@ function sortTable(column) {
 }
 
 function parseDateString(dateStr) {
-    // Assuming dateStr is in the format 'Sat 17th Aug - 2024'
+    // Assuming dateStr is in the format 'Sat 17th Aug 2024'
     const parts = dateStr.split(' ');
 
     if (parts.length < 4) {
@@ -314,7 +318,7 @@ function parseDateString(dateStr) {
 
     const day = parseInt(parts[1]); // Extract the day
     const month = parts[2];
-    const year = parseInt(parts[4]);
+    const year = parseInt(parts[3]);
 
     const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
     const monthIndex = monthNames.indexOf(month);
@@ -471,7 +475,6 @@ function updateAccordion() {
             accordionContainer.innerHTML += `
                 <div class="cycle-summary">
                     <div class="cycle-info">
-                        <span class="left-align">Next cycle:</span>
                         <span class="right-align">${formattedStartDate} - ${formattedEndDate}</span>
                     </div>
                     <div class="income-summary">
@@ -480,7 +483,7 @@ function updateAccordion() {
                         <p>Leftover: <span class="${leftoverClass}">$${leftoverAmount.toFixed(2)}</span></p>
                     </div>
                     <button class="accordion-btn">
-                        <span>${formattedStartDate}</span>
+                        <span>Bills list</span>
                         <span class="toggle-text">Show</span>
                     </button>
                     <div class="panel-content" style="display: none;">
@@ -507,7 +510,6 @@ function updateAccordion() {
             accordionContainer.innerHTML += `
                 <div class="cycle-summary">
                     <div class="cycle-info">
-                        <span class="left-align">Next cycle:</span>
                         <span class="right-align">${monthYear}</span>
                     </div>
                     <div class="income-summary">
@@ -516,7 +518,7 @@ function updateAccordion() {
                         <p>Leftover: <span class="${leftoverClass}">$${leftoverAmount.toFixed(2)}</span></p>
                     </div>
                     <button class="accordion-btn">
-                        <span>${monthYear}</span>
+                        <span>Bills list</span>
                         <span class="toggle-text">Show</span>
                     </button>
                     <div class="panel-content" style="display: none;">
@@ -603,17 +605,43 @@ function getBillRowsForCycle(bill, dates) {
     let rows = '', billDueDate = new Date(bill.date);
     if (bill.frequency === 'yearly' || bill.frequency === 'one-off') {
         if (billDueDate >= dates.start && billDueDate <= dates.end) {
-            rows += `<tr><td>${bill.name}</td><td>${formatDate(billDueDate)}</td><td class="bills negative right-align">-$${bill.amount.toFixed(2)}</td></tr>`;
+            rows += `<tr><td>${bill.name}</td><td>${formatDateWithLineBreak(billDueDate)}</td><td class="bills negative right-align">-$${bill.amount.toFixed(2)}</td></tr>`;
         }
     } else {
         while (billDueDate <= dates.end) {
             if (billDueDate >= dates.start && billDueDate <= dates.end) {
-                rows += `<tr><td>${bill.name}</td><td>${formatDate(billDueDate)}</td><td class="bills negative right-align">-$${bill.amount.toFixed(2)}</td></tr>`;
+                rows += `<tr><td>${bill.name}</td><td>${formatDateWithLineBreak(billDueDate)}</td><td class="bills negative right-align">-$${bill.amount.toFixed(2)}</td></tr>`;
             }
             billDueDate = adjustDate(getNextBillDate(billDueDate, bill.frequency));
         }
     }
     return rows;
+}
+
+function formatDateWithLineBreak(date) {
+    const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    
+    const d = new Date(date);
+    const dayOfWeek = days[d.getDay()];
+    const day = d.getDate();
+    const month = d.getMonth();
+    const year = d.getFullYear();
+
+    let daySuffix;
+
+    if (day > 3 && day < 21) {
+        daySuffix = 'th'; // 'th' for 4-20
+    } else {
+        switch (day % 10) {
+            case 1:  daySuffix = "st"; break;
+            case 2:  daySuffix = "nd"; break;
+            case 3:  daySuffix = "rd"; break;
+            default: daySuffix = "th";
+        }
+    }
+
+    return `${dayOfWeek} ${day}${daySuffix} ${months[month]}<br>${year}`;
 }
 
 function getBillTotalForCycle(bill, dates) {
@@ -1009,7 +1037,7 @@ function formatDate(date) {
         }
     }
 
-    return `${dayOfWeek} ${day}${daySuffix} ${months[month]} - ${year}`;
+    return `${dayOfWeek} ${day}${daySuffix} ${months[month]} ${year}`;
 }
 
 function formatDayOnly(date) {
@@ -1144,6 +1172,16 @@ function autocompleteTag() {
             tagList.appendChild(option);
         });
     }
+}
+
+function capitalizeFirstLetterOfSentences() {
+    const elements = document.querySelectorAll('body, h1, h2, h3, h4, h5, h6, p, a, span, li, td, th, button');
+
+    elements.forEach(element => {
+        if (element.innerText) {
+            element.innerText = element.innerText.toLowerCase().replace(/(^\w{1}|\.\s*\w{1})/g, match => match.toUpperCase());
+        }
+    });
 }
 
 document.getElementById('billTag').addEventListener('input', autocompleteTag);
