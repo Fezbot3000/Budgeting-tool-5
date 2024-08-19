@@ -960,7 +960,7 @@ function openManageTagsModal() {
     updateTagDropdown();
 }
 
-function closeTagModal() {
+function closeManageTagsModal() { // This function was missing
     document.getElementById('manageTagsModal').style.display = 'none';
 }
 
@@ -1011,7 +1011,7 @@ function deleteTag() {
     updateTagDropdown();
     alert("Tag deleted successfully.");
 
-    closeTagModal();
+    closeManageTagsModal();
 }
 
 function formatDate(date) {
