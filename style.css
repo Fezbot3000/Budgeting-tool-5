@@ -167,26 +167,25 @@ button[type="submit"]:hover {
     -moz-appearance: none;
     appearance: none;
     box-sizing: border-box;
+    position: relative;
 }
 
+/* Remove the current background image for the dropdown */
 .form-group select {
-    background: url('data:image/svg+xml;utf8,<svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M6 9l6 6 6-6"></path></svg>') no-repeat right 10px center;
-    background-size: 15px;
-    background-position: right 10px center;
-    background-color: #fff;
+    background-image: none;
     padding-right: 30px;
 }
 
-select {
-    box-shadow: inset 0px 0px 3px rgba(0, 0, 0, 0.20);
-    border: none;
-    padding: 15px;
-    background-color: #ffffff;
-    border-radius: 6px;
-    font-size: 16px;
-    appearance: none;
+/* Add the arrow icon using Material Icons */
+.form-group select::after {
+    content: 'arrow_drop_down';
+    font-family: 'Material Icons';
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none;
 }
-
 
 /* ========================================
    Table Styles
@@ -222,6 +221,7 @@ th {
     color: #333;
     font-weight: 500;
     padding: 12px;
+    position: relative;
 }
 
 tr:nth-child(odd) {
@@ -230,6 +230,21 @@ tr:nth-child(odd) {
 
 .bills.negative {
     color: #f44336 !important;
+}
+
+th span.sort-arrow {
+    content: 'arrow_drop_down';
+    font-family: 'Material Icons';
+    vertical-align: middle;
+    transition: transform 0.3s ease;
+}
+
+th span.sort-arrow.asc::after {
+    content: 'arrow_drop_up';
+}
+
+th span.sort-arrow.desc::after {
+    content: 'arrow_drop_down';
 }
 
 /* ========================================
@@ -250,7 +265,6 @@ tr:nth-child(odd) {
     margin-right: 10px;
     margin-bottom: 10px;
 }
-
 
 /* ========================================
    Accordion Styles
@@ -327,15 +341,11 @@ tr:nth-child(odd) {
 }
 
 .filter-by-tag::after {
-    content: '';
+    content: 'arrow_drop_down';
+    font-family: 'Material Icons';
     position: absolute;
     top: 50%;
     right: 15px;
-    width: 0;
-    height: 0;
-    border-left: 5px solid transparent;
-    border-right: 5px solid transparent;
-    border-top: 5px solid #000;
     transform: translateY(-50%);
     pointer-events: none;
 }
@@ -372,15 +382,11 @@ tr:nth-child(odd) {
 }
 
 .view-mode::after {
-    content: '';
+    content: 'arrow_drop_down';
+    font-family: 'Material Icons';
     position: absolute;
     top: 50%;
     right: 15px;
-    width: 0;
-    height: 0;
-    border-left: 5px solid transparent;
-    border-right: 5px solid transparent;
-    border-top: 5px solid #000;
     transform: translateY(-50%);
     pointer-events: none;
 }
@@ -790,6 +796,22 @@ body.dark-mode #billModal .modal-footer button:hover {
 /* ========================================
    Accordion Button Styles
 ======================================== */
+th .sort-arrow {
+    font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    vertical-align: middle;
+    transition: transform 0.3s ease;
+}
+
+th .sort-arrow.asc::after {
+    content: 'arrow_drop_up';
+    font-family: 'Material Icons';
+}
+
+th .sort-arrow.desc::after {
+    content: 'arrow_drop_down';
+    font-family: 'Material Icons';
+}
+
 .accordion-btn {
     width: 100%;
     text-align: left;
