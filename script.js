@@ -142,9 +142,6 @@ document.addEventListener('DOMContentLoaded', () => {
     viewMode = localStorage.getItem('viewMode') || 'payCycle'; // Default to 'payCycle' if not set
     document.getElementById('viewMode').value = viewMode; // Set the dropdown to the saved value
 
-    // Update the sort icons based on the initial sortOrder
-    updateSortArrows();  // Call this function to initialize the sort arrows
-
     // Don't run these functions until the necessary data is available
     if (payFrequency && payday) {
         toggleViewMode();
@@ -170,14 +167,43 @@ document.addEventListener('DOMContentLoaded', () => {
         document.querySelector('.container').classList.add('dark-mode');
     }
 
+    // Apply saved sortOrder when the page loads
+    const savedSortOrder = JSON.parse(localStorage.getItem('sortOrder'));
+    if (savedSortOrder) {
+        Object.keys(savedSortOrder).forEach(column => {
+            if (savedSortOrder[column]) {
+                sortOrder = savedSortOrder;  // Load the entire sortOrder object
+                sortTable(column, false); // Sort the table based on the stored sort order without toggling
+            }
+        });
+    } else {
+        // If no sortOrder is saved, ensure we have a default sort order
+        sortOrder = {
+            name: 'asc',
+            amount: 'asc',
+            frequency: 'asc',
+            date: 'asc',
+            tag: 'asc',
+            totalAmount: 'asc'
+        };
+    }
+
+    // Ensure the sort arrows reflect the correct initial state
+    const activeColumn = Object.keys(sortOrder).find(key => sortOrder[key] !== null);
+    if (activeColumn) {
+        updateSortArrows(activeColumn);
+    }
+
     // Check if the browser supports service workers and register one
     if ('serviceWorker' in navigator) {
         navigator.serviceWorker.register('/service-worker.js')
             .then(registration => {
                 // Registration successful
+                console.log('Service Worker registered with scope:', registration.scope);
             })
             .catch(error => {
                 // Registration failed
+                console.error('Service Worker registration failed:', error);
             });
     }
 });
@@ -374,7 +400,12 @@ function updateBillsTable() {
     updateIncomeTable(payFrequency, income);
 }
 
-function sortTable(column) {
+function sortTable(column, toggleDirection = true) {
+    // If the column is different from the previous sorted one, reset direction to ascending
+    if (toggleDirection) {
+        sortOrder[column] = sortOrder[column] === 'asc' ? 'desc' : 'asc';
+    }
+
     const rows = Array.from(document.querySelector('#billsTable tbody').rows);
     const totalRow = rows.pop(); // Remove the last row (total row) from sorting
 
@@ -397,15 +428,13 @@ function sortTable(column) {
         }
     });
 
-    sortOrder[column] = sortOrder[column] === 'asc' ? 'desc' : 'asc';
-
     const tbody = document.querySelector('#billsTable tbody');
     tbody.innerHTML = '';
     rows.forEach(row => tbody.appendChild(row));
     tbody.appendChild(totalRow);
 
     updateSortArrows(column);
-    saveToLocalStorage(); // Save sortOrder to localStorage
+    localStorage.setItem('sortOrder', JSON.stringify(sortOrder)); // Save sortOrder to localStorage
 }
 
 function sortBills(bills) {
@@ -449,10 +478,8 @@ function updateSortArrows(column) {
     columns.forEach(col => {
         const arrow = document.getElementById(`${col}SortArrow`);
         if (arrow) {
-            // Reset arrow classes
             arrow.textContent = ''; // Clear the existing icon
 
-            // Apply the correct class based on the sorting order
             if (col === column) {
                 arrow.textContent = sortOrder[column] === 'asc' ? '↑' : '↓';
             }
