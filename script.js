@@ -10,6 +10,29 @@ let revealedPayCycles = 3; // Initially reveal 3 pay cycles
 let tags = JSON.parse(localStorage.getItem('tags')) || ['default'];
 let oneOffIncomes = JSON.parse(localStorage.getItem('oneOffIncomes')) || []; // Load one-off incomes
 
+// Load saved sortOrder from localStorage or use default values
+let sortOrder;
+try {
+    sortOrder = JSON.parse(localStorage.getItem('sortOrder')) || {
+        name: 'asc',
+        amount: 'asc',
+        frequency: 'asc',
+        date: 'asc',
+        tag: 'asc',
+        totalAmount: 'asc'
+    };
+} catch (e) {
+    console.error("Error parsing sortOrder from localStorage:", e);
+    sortOrder = {
+        name: 'asc',
+        amount: 'asc',
+        frequency: 'asc',
+        date: 'asc',
+        tag: 'asc',
+        totalAmount: 'asc'
+    };
+}
+
 // Constants
 const frequencyMultipliers = { 
     weekly: 52, 
@@ -18,15 +41,6 @@ const frequencyMultipliers = {
     quarterly: 4,  
     yearly: 1,
     "one-off": 0 // No multiplier for one-off bills
-};
-
-let sortOrder = {
-    name: 'asc',
-    amount: 'asc',
-    frequency: 'asc',
-    date: 'asc',
-    tag: 'asc',
-    totalAmount: 'asc'
 };
 
 function saveToLocalStorage() {
@@ -38,6 +52,7 @@ function saveToLocalStorage() {
     localStorage.setItem('darkMode', darkMode);
     localStorage.setItem('tags', JSON.stringify(tags)); // Save tags
     localStorage.setItem('oneOffIncomes', JSON.stringify(oneOffIncomes)); // Save one-off incomes
+    localStorage.setItem('sortOrder', JSON.stringify(sortOrder)); // Save sortOrder
 }
 
 function calculateYearlyIncome(frequency, income) {
@@ -58,7 +73,6 @@ function calculateYearlyAmount(amount, frequency) {
     }
     return amount * (frequencyMultipliers[frequency] || 0);
 }
-
 
 function updateIncomeTable(payFrequency, income) {
     let totalOneOffIncome = oneOffIncomes.reduce((total, income) => total + income.amount, 0);
@@ -317,7 +331,7 @@ function updateBillsTable() {
                             </thead>
                             <tbody></tbody>`;
 
-    const sortedBills = sortBillsByDate(adjustedBills);
+    const sortedBills = sortBills(adjustedBills); // Call sortBills to get the sorted array
 
     // Subtract bill amounts (as they are expenses)
     sortedBills.forEach((bill, index) => {
@@ -391,52 +405,31 @@ function sortTable(column) {
     tbody.appendChild(totalRow);
 
     updateSortArrows(column);
+    saveToLocalStorage(); // Save sortOrder to localStorage
 }
 
-function parseDateString(dateStr) {
-    // Assuming dateStr is in the format 'Sat 17th Aug 2024'
-    const parts = dateStr.split(' ');
+function sortBills(bills) {
+    const sortKey = Object.keys(sortOrder).find(key => sortOrder[key] !== null);
+    const sortDirection = sortOrder[sortKey];
 
-    if (parts.length < 4) {
-        return new Date(NaN); // Return an invalid date
-    }
+    return bills.sort((a, b) => {
+        let valA = a[sortKey];
+        let valB = b[sortKey];
 
-    const day = parseInt(parts[1]); // Extract the day
-    const month = parts[2];
-    const year = parseInt(parts[3]);
+        if (sortKey === 'amount' || sortKey === 'totalAmount') {
+            valA = parseFloat(valA.replace(/[^0-9.-]+/g, ""));
+            valB = parseFloat(valB.replace(/[^0-9.-]+/g, ""));
+        } else if (sortKey === 'date') {
+            valA = new Date(valA);
+            valB = new Date(valB);
+        }
 
-    const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-    const monthIndex = monthNames.indexOf(month);
-
-    if (monthIndex === -1) {
-        return new Date(NaN); // Return an invalid date
-    }
-
-    return new Date(year, monthIndex, day);
-}
-
-function parseMonthString(monthString) {
-    const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-    return months.indexOf(monthString) + 1;
-}
-
-function getPeriodDays(frequency) {
-    switch (frequency.toLowerCase()) {
-        case 'weekly':
-            return 7;
-        case 'fortnightly':
-            return 14;
-        case 'monthly':
-            return 30;
-        case 'quarterly':
-            return 90;
-        case 'yearly':
-            return 365;
-        case 'one-off':
-            return Number.MAX_SAFE_INTEGER; // One-off events are considered far in the future
-        default:
-            return 0;
-    }
+        if (sortDirection === 'asc') {
+            return valA > valB ? 1 : -1;
+        } else {
+            return valA < valB ? 1 : -1;
+        }
+    });
 }
 
 function getColumnIndex(column) {
@@ -709,8 +702,6 @@ function formatDaySuffix(day) {
         default: return "th";
     }
 }
-
-
 
 function sortBillsByDate(bills) {
     return bills.sort((a, b) => {
