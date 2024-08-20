@@ -417,6 +417,7 @@ th span.sort-arrow.desc::after {
     display: flex;
     align-items: center;
     margin-top: 15px;
+    gap: 10px; /* Add spacing between buttons */
 }
 
 /* ========================================
@@ -915,3 +916,4 @@ input[type="checkbox"] {
     height: auto;
     margin-right: 5px;            /* Add some space between the checkbox and the label text */
 }
+
