@@ -115,7 +115,8 @@ button[type="submit"]:hover {
     color: #007bff;
     text-decoration: underline;
     border: none;
-    margin-bottom: 10px;
+    margin-bottom: -10px;
+    margin-left: -10px;
 }
 
 .secondary-btn:hover {
@@ -262,7 +263,6 @@ th span.sort-arrow.desc::after {
 
 .bill-summary-header .primary-btn {
     align-self: flex-start;
-    margin-right: 10px;
     margin-bottom: 10px;
 }
 
@@ -350,6 +350,17 @@ th span.sort-arrow.desc::after {
     pointer-events: none;
 }
 
+.view-mode-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 50px;
+}
+
+.view-mode-container h2 {
+    margin: 0;
+}
+
 .view-mode {
     position: relative;
     display: flex;
@@ -424,8 +435,13 @@ th span.sort-arrow.desc::after {
    Chart Styles
 ======================================== */
 .chart-container {
-    margin: 20px auto;
+    margin: 40px auto;
     max-width: 800px;
+}
+
+.financialChart {
+    height: 350px;
+    width: 100%;
 }
 
 /* ========================================
@@ -658,7 +674,6 @@ body.dark-mode {
     .left-buttons {
         flex-direction: row;
         justify-content: space-between;
-        width: 100%;
         margin-top: 10px;
     }
 
