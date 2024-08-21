@@ -456,7 +456,7 @@ function sortBills(bills) {
         if (sortDirection === 'asc') {
             return valA > valB ? 1 : -1;
         } else {
-            return valA < valB ? 1 : -1;
+            return valA < valB ? -1 : 1;
         }
     });
 }
@@ -615,6 +615,11 @@ function updateAccordion() {
             const formattedStartDate = formatDate(dates.start);
             const formattedEndDate = formatDate(dates.end);
 
+            // Determine if this panel should be open or closed
+            const isOpen = localStorage.getItem(`panel-open-${index}`) === 'true';
+            const panelStyle = isOpen ? 'block' : 'none';
+            const toggleText = isOpen ? 'Hide' : 'Show';
+
             accordionContainer.innerHTML += `
                 <div class="cycle-summary">
                     <div class="cycle-info">
@@ -624,11 +629,11 @@ function updateAccordion() {
                         <p>Estimated to pay: <span class="negative">-$${cycleTotal.toFixed(2)}</span></p>
                         <p>Leftover: <span class="${leftoverClass}">$${leftoverAmount.toFixed(2)}</span></p>
                     </div>
-                    <button class="accordion-btn">
+                    <button class="accordion-btn" data-index="${index}">
                         <span>Bills list</span>
-                        <span class="toggle-text">Show</span>
+                        <span class="toggle-text">${toggleText}</span>
                     </button>
-                    <div class="panel-content" style="display: none;">
+                    <div class="panel-content" style="display: ${panelStyle};">
                         <table>
                             ${cycleBills}
                         </table>
@@ -666,6 +671,11 @@ function updateAccordion() {
             const leftoverAmount = monthIncome - monthTotal;
             const leftoverClass = leftoverAmount >= 0 ? 'positive' : 'negative';
 
+            // Determine if this panel should be open or closed
+            const isOpen = localStorage.getItem(`panel-open-${index}`) === 'true';
+            const panelStyle = isOpen ? 'block' : 'none';
+            const toggleText = isOpen ? 'Hide' : 'Show';
+
             accordionContainer.innerHTML += `
                 <div class="cycle-summary">
                     <div class="cycle-info">
@@ -676,11 +686,11 @@ function updateAccordion() {
                         <p>Estimated to pay: <span class="negative">-$${monthTotal.toFixed(2)}</span></p>
                         <p>Leftover: <span class="${leftoverClass}">$${leftoverAmount.toFixed(2)}</span></p>
                     </div>
-                    <button class="accordion-btn">
+                    <button class="accordion-btn" data-index="${index}">
                         <span>Bills list</span>
-                        <span class="toggle-text">Show</span>
+                        <span class="toggle-text">${toggleText}</span>
                     </button>
-                    <div class="panel-content" style="display: none;">
+                    <div class="panel-content" style="display: ${panelStyle};">
                         <table>
                             ${billsForMonth}
                         </table>
@@ -691,16 +701,17 @@ function updateAccordion() {
     }
 
     // Re-attach event listeners to newly created accordion buttons
-    document.querySelectorAll('.accordion-btn').forEach((button, index) => {
+    document.querySelectorAll('.accordion-btn').forEach(button => {
+        const index = button.getAttribute('data-index');
         button.addEventListener('click', function () {
             const panel = this.nextElementSibling;
-            if (panel.style.display === 'block') {
-                panel.style.display = 'none';
-                this.querySelector('.toggle-text').textContent = 'Show';
-            } else {
-                panel.style.display = 'block';
-                this.querySelector('.toggle-text').textContent = 'Hide';
-            }
+            const isOpen = panel.style.display === 'block';
+
+            panel.style.display = isOpen ? 'none' : 'block';
+            this.querySelector('.toggle-text').textContent = isOpen ? 'Show' : 'Hide';
+
+            // Save the panel's state in localStorage
+            localStorage.setItem(`panel-open-${index}`, !isOpen);
         });
     });
 
@@ -737,7 +748,6 @@ function sortBillsByDate(bills) {
         return dateA - dateB; // Sort in ascending order
     });
 }
-
 
 function getCycleLength(frequency) {
     let referenceDate = new Date(localStorage.getItem('payday'));
@@ -1015,13 +1025,13 @@ function updateChart(chartData) {
         window.financialChart.destroy();
     }
     window.financialChart = new Chart(ctx, {
-        type: 'line',
+        type: 'bar', // Change from 'line' to 'bar'
         data: {
             labels: chartData.dates,
             datasets: [{
                 label: 'Total Bills',
                 data: chartData.totals,
-                backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                backgroundColor: 'rgba(75, 192, 192, 0.6)', // Slightly more opaque for better visibility
                 borderColor: 'rgba(75, 192, 192, 1)',
                 borderWidth: 1
             }]
