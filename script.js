@@ -1020,10 +1020,18 @@ function loadMorePayCycles() {
 }
 
 function updateChart(chartData) {
-    const ctx = document.getElementById('financialChart').getContext('2d');
+    const financialChartElement = document.getElementById('financialChart');
+    
+    // Set the canvas width and height based on your CSS
+    financialChartElement.style.width = '100%';
+    financialChartElement.style.height = '350px';
+
+    const ctx = financialChartElement.getContext('2d');
+    
     if (window.financialChart && typeof window.financialChart.destroy === 'function') {
         window.financialChart.destroy();
     }
+    
     window.financialChart = new Chart(ctx, {
         type: 'bar', // Change from 'line' to 'bar'
         data: {
