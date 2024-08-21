@@ -1,6 +1,12 @@
 /* ========================================
    General Styles
 ======================================== */
+*,
+*::before,
+*::after {
+    box-sizing: inherit;
+}
+
 body {
     font-family: 'Roboto', sans-serif;
     margin: 0;
@@ -10,6 +16,7 @@ body {
     font-size: 16px;
     transition: background-color 0.3s, color 0.3s;
     text-transform: lowercase;
+    -webkit-font-smoothing: antialiased; /* Ensure font rendering is smooth */
 }
 
 h1, h2, h3, h4, h5, h6, p, a, button, input, select, label, th, td, .accordion-btn, .modal-content, .bill-summary-header, .panel-content, .table-container, .right-align, .left-align, .cycle-summary, .income-summary, .reset-btn, .dark-mode-btn, .edit-income, .controls {
@@ -941,5 +948,3 @@ input[type="checkbox"] {
     height: auto;
     margin-right: 5px;            /* Add some space between the checkbox and the label text */
 }
-
- 
