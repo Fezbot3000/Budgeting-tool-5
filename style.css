@@ -1,11 +1,6 @@
 /* ========================================
    General Styles
 ======================================== */
-*,
-*::before,
-*::after {
-    box-sizing: inherit;
-}
 
 body {
     font-family: 'Roboto', sans-serif;
@@ -133,11 +128,10 @@ button[type="submit"]:hover {
 .delete-btn {
     background-color:  #fff;
     color: #f44336;
-    border: 2px solid #f44336;
 }
 
 .delete-btn:hover {
-    background-color: #1e1e1e;
+    colour: #333;
 }
 
 /* ========================================
@@ -442,7 +436,7 @@ th span.sort-arrow.desc::after {
    Chart Styles
 ======================================== */
 .chart-container {
-    margin: 40px auto;
+        margin: 40px auto;
     max-width: 800px;
     /* background-color: red; */
     background: linear-gradient(180deg, #FFC3C3 0%, #FFEB7F 100%);
@@ -664,6 +658,7 @@ body.dark-mode {
         overflow-x: auto;
         -webkit-overflow-scrolling: touch; /* Smooth scrolling for iOS */
         white-space: nowrap; /* Prevent text from wrapping */
+        margin-top: 30px;
     }
 
     #billsTable table {
