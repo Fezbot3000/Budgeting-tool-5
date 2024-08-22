@@ -142,15 +142,31 @@ function goToStep2() {
 }
 
 function toggleViewMode() {
+    const previousViewMode = viewMode;
     viewMode = document.getElementById('viewMode').value;
     localStorage.setItem('viewMode', viewMode);
+
+    // Reset all accordion panel states when switching view modes
+    if (previousViewMode !== viewMode) {
+        // Reset the revealedPayCycles to 3 when switching views
+        revealedPayCycles = 3;
+
+        // Remove saved panel states
+        for (let i = 0; i < generatedPayCycles; i++) {
+            localStorage.removeItem(`panel-open-${i}`);
+        }
+    }
+
+    // Clear the existing content before updating the view
+    document.getElementById('accordionContainer').innerHTML = '';
 
     if (viewMode === 'payCycle') {
         updateAccordion();
     } else if (viewMode === 'monthly') {
         const chartData = calculateMonthlyView();
         if (chartData.dates.length > 0) {
-            updateChart(chartData);  // This must be executed with valid data
+            updateAccordion(); // Ensure the accordion is updated with the new monthly data
+            updateChart(chartData); // Update the chart for the monthly view
         } else {
             console.error('No data to display for monthly view');
         }
@@ -160,10 +176,24 @@ function toggleViewMode() {
     updateBillsTable();
 }
 
+
 document.addEventListener('DOMContentLoaded', () => {
     // Load the saved view mode from localStorage
     viewMode = localStorage.getItem('viewMode') || 'payCycle'; // Default to 'payCycle' if not set
     document.getElementById('viewMode').value = viewMode; // Set the dropdown to the saved value
+
+    // Restore the bill list visibility state
+    const isBillsListHidden = localStorage.getItem('billsListHidden') === 'true';
+    const billsTable = document.getElementById('billsTable');
+    const filterByTag = document.querySelector('.filter-by-tag');
+
+    if (isBillsListHidden) {
+        billsTable.classList.add('hidden');
+        filterByTag.classList.add('hidden');
+    } else {
+        billsTable.classList.remove('hidden');
+        filterByTag.classList.remove('hidden');
+    }
 
     // Ensure payFrequency and payday are valid before proceeding
     if (payFrequency && payday) {
@@ -230,7 +260,6 @@ document.addEventListener('DOMContentLoaded', () => {
             });
     }
 });
-
 
 document.getElementById('billsForm').addEventListener('submit', function(event) {
     event.preventDefault();
@@ -736,7 +765,6 @@ function updateAccordion() {
 }
 
 
-
 // Helper function to add the correct suffix to the date
 function formatDaySuffix(day) {
     if (day > 3 && day < 21) return 'th';
@@ -1089,7 +1117,6 @@ function updateChart(chartData) {
                 label: 'Total Bills',
                 data: chartData.billsData,
                 backgroundColor: stripePattern, // Use the striped pattern
-                borderColor: 'rgba(0, 0, 0, 0.1)',
                 borderWidth: 1,
                 borderRadius: 10, // Rounded edges
                 stack: 'Stack 0'
@@ -1097,9 +1124,7 @@ function updateChart(chartData) {
             {
                 label: 'Leftover',
                 data: netIncomeData,
-                backgroundColor: 'rgba(0, 0, 0, 1)', // Solid black for Leftover
-                borderColor: 'rgba(0, 0, 0, 1)',
-                borderWidth: 1,
+                backgroundColor: 'rgba(0, 0, 0, 8)', // Solid black for Leftover
                 borderRadius: 10, // Rounded edges
                 stack: 'Stack 0'
             }
@@ -1112,8 +1137,7 @@ function updateChart(chartData) {
                 label: 'Total Bills',
                 data: chartData.totals,
                 backgroundColor: stripePattern, // Use the striped pattern
-                borderColor: 'rgba(0, 0, 0, 0.1)',
-                borderWidth: 1,
+                borderColor: 'rgba(0, 0, 0, 1)',
                 borderRadius: 10, // Rounded edges
                 stack: 'Stack 0'
             },
