@@ -1060,47 +1060,47 @@ function updateChart(chartData) {
     }
 
     let datasets;
-    
+
     if (viewMode === 'payCycle') {
+        const netIncomeData = chartData.incomeData.map((income, index) => income - chartData.billsData[index]);
+
         datasets = [
-            {
-                label: 'Income',
-                data: chartData.incomeData,
-                backgroundColor: 'rgba(75, 192, 192, 0.6)', // Blue color with transparency
-                borderColor: 'rgba(75, 192, 192, 1)',
-                borderWidth: 1,
-                order: 1, // Draw income bars first (background)
-                stack: 'Stack 0'
-            },
             {
                 label: 'Total Bills',
                 data: chartData.billsData,
-                backgroundColor: 'rgba(255, 165, 0, 1)', // Orange color
+                backgroundColor: 'rgba(255, 165, 0, 1)', // Orange color for Bills (bottom)
                 borderColor: 'rgba(255, 165, 0, 1)',
                 borderWidth: 1,
-                order: 2, // Draw bills bars on top (foreground)
-                stack: 'Stack 1' 
-            }
-        ];
-    } else if (viewMode === 'monthly') {
-        datasets = [
-            {
-                label: 'Income',
-                data: chartData.incomes,
-                backgroundColor: 'rgba(75, 192, 192, 0.6)', // Blue color with transparency
-                borderColor: 'rgba(75, 192, 192, 1)',
-                borderWidth: 1,
-                order: 1, // Draw income bars first (background)
                 stack: 'Stack 0'
             },
             {
+                label: 'Leftover',  // Changed label from 'Net Income' to 'Leftover'
+                data: netIncomeData,
+                backgroundColor: 'rgba(75, 192, 192, 0.6)', // Blue color with transparency for Leftover (top)
+                borderColor: 'rgba(75, 192, 192, 1)',
+                borderWidth: 1,
+                stack: 'Stack 0'
+            }
+        ];
+    } else if (viewMode === 'monthly') {
+        const netIncomeData = chartData.incomes.map((income, index) => income - chartData.totals[index]);
+
+        datasets = [
+            {
                 label: 'Total Bills',
                 data: chartData.totals,
-                backgroundColor: 'rgba(255, 165, 0, 1)', // Orange color
+                backgroundColor: 'rgba(255, 165, 0, 1)', // Orange color for Bills (bottom)
                 borderColor: 'rgba(255, 165, 0, 1)',
                 borderWidth: 1,
-                order: 2, // Draw bills bars on top (foreground)
-                stack: 'Stack 1'
+                stack: 'Stack 0'
+            },
+            {
+                label: 'Leftover',  // Changed label from 'Net Income' to 'Leftover'
+                data: netIncomeData,
+                backgroundColor: 'rgba(75, 192, 192, 0.6)', // Blue color with transparency for Leftover (top)
+                borderColor: 'rgba(75, 192, 192, 1)',
+                borderWidth: 1,
+                stack: 'Stack 0'
             }
         ];
     }
