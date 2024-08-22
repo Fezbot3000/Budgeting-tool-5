@@ -96,6 +96,18 @@ function updateIncomeTable(payFrequency, income) {
     document.getElementById('yearlySavingsAmount').textContent = `$${potentialSavings.toFixed(2)}`;
     document.getElementById('yearlySavingsPercentage').className = 'right-align';
     document.getElementById('yearlySavingsPercentage').textContent = `${savingsPercentage.toFixed(2)}%`;
+
+    // Log the results for debugging
+    console.log('Updated Income Table:', {
+        payFrequency,
+        income,
+        totalOneOffIncome,
+        yearlyIncome,
+        yearlyBills,
+        potentialSavings,
+        billPercentage,
+        savingsPercentage
+    });
 }
 
 function goToStep2() {
@@ -133,8 +145,19 @@ function toggleViewMode() {
     viewMode = document.getElementById('viewMode').value;
     localStorage.setItem('viewMode', viewMode);
 
-    // Update the UI based on the selected view mode
-    updateAccordion();
+    if (viewMode === 'payCycle') {
+        updateAccordion();
+    } else if (viewMode === 'monthly') {
+        const chartData = calculateMonthlyView();
+        if (chartData.dates.length > 0) {
+            updateChart(chartData);  // This must be executed with valid data
+        } else {
+            console.error('No data to display for monthly view');
+        }
+    }
+
+    updateIncomeTable(payFrequency, income);
+    updateBillsTable();
 }
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -142,7 +165,7 @@ document.addEventListener('DOMContentLoaded', () => {
     viewMode = localStorage.getItem('viewMode') || 'payCycle'; // Default to 'payCycle' if not set
     document.getElementById('viewMode').value = viewMode; // Set the dropdown to the saved value
 
-    // Don't run these functions until the necessary data is available
+    // Ensure payFrequency and payday are valid before proceeding
     if (payFrequency && payday) {
         toggleViewMode();
         updateBillsTable();
@@ -207,6 +230,7 @@ document.addEventListener('DOMContentLoaded', () => {
             });
     }
 });
+
 
 document.getElementById('billsForm').addEventListener('submit', function(event) {
     event.preventDefault();
@@ -580,11 +604,10 @@ function updateAccordion() {
     const accordionContainer = document.getElementById('accordionContainer');
     accordionContainer.innerHTML = ''; // Clear existing content
 
-    let cycleDates, chartData;
+    let chartData = { dates: [], billsData: [], incomeData: [] };
 
     if (viewMode === 'payCycle') {
-        cycleDates = getCycleDates(new Date(payday), getCycleLength(payFrequency), generatedPayCycles);
-        chartData = { dates: [], totals: [] };
+        const cycleDates = getCycleDates(new Date(payday), getCycleLength(payFrequency), generatedPayCycles);
 
         cycleDates.forEach((dates, index) => {
             if (index >= revealedPayCycles) return;
@@ -605,8 +628,7 @@ function updateAccordion() {
                 const incomeDate = new Date(incomeItem.date);
                 if (incomeDate >= dates.start && incomeDate <= dates.end) {
                     cycleIncome += incomeItem.amount;  // Add one-off income to cycle income
-                    // Ensure positive income is displayed in green and format date consistently
-                    cycleBills += `<tr><td>${incomeItem.name}</td><td>${formatDate(incomeDate)}</td><td class="positive right-align" style="color: green;">+$${incomeItem.amount.toFixed(2)}</td></tr>`;
+                    cycleBills += `<tr><td>${incomeItem.name}</td><td>${formatDate(incomeDate)}</td><td class="positive right-align">+$${incomeItem.amount.toFixed(2)}</td></tr>`;
                 }
             });
 
@@ -640,8 +662,10 @@ function updateAccordion() {
                     </div>
                 </div>
             `;
+
             chartData.dates.push(formattedStartDate);
-            chartData.totals.push(cycleTotal);
+            chartData.billsData.push(cycleTotal);
+            chartData.incomeData.push(cycleIncome);
         });
     } else if (viewMode === 'monthly') {
         chartData = calculateMonthlyView();
@@ -652,26 +676,21 @@ function updateAccordion() {
             let billsForMonth = chartData.bills[index];
             let monthIncome = chartData.incomes[index];
 
-            // Add one-off incomes that fall within this month
             oneOffIncomes.forEach(incomeItem => {
                 const incomeDate = new Date(incomeItem.date);
                 const incomeMonth = incomeDate.getMonth();
                 const incomeYear = incomeDate.getFullYear();
 
-                // Check if the income falls within the current month and year
                 if (incomeMonth === new Date(monthYear).getMonth() && incomeYear === new Date(monthYear).getFullYear()) {
                     monthIncome += incomeItem.amount;
-                    // Format date to be consistent with the existing bill dates (e.g., "31st")
                     const formattedIncomeDate = incomeDate.getDate() + formatDaySuffix(incomeDate.getDate());
-                    // Ensure positive income is displayed in green
-                    billsForMonth += `<tr><td>${incomeItem.name}</td><td>${formattedIncomeDate}</td><td class="positive right-align" style="color: green;">+$${incomeItem.amount.toFixed(2)}</td></tr>`;
+                    billsForMonth += `<tr><td>${incomeItem.name}</td><td>${formattedIncomeDate}</td><td class="positive right-align">+$${incomeItem.amount.toFixed(2)}</td></tr>`;
                 }
             });
 
             const leftoverAmount = monthIncome - monthTotal;
             const leftoverClass = leftoverAmount >= 0 ? 'positive' : 'negative';
 
-            // Determine if this panel should be open or closed
             const isOpen = localStorage.getItem(`panel-open-${index}`) === 'true';
             const panelStyle = isOpen ? 'block' : 'none';
             const toggleText = isOpen ? 'Hide' : 'Show';
@@ -700,7 +719,6 @@ function updateAccordion() {
         });
     }
 
-    // Re-attach event listeners to newly created accordion buttons
     document.querySelectorAll('.accordion-btn').forEach(button => {
         const index = button.getAttribute('data-index');
         button.addEventListener('click', function () {
@@ -710,25 +728,14 @@ function updateAccordion() {
             panel.style.display = isOpen ? 'none' : 'block';
             this.querySelector('.toggle-text').textContent = isOpen ? 'Show' : 'Hide';
 
-            // Save the panel's state in localStorage
             localStorage.setItem(`panel-open-${index}`, !isOpen);
         });
     });
 
-    // Update the chart with the new data
     updateChart(chartData);
 }
 
-// Helper function to add the correct suffix to the date
-function formatDaySuffix(day) {
-    if (day > 3 && day < 21) return 'th';
-    switch (day % 10) {
-        case 1:  return "st";
-        case 2:  return "nd";
-        case 3:  return "rd";
-        default: return "th";
-    }
-}
+
 
 // Helper function to add the correct suffix to the date
 function formatDaySuffix(day) {
@@ -960,8 +967,13 @@ function calculateMonthlyView() {
         currentDate.setMonth(currentDate.getMonth() + 1);
     }
 
+    console.log('Monthly View Data:', monthlyData);
     return monthlyData;
 }
+
+
+
+
 
 function getNextBillDate(date, frequency) {
     const originalDay = date.getDate();
@@ -994,26 +1006,43 @@ function getNextBillDate(date, frequency) {
 
 function loadMorePayCycles() {
     revealedPayCycles += 3; // Increase the number of revealed cycles
+
+    // Update the accordion view to include the newly revealed pay cycles
     updateAccordion();
-    // Ensure the chart is updated
+
+    // Ensure the chart is updated with the correct data
     if (viewMode === 'payCycle') {
         const cycleDates = getCycleDates(new Date(payday), getCycleLength(payFrequency), generatedPayCycles);
-        const chartData = { dates: [], totals: [] };
+        const chartData = { dates: [], billsData: [], incomeData: [] };
 
         cycleDates.forEach((dates, index) => {
             if (index >= revealedPayCycles) return;
             let cycleTotal = 0;
+            let cycleIncome = income;
+
             const sortedBills = sortBillsByDate(bills);
             sortedBills.forEach(bill => {
                 cycleTotal += getBillTotalForCycle(bill, dates);
             });
+
+            // Add any one-off incomes that should be part of this pay cycle
+            oneOffIncomes.forEach(incomeItem => {
+                const incomeDate = new Date(incomeItem.date);
+                if (incomeDate >= dates.start && incomeDate <= dates.end) {
+                    cycleIncome += incomeItem.amount;  // Add one-off income to cycle income
+                }
+            });
+
             const formattedStartDate = formatDate(dates.start);
             chartData.dates.push(formattedStartDate);
-            chartData.totals.push(cycleTotal);
+            chartData.billsData.push(cycleTotal);
+            chartData.incomeData.push(cycleIncome);
         });
 
+        // Force update the chart with the new data
         updateChart(chartData);
     } else if (viewMode === 'monthly') {
+        // Handle monthly view update if necessary
         const chartData = calculateMonthlyView();
         updateChart(chartData);
     }
@@ -1021,49 +1050,92 @@ function loadMorePayCycles() {
 
 function updateChart(chartData) {
     const financialChartElement = document.getElementById('financialChart');
-    
-    // Set the canvas width and height based on your CSS
     financialChartElement.style.width = '100%';
     financialChartElement.style.height = '350px';
 
     const ctx = financialChartElement.getContext('2d');
-    
+
     if (window.financialChart && typeof window.financialChart.destroy === 'function') {
         window.financialChart.destroy();
     }
+
+    let datasets;
     
-    window.financialChart = new Chart(ctx, {
-        type: 'bar', // Change from 'line' to 'bar'
-        data: {
-            labels: chartData.dates,
-            datasets: [{
+    if (viewMode === 'payCycle') {
+        datasets = [
+            {
+                label: 'Income',
+                data: chartData.incomeData,
+                backgroundColor: 'rgba(75, 192, 192, 0.6)', // Blue color with transparency
+                borderColor: 'rgba(75, 192, 192, 1)',
+                borderWidth: 1,
+                order: 1, // Draw income bars first (background)
+                stack: 'Stack 0'
+            },
+            {
+                label: 'Total Bills',
+                data: chartData.billsData,
+                backgroundColor: 'rgba(255, 165, 0, 1)', // Orange color
+                borderColor: 'rgba(255, 165, 0, 1)',
+                borderWidth: 1,
+                order: 2, // Draw bills bars on top (foreground)
+                stack: 'Stack 1' 
+            }
+        ];
+    } else if (viewMode === 'monthly') {
+        datasets = [
+            {
+                label: 'Income',
+                data: chartData.incomes,
+                backgroundColor: 'rgba(75, 192, 192, 0.6)', // Blue color with transparency
+                borderColor: 'rgba(75, 192, 192, 1)',
+                borderWidth: 1,
+                order: 1, // Draw income bars first (background)
+                stack: 'Stack 0'
+            },
+            {
                 label: 'Total Bills',
                 data: chartData.totals,
-                backgroundColor: 'rgba(75, 192, 192, 0.6)', // Slightly more opaque for better visibility
-                borderColor: 'rgba(75, 192, 192, 1)',
-                borderWidth: 1
-            }]
+                backgroundColor: 'rgba(255, 165, 0, 1)', // Orange color
+                borderColor: 'rgba(255, 165, 0, 1)',
+                borderWidth: 1,
+                order: 2, // Draw bills bars on top (foreground)
+                stack: 'Stack 1'
+            }
+        ];
+    }
+
+    window.financialChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: chartData.dates,
+            datasets: datasets
         },
         options: {
             scales: {
                 x: {
+                    stacked: true,
                     beginAtZero: true,
                     type: 'category',
                     labels: chartData.dates,
                     ticks: { autoSkip: true, maxTicksLimit: 20 },
-                    title: { display: true, text: 'Start Date of Pay Cycle' }
+                    title: { display: true, text: viewMode === 'payCycle' ? 'Start Date of Pay Cycle' : 'Month' }
                 },
                 y: {
+                    stacked: true,
                     beginAtZero: true,
-                    title: { display: true, text: 'Total Bills' }
+                    title: { display: true, text: 'Total Amount' }
                 }
             },
             responsive: true,
             maintainAspectRatio: false,
-            plugins: { legend: { display: false } }
+            plugins: {
+                legend: { display: true }
+            }
         }
     });
 }
+
 
 function resetLocalStorage() {
     if (confirm('Are you sure you want to reset all data? This action cannot be undone.')) {
