@@ -22,7 +22,6 @@ try {
         totalAmount: 'asc'
     };
 } catch (e) {
-    console.error("Error parsing sortOrder from localStorage:", e);
     sortOrder = {
         name: 'asc',
         amount: 'asc',
@@ -79,8 +78,12 @@ function calculateYearlyAmount(amount, frequency) {
 }
 
 function updateIncomeTable(payFrequency, income) {
-    let totalOneOffIncome = oneOffIncomes.reduce((total, income) => total + income.amount, 0);
+    let totalOneOffIncome = oneOffIncomes.reduce((total, income) => {
+        return total + income.amount;
+    }, 0);
+
     const yearlyIncome = calculateYearlyIncome(payFrequency, income) + totalOneOffIncome;
+
     const yearlyBills = calculateYearlyBills();
     const potentialSavings = yearlyIncome - yearlyBills;
     const billPercentage = yearlyIncome > 0 ? (yearlyBills / yearlyIncome) * 100 : 0;
@@ -100,18 +103,6 @@ function updateIncomeTable(payFrequency, income) {
     document.getElementById('yearlySavingsAmount').textContent = `$${potentialSavings.toFixed(2)}`;
     document.getElementById('yearlySavingsPercentage').className = 'right-align';
     document.getElementById('yearlySavingsPercentage').textContent = `${savingsPercentage.toFixed(2)}%`;
-
-    // Log the results for debugging
-    console.log('Updated Income Table:', {
-        payFrequency,
-        income,
-        totalOneOffIncome,
-        yearlyIncome,
-        yearlyBills,
-        potentialSavings,
-        billPercentage,
-        savingsPercentage
-    });
 }
 
 function goToStep2() {
@@ -176,14 +167,13 @@ function toggleViewMode() {
                 leftovers: chartData.leftovers.slice(0, revealedPayCycles) 
             };
             updateChart(limitedChartData); 
-        } else {
-            console.error('No data to display for monthly view');
         }
     }
 
     updateIncomeTable(payFrequency, income);
     updateBillsTable();
 }
+
 
 document.addEventListener('DOMContentLoaded', () => {
     // Load the saved view mode from localStorage
@@ -237,8 +227,6 @@ document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('step1').classList.add('hidden');
             document.getElementById('step2').classList.remove('hidden');
         }
-    } else {
-        console.log("Waiting for user input on Step 1...");
     }
 
     // Set dark mode if enabled
@@ -276,17 +264,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Check if the browser supports service workers and register one
     if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('/service-worker.js')
-            .then(registration => {
-                // Registration successful
-                console.log('Service Worker registered with scope:', registration.scope);
-            })
-            .catch(error => {
-                // Registration failed
-                console.error('Service Worker registration failed:', error);
-            });
+        navigator.serviceWorker.register('/service-worker.js');
     }
+
+    // Populate the tag dropdowns on page load
+    updateTagDropdown(); 
+
+    // Other initializations...
 });
+
 
 document.getElementById('billsForm').addEventListener('submit', function(event) {
     event.preventDefault();
@@ -342,7 +328,6 @@ document.getElementById('oneOffIncomeForm').addEventListener('submit', function(
     const incomeAmountInput = document.getElementById('oneOffIncomeAmount');  // Use the original ID
 
     if (!incomeAmountInput) {
-        console.error("Input element for income amount not found.");
         return;
     }
 
@@ -383,10 +368,16 @@ function resetIncomeForm() {
     document.getElementById('submitOneOffIncome').textContent = 'Add Income';
 }
 
-// Update the income table with the one-off incomes
 function updateIncomeTableWithOneOffIncomes() {
-    let totalOneOffIncome = oneOffIncomes.reduce((total, income) => total + income.amount, 0);
-    console.log("Total One-Off Income:", totalOneOffIncome);
+    let totalOneOffIncome = 0;
+    let processedIncomeNames = new Set();  // Use a Set to keep track of processed income names
+
+    oneOffIncomes.forEach((income, index) => {
+        if (!processedIncomeNames.has(income.name)) {
+            totalOneOffIncome += income.amount;
+            processedIncomeNames.add(income.name); // Mark this income as processed
+        }
+    });
 
     const yearlyIncome = calculateYearlyIncome(payFrequency, income) + totalOneOffIncome;
     const yearlyBills = calculateYearlyBills();
@@ -401,6 +392,7 @@ function updateIncomeTableWithOneOffIncomes() {
     updateAccordion();
     updateBillsTable();
 }
+
 
 function updateBillDueDatesForDisplay() {
     const today = new Date();
@@ -682,8 +674,6 @@ function updateAccordion() {
     });
   });
 
-  console.log('Accordion Data (for accordion display):', chartData);
-
   // Update chart based on view mode
   if (viewMode === 'monthly') {
     const chartData = calculateMonthlyView();
@@ -751,7 +741,6 @@ function getCycleLength(frequency) {
 
     // Check if frequency or referenceDate is invalid
     if (!frequency || isNaN(referenceDate.getTime())) {
-        console.error("Invalid frequency or referenceDate passed to getCycleLength:", frequency, referenceDate);
         return 0; // Return 0 or some other appropriate default value
     }
 
@@ -767,7 +756,6 @@ function getCycleLength(frequency) {
         case 'yearly': 
             return 365;
         default: 
-            console.error("Invalid frequency passed to getCycleLength:", frequency);
             return 0; // Return 0 or some other appropriate default value
     }
 }
@@ -1098,66 +1086,79 @@ function loadMorePayCycles() {
 }
 
 function updatePayCycleAccordion(chartData) {
-  const accordionContainer = document.getElementById('accordionContainer');
-  const cycleDates = getCycleDates(new Date(payday), getCycleLength(payFrequency), generatedPayCycles);
+    const accordionContainer = document.getElementById('accordionContainer');
+    const cycleDates = getCycleDates(new Date(payday), getCycleLength(payFrequency), generatedPayCycles);
 
-  cycleDates.forEach((dates, index) => {
-    if (index >= revealedPayCycles) return;
+    cycleDates.forEach((dates, index) => {
+        if (index >= revealedPayCycles) return;
 
-    let cycleTotal = 0;
-    let cycleIncome = income; 
-    let cycleBills = '';
+        let cycleTotal = 0;
+        let cycleIncome = income; 
+        let cycleBills = '';
 
-    const sortedBills = sortBillsByDate(bills);
-    sortedBills.forEach(bill => {
-      cycleBills += getBillRowsForCycle(bill, dates);
-      cycleTotal += getBillTotalForCycle(bill, dates);
+        const sortedBills = sortBillsByDate(bills);
+        sortedBills.forEach(bill => {
+            cycleBills += getBillRowsForCycle(bill, dates);
+            cycleTotal += getBillTotalForCycle(bill, dates);
+        });
+
+        // Reset the processed incomes at the start of each cycle to avoid duplicates
+        let processedIncomes = new Set();
+
+        oneOffIncomes.forEach(incomeItem => {
+            const incomeDate = new Date(incomeItem.date);
+            const incomeKey = `${incomeItem.name}-${incomeDate.toISOString()}`; // Unique key for each income
+
+            // Debugging step: Log to console to check for duplicates
+            console.log(`Processing income: ${incomeItem.name} on ${incomeDate}`);
+
+            // Check if this income has already been processed
+            if (incomeDate >= dates.start && incomeDate <= dates.end && !processedIncomes.has(incomeKey)) {
+                cycleIncome += incomeItem.amount; 
+                cycleBills += `<tr><td>${incomeItem.name}</td><td>${formatDate(incomeDate)}</td><td class="positive right-align">+$${incomeItem.amount.toFixed(2)}</td></tr>`;
+                processedIncomes.add(incomeKey); // Mark this one-off income as processed
+            } else if (processedIncomes.has(incomeKey)) {
+                console.warn(`Duplicate detected: ${incomeItem.name} on ${incomeDate}`);
+            }
+        });
+
+        const leftoverAmount = cycleIncome - cycleTotal; 
+        const leftoverClass = leftoverAmount >= 0 ? 'positive' : 'negative';
+        const formattedStartDate = formatDate(dates.start);
+        const formattedEndDate = formatDate(dates.end);
+
+        const isOpen = localStorage.getItem(`panel-open-${index}`) === 'true';
+        const panelStyle = isOpen ? 'block' : 'none';
+        const toggleText = isOpen ? 'Hide' : 'Show';
+
+        accordionContainer.innerHTML += `
+        <div class="cycle-summary">
+            <div class="cycle-info">
+                <span class="right-align">${formattedStartDate} - ${formattedEndDate}</span>
+            </div>
+            <div class="income-summary">
+                <p>Income: <span class="positive">$${cycleIncome.toFixed(2)}</span></p>
+                <p>Estimated to pay: <span class="negative">-$${cycleTotal.toFixed(2)}</span></p>
+                <p>Leftover: <span class="${leftoverClass}">$${leftoverAmount.toFixed(2)}</span></p>
+            </div>
+            <button class="accordion-btn" data-index="${index}">
+                <span>Bills list</span>
+                <span class="toggle-text">${toggleText}</span>
+            </button>
+            <div class="panel-content" style="display: ${panelStyle};">
+                <table>
+                    ${cycleBills}
+                </table>
+            </div>
+        </div>
+        `;
+
+        chartData.dates.push(formattedStartDate);
+        chartData.billsData.push(cycleTotal);
+        chartData.incomeData.push(cycleIncome);
     });
-
-    oneOffIncomes.forEach(incomeItem => {
-      const incomeDate = new Date(incomeItem.date);
-      if (incomeDate >= dates.start && incomeDate <= dates.end) {
-        cycleIncome += incomeItem.amount; 
-        cycleBills += `<tr><td>${incomeItem.name}</td><td>${formatDate(incomeDate)}</td><td class="positive right-align">+$${incomeItem.amount.toFixed(2)}</td></tr>`;
-      }
-    });
-
-    const leftoverAmount = cycleIncome - cycleTotal; 
-    const leftoverClass = leftoverAmount >= 0 ? 'positive' : 'negative';
-    const formattedStartDate = formatDate(dates.start);
-    const formattedEndDate = formatDate(dates.end);
-
-    const isOpen = localStorage.getItem(`panel-open-${index}`) === 'true';
-    const panelStyle = isOpen ? 'block' : 'none';
-    const toggleText = isOpen ? 'Hide' : 'Show';
-
-    accordionContainer.innerHTML += `
-    <div class="cycle-summary">
-      <div class="cycle-info">
-        <span class="right-align">${formattedStartDate} - ${formattedEndDate}</span>
-      </div>
-      <div class="income-summary">
-        <p>Income: <span class="positive">$${cycleIncome.toFixed(2)}</span></p>
-        <p>Estimated to pay: <span class="negative">-$${cycleTotal.toFixed(2)}</span></p>
-        <p>Leftover: <span class="${leftoverClass}">$${leftoverAmount.toFixed(2)}</span></p>
-      </div>
-      <button class="accordion-btn" data-index="${index}">
-        <span>Bills list</span>
-        <span class="toggle-text">${toggleText}</span>
-      </button>
-      <div class="panel-content" style="display: ${panelStyle};">
-        <table>
-          ${cycleBills}
-        </table>
-      </div>
-    </div>
-    `;
-
-    chartData.dates.push(formattedStartDate);
-    chartData.billsData.push(cycleTotal);
-    chartData.incomeData.push(cycleIncome);
-  });
 }
+
 
 function updateMonthlyAccordion(chartData) {
     const accordionContainer = document.getElementById('accordionContainer');
@@ -1170,7 +1171,7 @@ function updateMonthlyAccordion(chartData) {
         let billsForMonth = chartData.bills[index];
         let monthIncome = chartData.incomes[index];
 
-        // Create a Set to keep track of added one-off incomes (assuming names are unique)
+        // Use a Set to track which one-off incomes have been processed
         const addedOneOffIncomes = new Set(); 
 
         oneOffIncomes.forEach(incomeItem => {
@@ -1179,12 +1180,10 @@ function updateMonthlyAccordion(chartData) {
             const incomeYear = incomeDate.getFullYear();
 
             if (incomeMonth === new Date(monthYear).getMonth() && incomeYear === new Date(monthYear).getFullYear()) {
-                // Add one-off income only if it hasn't been added before
                 if (!addedOneOffIncomes.has(incomeItem.name)) {
                     monthIncome += incomeItem.amount; 
-                    const formattedIncomeDate = incomeDate.getDate() + formatDaySuffix(incomeDate.getDate());
-                    billsForMonth += `<tr><td>${incomeItem.name}</td><td>${formattedIncomeDate}</td><td class="positive right-align">+$${incomeItem.amount.toFixed(2)}</td></tr>`;
-                    addedOneOffIncomes.add(incomeItem.name); // Mark this income as added
+                    billsForMonth += `<tr><td>${incomeItem.name}</td><td>${incomeDate.getDate()}${formatDaySuffix(incomeDate.getDate())}</td><td class="positive right-align">+$${incomeItem.amount.toFixed(2)}</td></tr>`;
+                    addedOneOffIncomes.add(incomeItem.name);
                 }
             }
         });
@@ -1392,7 +1391,6 @@ function deleteOldPayCycles() {
     }
 }
 
-// Tag Management Functions
 function updateTagDropdown() {
     const tagList = document.getElementById('tagList');
     const existingTagSelect = document.getElementById('existingTag');
@@ -1446,15 +1444,16 @@ function renameTag() {
     if (tagIndex > -1) {
         tags[tagIndex] = newTag;
 
+        // Update tags in bills
         bills.forEach(bill => {
             if (bill.tag === oldTag) {
                 bill.tag = newTag;
             }
         });
 
-        saveToLocalStorage();
-        updateBillsTable();
-        updateTagDropdown();
+        saveToLocalStorage(); // Save updated tags and bills to localStorage
+        updateBillsTable(); // Refresh the bills table to reflect changes
+        updateTagDropdown(); // Refresh dropdowns with updated tags
         alert("Tag renamed successfully.");
     }
 }
