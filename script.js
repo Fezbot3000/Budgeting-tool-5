@@ -1059,6 +1059,26 @@ function updateChart(chartData) {
         window.financialChart.destroy();
     }
 
+    // Create a pattern for the diagonal stripe effect with solid lines
+    const stripePatternCanvas = document.createElement('canvas');
+    stripePatternCanvas.width = 20; // Adjust size to ensure lines are visible
+    stripePatternCanvas.height = 20;
+    const stripeCtx = stripePatternCanvas.getContext('2d');
+
+    // Set the background to be fully transparent
+    stripeCtx.clearRect(0, 0, stripePatternCanvas.width, stripePatternCanvas.height);
+
+    // Draw solid diagonal stripes
+    stripeCtx.strokeStyle = 'rgba(0, 0, 0, 0.2)'; // Light grey color for stripes
+    stripeCtx.lineWidth = 2; // Solid line width
+
+    stripeCtx.beginPath();
+    stripeCtx.moveTo(0, stripePatternCanvas.height);
+    stripeCtx.lineTo(stripePatternCanvas.width, 0);
+    stripeCtx.stroke();
+
+    const stripePattern = ctx.createPattern(stripePatternCanvas, 'repeat');
+
     let datasets;
 
     if (viewMode === 'payCycle') {
@@ -1068,17 +1088,19 @@ function updateChart(chartData) {
             {
                 label: 'Total Bills',
                 data: chartData.billsData,
-                backgroundColor: 'rgba(255, 165, 0, 1)', // Orange color for Bills (bottom)
-                borderColor: 'rgba(255, 165, 0, 1)',
+                backgroundColor: stripePattern, // Use the striped pattern
+                borderColor: 'rgba(0, 0, 0, 0.1)',
                 borderWidth: 1,
+                borderRadius: 10, // Rounded edges
                 stack: 'Stack 0'
             },
             {
-                label: 'Leftover',  // Changed label from 'Net Income' to 'Leftover'
+                label: 'Leftover',
                 data: netIncomeData,
-                backgroundColor: 'rgba(75, 192, 192, 0.6)', // Blue color with transparency for Leftover (top)
-                borderColor: 'rgba(75, 192, 192, 1)',
+                backgroundColor: 'rgba(0, 0, 0, 1)', // Solid black for Leftover
+                borderColor: 'rgba(0, 0, 0, 1)',
                 borderWidth: 1,
+                borderRadius: 10, // Rounded edges
                 stack: 'Stack 0'
             }
         ];
@@ -1089,17 +1111,18 @@ function updateChart(chartData) {
             {
                 label: 'Total Bills',
                 data: chartData.totals,
-                backgroundColor: 'rgba(255, 165, 0, 1)', // Orange color for Bills (bottom)
-                borderColor: 'rgba(255, 165, 0, 1)',
+                backgroundColor: stripePattern, // Use the striped pattern
+                borderColor: 'rgba(0, 0, 0, 0.1)',
                 borderWidth: 1,
+                borderRadius: 10, // Rounded edges
                 stack: 'Stack 0'
             },
             {
-                label: 'Leftover',  // Changed label from 'Net Income' to 'Leftover'
+                label: 'Leftover',
                 data: netIncomeData,
-                backgroundColor: 'rgba(75, 192, 192, 0.6)', // Blue color with transparency for Leftover (top)
-                borderColor: 'rgba(75, 192, 192, 1)',
-                borderWidth: 1,
+                backgroundColor: 'rgba(0, 0, 0, 1)', // Solid black for Leftover
+                borderColor: 'rgba(0, 0, 0, 1)',
+                borderRadius: 10, // Rounded edges
                 stack: 'Stack 0'
             }
         ];
@@ -1119,12 +1142,27 @@ function updateChart(chartData) {
                     type: 'category',
                     labels: chartData.dates,
                     ticks: { autoSkip: true, maxTicksLimit: 20 },
-                    title: { display: true, text: viewMode === 'payCycle' ? 'Start Date of Pay Cycle' : 'Month' }
+                    title: { display: true, text: viewMode === 'payCycle' ? 'Start Date of Pay Cycle' : 'Month' },
+                    grid: {
+                        display: false, // Remove grid lines on x-axis
+                    }
                 },
                 y: {
                     stacked: true,
                     beginAtZero: true,
-                    title: { display: true, text: 'Total Amount' }
+                    title: { display: true, text: 'Total Amount' },
+                    grid: {
+                        display: false, // Remove grid lines on y-axis
+                    },
+                    ticks: {
+                        callback: function(value) {
+                            // Format y-axis values as 2k, 4k, 15k, etc.
+                            if (value >= 1000) {
+                                return value / 1000 + 'k';
+                            }
+                            return value;
+                        }
+                    }
                 }
             },
             responsive: true,
