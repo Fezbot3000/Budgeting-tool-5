@@ -857,13 +857,24 @@ function getBillTotalForCycle(bill, dates) {
 }
 
 function calculateMonthlyView() {
-    let monthlyData = { dates: [], totals: [], bills: [], incomes: [], payDates: [], leftovers: [] };
+    let monthlyData = {
+        dates: [],
+        totals: [],
+        bills: [],
+        incomes: [],
+        payDates: [],
+        leftovers: [],
+    };
     let currentDate = new Date(payday);
     let payDates = [];
 
     const totalMonths = 18;
     let date = new Date(payday);
-    let endViewDate = new Date(currentDate.getFullYear(), currentDate.getMonth() + totalMonths, 0);
+    let endViewDate = new Date(
+        currentDate.getFullYear(),
+        currentDate.getMonth() + totalMonths,
+        0
+    );
 
     while (date <= endViewDate) {
         payDates.push(new Date(date));
@@ -872,19 +883,27 @@ function calculateMonthlyView() {
 
     for (let i = 0; i < totalMonths; i++) {
         let startDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
-        let endDate = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
-        let monthName = startDate.toLocaleString('default', { month: 'long' });
+        let endDate = new Date(
+            currentDate.getFullYear(),
+            currentDate.getMonth() + 1,
+            0
+        );
+        let monthName = startDate.toLocaleString("default", { month: "long" });
         monthlyData.dates.push(`${monthName} ${currentDate.getFullYear()}`);
 
         let monthTotal = 0;
-        let monthBills = '';
+        let monthBills = "";
         let monthIncome = 0;
         let monthPayDates = [];
         let billsInMonth = [];
 
-        // Calculate income for the month, including one-off incomes
-        payDates.forEach(payDate => {
-            const payDateStartOfDay = new Date(payDate.getFullYear(), payDate.getMonth(), payDate.getDate());
+        // Calculate income for the month
+        payDates.forEach((payDate) => {
+            const payDateStartOfDay = new Date(
+                payDate.getFullYear(),
+                payDate.getMonth(),
+                payDate.getDate()
+            );
 
             if (payDateStartOfDay >= startDate && payDateStartOfDay <= endDate) {
                 monthIncome += income;
@@ -892,62 +911,93 @@ function calculateMonthlyView() {
             }
         });
 
-        // Add one-off incomes to the month's income AND subtract from monthTotal
-        oneOffIncomes.forEach(incomeItem => {
-            const incomeDate = new Date(incomeItem.date);
-            if (incomeDate >= startDate && incomeDate <= endDate) {
-                monthIncome += incomeItem.amount;
-                monthTotal -= incomeItem.amount; // Subtract one-off income from expenses
-                monthBills += `<tr><td>${incomeItem.name}</td><td>${formatDayOnly(incomeDate)}</td><td class="positive right-align">+$${incomeItem.amount.toFixed(2)}</td></tr>`;
-            }
-        });
-
         monthlyData.incomes[i] = monthIncome; // Store the income for the month
-
         monthlyData.payDates.push(monthPayDates);
 
-        bills.forEach(bill => {
+        bills.forEach((bill) => {
             let billDueDate = new Date(bill.date);
-            if (bill.frequency === 'monthly') {
+            if (bill.frequency === "monthly") {
                 if (billDueDate.getDate() > endDate.getDate()) {
                     billDueDate.setDate(endDate.getDate());
                 }
-                billsInMonth.push({ name: bill.name, dueDate: new Date(billDueDate), amount: bill.amount });
+                billsInMonth.push({
+                    name: bill.name,
+                    dueDate: new Date(billDueDate),
+                    amount: bill.amount,
+                });
             }
         });
 
-        bills.forEach(bill => {
-            if (bill.frequency === 'weekly' || bill.frequency === 'fortnightly') {
+        bills.forEach((bill) => {
+            if (bill.frequency === "weekly" || bill.frequency === "fortnightly") {
                 let billDueDate = new Date(bill.date);
                 while (billDueDate <= endDate) {
                     if (billDueDate >= startDate && billDueDate <= endDate) {
-                        billsInMonth.push({ name: bill.name, dueDate: new Date(billDueDate), amount: bill.amount });
+                        billsInMonth.push({
+                            name: bill.name,
+                            dueDate: new Date(billDueDate),
+                            amount: bill.amount,
+                        });
                     }
                     billDueDate = getNextBillDate(billDueDate, bill.frequency);
                 }
             }
         });
 
-        bills.forEach(bill => {
+        bills.forEach((bill) => {
             let billDueDate = new Date(bill.date);
-            if (bill.frequency === 'quarterly') {
-                if ((billDueDate.getMonth() % 3 === startDate.getMonth() % 3) &&
-                    billDueDate.getFullYear() === startDate.getFullYear()) {
-                    billsInMonth.push({ name: bill.name, dueDate: new Date(billDueDate), amount: bill.amount });
+            if (bill.frequency === "quarterly") {
+                if (
+                    billDueDate.getMonth() % 3 === startDate.getMonth() % 3 &&
+                    billDueDate.getFullYear() === startDate.getFullYear()
+                ) {
+                    billsInMonth.push({
+                        name: bill.name,
+                        dueDate: new Date(billDueDate),
+                        amount: bill.amount,
+                    });
                 }
-            } else if (bill.frequency === 'yearly' || bill.frequency === 'one-off') {
-                if (billDueDate.getMonth() === startDate.getMonth() &&
-                    billDueDate.getFullYear() === startDate.getFullYear()) {
-                    billsInMonth.push({ name: bill.name, dueDate: new Date(billDueDate), amount: bill.amount });
+            } else if (
+                bill.frequency === "yearly" ||
+                bill.frequency === "one-off"
+            ) {
+                if (
+                    billDueDate.getMonth() === startDate.getMonth() &&
+                    billDueDate.getFullYear() === startDate.getFullYear()
+                ) {
+                    billsInMonth.push({
+                        name: bill.name,
+                        dueDate: new Date(billDueDate),
+                        amount: bill.amount,
+                    });
                 }
             }
         });
 
         billsInMonth.sort((a, b) => a.dueDate - b.dueDate);
 
-        billsInMonth.forEach(bill => {
-            monthBills += `<tr><td>${bill.name}</td><td>${formatDayOnly(bill.dueDate)}</td><td class="bills negative right-align">-$${bill.amount.toFixed(2)}</td></tr>`;
+        billsInMonth.forEach((bill) => {
+            monthBills += `<tr><td>${bill.name}</td><td>${formatDayOnly(
+                bill.dueDate
+            )}</td><td class="bills negative right-align">-$${bill.amount.toFixed(
+                2
+            )}</td></tr>`;
             monthTotal += bill.amount; // Add bill amounts (they're already negative)
+        });
+
+        // Handle one-off incomes separately to avoid duplicates
+        let incomeProcessed = false;
+        oneOffIncomes.forEach((incomeItem) => {
+            const incomeDate = new Date(incomeItem.date);
+            if (incomeDate >= startDate && incomeDate <= endDate && !incomeProcessed) {
+                monthBills += `<tr><td>${incomeItem.name}</td><td>${formatDayOnly(
+                    incomeDate
+                )}</td><td class="positive right-align">+$${incomeItem.amount.toFixed(
+                    2
+                )}</td></tr>`;
+                monthIncome += incomeItem.amount;
+                incomeProcessed = true; // Mark this one-off income as processed for the month
+            }
         });
 
         monthlyData.totals.push(monthTotal);
@@ -961,6 +1011,7 @@ function calculateMonthlyView() {
 
     return monthlyData;
 }
+
 
 
 function getNextBillDate(date, frequency) {
@@ -1109,63 +1160,70 @@ function updatePayCycleAccordion(chartData) {
 }
 
 function updateMonthlyAccordion(chartData) {
-  const accordionContainer = document.getElementById('accordionContainer');
-  chartData = calculateMonthlyView(); 
+    const accordionContainer = document.getElementById('accordionContainer');
+    chartData = calculateMonthlyView();
 
-  chartData.dates.forEach((monthYear, index) => {
-    if (index >= revealedPayCycles) return;
+    chartData.dates.forEach((monthYear, index) => {
+        if (index >= revealedPayCycles) return;
 
-    const monthTotal = chartData.totals[index];
-    let billsForMonth = chartData.bills[index];
-    let monthIncome = chartData.incomes[index];
+        const monthTotal = chartData.totals[index];
+        let billsForMonth = chartData.bills[index];
+        let monthIncome = chartData.incomes[index];
 
-    oneOffIncomes.forEach(incomeItem => {
-      const incomeDate = new Date(incomeItem.date);
-      const incomeMonth = incomeDate.getMonth();
-      const incomeYear = incomeDate.getFullYear();
+        // Create a Set to keep track of added one-off incomes (assuming names are unique)
+        const addedOneOffIncomes = new Set(); 
 
-      if (incomeMonth === new Date(monthYear).getMonth() && incomeYear === new Date(monthYear).getFullYear()) {
-        monthIncome += incomeItem.amount;
-        const formattedIncomeDate = incomeDate.getDate() + formatDaySuffix(incomeDate.getDate());
-        billsForMonth += `<tr><td>${incomeItem.name}</td><td>${formattedIncomeDate}</td><td class="positive right-align">+$${incomeItem.amount.toFixed(2)}</td></tr>`;
-      }
+        oneOffIncomes.forEach(incomeItem => {
+            const incomeDate = new Date(incomeItem.date);
+            const incomeMonth = incomeDate.getMonth();
+            const incomeYear = incomeDate.getFullYear();
+
+            if (incomeMonth === new Date(monthYear).getMonth() && incomeYear === new Date(monthYear).getFullYear()) {
+                // Add one-off income only if it hasn't been added before
+                if (!addedOneOffIncomes.has(incomeItem.name)) {
+                    monthIncome += incomeItem.amount; 
+                    const formattedIncomeDate = incomeDate.getDate() + formatDaySuffix(incomeDate.getDate());
+                    billsForMonth += `<tr><td>${incomeItem.name}</td><td>${formattedIncomeDate}</td><td class="positive right-align">+$${incomeItem.amount.toFixed(2)}</td></tr>`;
+                    addedOneOffIncomes.add(incomeItem.name); // Mark this income as added
+                }
+            }
+        });
+
+        const leftoverAmount = monthIncome - monthTotal;
+        const leftoverClass = leftoverAmount >= 0 ? 'positive' : 'negative';
+
+        const isOpen = localStorage.getItem(`panel-open-${index}`) === 'true';
+        const panelStyle = isOpen ? 'block' : 'none';
+        const toggleText = isOpen ? 'Hide' : 'Show';
+
+        accordionContainer.innerHTML += `
+        <div class="cycle-summary">
+            <div class="cycle-info">
+                <span class="right-align">${monthYear}</span>
+            </div>
+            <div class="income-summary">
+                <p>Income: <span class="positive">$${monthIncome.toFixed(2)}</span></p>
+                <p>Estimated to pay: <span class="negative">-$${monthTotal.toFixed(2)}</span></p>
+                <p>Leftover: <span class="${leftoverClass}">$${leftoverAmount.toFixed(2)}</span></p>
+            </div>
+            <button class="accordion-btn" data-index="${index}">
+                <span>Bills list</span>
+                <span class="toggle-text">${toggleText}</span>
+            </button>
+            <div class="panel-content" style="display: ${panelStyle};">
+                <table>
+                    ${billsForMonth}
+                </table>
+            </div>
+        </div>
+        `;
     });
-
-    const leftoverAmount = monthIncome - monthTotal;
-    const leftoverClass = leftoverAmount >= 0 ? 'positive' : 'negative';
-
-    const isOpen = localStorage.getItem(`panel-open-${index}`) === 'true';
-    const panelStyle = isOpen ? 'block' : 'none';
-    const toggleText = isOpen ? 'Hide' : 'Show';
-
-    accordionContainer.innerHTML += `
-    <div class="cycle-summary">
-      <div class="cycle-info">
-        <span class="right-align">${monthYear}</span>
-      </div>
-      <div class="income-summary">
-        <p>Income: <span class="positive">$${monthIncome.toFixed(2)}</span></p>
-        <p>Estimated to pay: <span class="negative">-$${monthTotal.toFixed(2)}</span></p>
-        <p>Leftover: <span class="${leftoverClass}">$${leftoverAmount.toFixed(2)}</span></p>
-      </div>
-      <button class="accordion-btn" data-index="${index}">
-        <span>Bills list</span>
-        <span class="toggle-text">${toggleText}</span>
-      </button>
-      <div class="panel-content" style="display: ${panelStyle};">
-        <table>
-          ${billsForMonth}
-        </table>
-      </div>
-    </div>
-    `;
-  });
 }
 
 function updateChart(chartData) {
   const financialChartElement = document.getElementById('financialChart');
   financialChartElement.style.width = '100%';
-  financialChartElement.style.height = '350px';
+  financialChartElement.style.height = '400px';
 
   const ctx = financialChartElement.getContext('2d');
 
