@@ -444,6 +444,12 @@ th span.sort-arrow.desc::after {
 .chart-container {
     margin: 40px auto;
     max-width: 800px;
+    /* background-color: red; */
+    background: linear-gradient(180deg, #FFC3C3 0%, #FFEB7F 100%);
+    padding: 10px;
+    border-radius: 15px;
+    /* box-shadow: 0px 0px 6px rgba(0, 0, 0, 0.1); */
+    margin-top: 20px;
 }
 
 .financialChart {
