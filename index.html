@@ -84,6 +84,7 @@
                         <td class="right-align" id="yearlySavingsPercentage"></td>
                     </tr>
                 </table>
+                
                 <div class="bill-summary-header">
                     <h2>Bills summary</h2>
                     <div class="buttons-container">
@@ -129,12 +130,15 @@
                         </select>
                     </div>
                 </div>
+                <!-- Move the chart here -->
+                <div class="chart-box">
+                    <div class="chart-container">
+                        <canvas id="financialChart"></canvas>
+                    </div>
+                </div>
                 <div id="accordionContainer"></div>
                 <button class="primary-btn" onclick="loadMorePayCycles()">Load 3 More Pay Cycles</button>
                 <div id="yearlyBillsSection"></div>
-            </div>
-            <div class="chart-container">
-                <canvas id="financialChart"></canvas>
             </div>
         </main>
     </div>
