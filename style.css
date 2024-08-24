@@ -44,21 +44,25 @@ h1, h2, h3, h4, h5, h6, p, a, button, input, select, label, th, td, .accordion-b
 }
 
 .negative {
+    color: #333;
+}
+
+.leftover-amount.negative {
     color: #f44336 !important;
 }
 
 .income-summary p span {
-    color: #333 !important; /* Override all other styles and make it black */
+    color: #333 ;
 }
 
 .income-summary p:last-child span.positive,
 .panel-content table td.positive {
-    color: green !important;
+    color: green;
 }
 
 /* Ensure negative amounts are red */
 .panel-content table td.negative {
-    color: #f44336 !important;
+    color: #f44336;
 }
 
 
@@ -246,7 +250,7 @@ tr:nth-child(odd) {
 }
 
 .bills.negative {
-    color: #f44336 !important;
+    color: #f44336;
 }
 
 th span.sort-arrow {
@@ -609,6 +613,14 @@ body.dark-mode {
 .chart-box {
     overflow-x: auto;  /* Enable horizontal scrolling if needed */
     -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS devices */
+}
+
+.past-bill {
+    color: #B7B7B7; /* Gray color */
+}
+
+.past-bill .bills.negative {
+    color: #B7B7B7 !important; /* Ensures the negative amount is also gray */
 }
 
 /* ========================================
