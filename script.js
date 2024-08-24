@@ -1,4 +1,4 @@
-// Initialize variables and load data from localStorage
+// Initialize variables and load data from localStorage change
 let bills = JSON.parse(localStorage.getItem('bills')) || [];
 let payFrequency = localStorage.getItem('payFrequency') || '';
 let income = parseFloat(localStorage.getItem('income')) || 0;
