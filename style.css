@@ -47,6 +47,21 @@ h1, h2, h3, h4, h5, h6, p, a, button, input, select, label, th, td, .accordion-b
     color: #f44336 !important;
 }
 
+.income-summary p span {
+    color: #333 !important; /* Override all other styles and make it black */
+}
+
+.income-summary p:last-child span.positive,
+.panel-content table td.positive {
+    color: green !important;
+}
+
+/* Ensure negative amounts are red */
+.panel-content table td.negative {
+    color: #f44336 !important;
+}
+
+
 /* ========================================
    Header Styles
 ======================================== */
@@ -436,13 +451,10 @@ th span.sort-arrow.desc::after {
    Chart Styles
 ======================================== */
 .chart-container {
-        margin: 40px auto;
-    max-width: 800px;
-    /* background-color: red; */
     background: linear-gradient(180deg, #FFC3C3 0%, #FFEB7F 100%);
     padding: 10px;
     border-radius: 15px;
-    /* box-shadow: 0px 0px 6px rgba(0, 0, 0, 0.1); */
+    box-shadow: 0px 0px 6px rgba(0, 0, 0, 0.1);
     margin-top: 20px;
 }
 
@@ -594,6 +606,11 @@ body.dark-mode {
     vertical-align: top;
 }
 
+.chart-box {
+    overflow-x: auto;  /* Enable horizontal scrolling if needed */
+    -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS devices */
+}
+
 /* ========================================
    Media Queries
 ======================================== */
@@ -603,6 +620,16 @@ body.dark-mode {
 }
 
 @media (max-width: 768px) {
+    .chart-container {
+        width: 950px; 
+        overflow-x: auto; 
+        overflow-y: hidden; 
+        white-space: nowrap; 
+    }
+    .chart-box {
+        width: 100%;
+    }
+
     .cycle-info span.left-align {
         display: none;
     }
@@ -811,6 +838,7 @@ body.dark-mode #billModal .modal-footer button:hover {
     padding: 20px;
     margin-bottom: 10px;
     background-color: #fff;
+    box-shadow: 0px 0px 6px rgba(0, 0, 0, 0.1);
 }
 
 .income-summary p {
@@ -859,6 +887,7 @@ th .sort-arrow.desc::after {
     appearance: none;
     color: #333; /* Explicit text color */
     background-color: #fff;
+    box-shadow: 0px 0px 6px rgba(0, 0, 0, 0.1);
 }
 
 .accordion-btn span {
