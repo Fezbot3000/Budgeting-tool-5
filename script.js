@@ -1107,6 +1107,7 @@ function updatePayCycleAccordion(chartData) {
             }
         });
 
+        // Calculate leftover amount and determine class
         const leftoverAmount = cycleIncome - cycleTotal; 
         const leftoverClass = leftoverAmount >= 0 ? 'positive' : 'negative';
         const formattedStartDate = formatDate(dates.start);
@@ -1123,8 +1124,8 @@ function updatePayCycleAccordion(chartData) {
             </div>
             <div class="income-summary">
                 <p>Income: <span class="positive">$${cycleIncome.toFixed(2)}</span></p>
-                <p>Estimated to pay: <span class="negative">-$${cycleTotal.toFixed(2)}</span></p>
-                <p>Leftover: <span class="${leftoverClass}">$${leftoverAmount.toFixed(2)}</span></p>
+                <p>Estimated to pay: <span style="color: #333;">-$${cycleTotal.toFixed(2)}</span></p>
+                <p>Leftover: <span class="leftover-amount ${leftoverClass}">$${leftoverAmount.toFixed(2)}</span></p>
             </div>
             <button class="accordion-btn" data-index="${index}">
                 <span>Bills list</span>
@@ -1138,12 +1139,12 @@ function updatePayCycleAccordion(chartData) {
         </div>
         `;
 
+        // Populate chartData for chart updates
         chartData.dates.push(formattedStartDate);
         chartData.billsData.push(cycleTotal);
         chartData.incomeData.push(cycleIncome);
     });
 }
-
 
 
 function updateMonthlyAccordion(chartData) {
