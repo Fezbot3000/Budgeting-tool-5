@@ -78,12 +78,7 @@ function calculateYearlyAmount(amount, frequency) {
 }
 
 function updateIncomeTable(payFrequency, income) {
-    let totalOneOffIncome = oneOffIncomes.reduce((total, income) => {
-        return total + income.amount;
-    }, 0);
-
-    const yearlyIncome = calculateYearlyIncome(payFrequency, income) + totalOneOffIncome;
-
+    const yearlyIncome = calculateYearlyIncome(payFrequency, income);
     const yearlyBills = calculateYearlyBills();
     const potentialSavings = yearlyIncome - yearlyBills;
     const billPercentage = yearlyIncome > 0 ? (yearlyBills / yearlyIncome) * 100 : 0;
@@ -126,14 +121,12 @@ function goToStep2() {
     document.getElementById('step1').classList.add('hidden');
     document.getElementById('step2').classList.remove('hidden');
 
-    // Show the chart when moving to Step 2
     const chartContainer = document.getElementById('chartContainer');
     if (chartContainer) {
         chartContainer.style.display = 'block';
     }
 
-    // Reload the page to ensure the pay cycles are shown correctly
-    location.reload();
+    location.reload();  // Ensures that the pay cycles are shown correctly.
 }
 
 function toggleViewMode() {
