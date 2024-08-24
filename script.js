@@ -775,7 +775,7 @@ function getBillRowsForCycle(bill, dates) {
         }
     } else {
         while (billDueDate <= dates.end) {
-            if (billDueDate >= dates.start && billDueDate <= dates.end) {
+            if (billDueDate >= dates.start) { // Include bills due on the start date of the cycle
                 rows += `<tr><td>${bill.name}</td><td>${formatDateWithLineBreak(billDueDate)}</td><td class="bills negative right-align">-$${bill.amount.toFixed(2)}</td></tr>`;
             }
             billDueDate = adjustDate(getNextBillDate(billDueDate, bill.frequency));
@@ -819,15 +819,23 @@ function getBillTotalForCycle(bill, dates) {
             if (bill.amount < 0) {
                 total += bill.amount; // Bills are added to the total (as they are negative)
             } else {
-                total += bill.amount; // Incomes are added (as they are positive)
+                total -= bill.amount; // Incomes are subtracted (as they are positive)
             }
         }
     } else {
         while (billDueDate <= dates.end) {
-            if (billDueDate >= dates.start && billDueDate <= dates.end) {
+            if (billDueDate >= dates.start) { // Include bills due on the start date of the cycle
                 total += bill.amount; // Regular bills are added
             }
-            billDueDate = adjustDate(getNextBillDate(billDueDate, bill.frequency));
+            billDueDate = getNextBillDate(billDueDate, bill.frequency);
+
+            // Apply the same date adjustment logic as the month-to-month view within the loop
+            if (bill.frequency === "monthly" || bill.frequency === "quarterly") {
+                let lastDayOfMonth = new Date(billDueDate.getFullYear(), billDueDate.getMonth() + 1, 0).getDate();
+                if (billDueDate.getDate() > lastDayOfMonth) {
+                    billDueDate.setDate(lastDayOfMonth); // Adjust to the last valid day of the month
+                }
+            }
         }
     }
 
@@ -990,162 +998,176 @@ function calculateMonthlyView() {
     return monthlyData;
 }
 
-
-
 function getNextBillDate(date, frequency) {
     const originalDay = date.getDate();
-    
+
     switch (frequency) {
-        case 'weekly': 
-            date.setDate(date.getDate() + 7); 
+        case 'weekly':
+            date.setDate(date.getDate() + 7);
             break;
-        case 'fortnightly': 
-            date.setDate(date.getDate() + 14); 
+        case 'fortnightly':
+            date.setDate(date.getDate() + 14);
             break;
-        case 'monthly': 
+        case 'monthly':
             date.setMonth(date.getMonth() + 1);
-            if (date.getDate() < originalDay) {
-                date.setDate(new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate());
+            // Special handling for bills due on the 30th
+            if (originalDay === 30) {
+                const lastDayOfCurrentMonth = new Date(date.getFullYear(), date.getMonth(), 0).getDate(); 
+                date.setDate(lastDayOfCurrentMonth); 
             }
             break;
-        case 'quarterly': 
+        case 'quarterly':
             date.setMonth(date.getMonth() + 3);
             if (date.getDate() < originalDay) {
                 date.setDate(new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate());
             }
             break;
-        case 'yearly': 
-            date.setFullYear(date.getFullYear() + 1); 
+        case 'yearly':
+            date.setFullYear(date.getFullYear() + 1);
             break;
     }
-    return date;
+
+    // Apply general date adjustment to ensure it's a valid day within the month
+    return adjustDate(date);
 }
 
 function loadMorePayCycles() {
-    revealedPayCycles += 3; 
+  revealedPayCycles += 3; 
 
-    // Save the updated revealedPayCycles for the current viewMode
-    if (viewMode === 'payCycle') {
-        localStorage.setItem('revealedPayCyclesPayCycle', revealedPayCycles);
-    } else if (viewMode === 'monthly') {
-        localStorage.setItem('revealedPayCyclesMonthly', revealedPayCycles);
-    }
+  // Save the updated revealedPayCycles for the current viewMode
+  if (viewMode === 'payCycle') {
+    localStorage.setItem('revealedPayCyclesPayCycle', revealedPayCycles);
+  } else if (viewMode === 'monthly') {
+    localStorage.setItem('revealedPayCyclesMonthly', revealedPayCycles);
+  }
 
-    updateAccordion(); 
+  updateAccordion(); 
 
-    if (viewMode === 'monthly') {
-        const chartData = calculateMonthlyView();
-        const limitedChartData = {
-            dates: chartData.dates.slice(0, revealedPayCycles),
-            totals: chartData.totals.slice(0, revealedPayCycles),
-            bills: chartData.bills.slice(0, revealedPayCycles),
-            incomes: chartData.incomes.slice(0, revealedPayCycles),
-            leftovers: chartData.leftovers.slice(0, revealedPayCycles)
-        };
-        updateChart(limitedChartData); 
-    } else if (viewMode === 'payCycle') {
-        const cycleDates = getCycleDates(new Date(payday), getCycleLength(payFrequency), generatedPayCycles);
-        const chartData = { dates: [], billsData: [], incomeData: [] };
+  if (viewMode === 'monthly') {
+    const chartData = calculateMonthlyView();
+    const limitedChartData = {
+      dates: chartData.dates.slice(0, revealedPayCycles),
+      totals: chartData.totals.slice(0, revealedPayCycles),
+      bills: chartData.bills.slice(0, revealedPayCycles),
+      incomes: chartData.incomes.slice(0, revealedPayCycles),
+      leftovers: chartData.leftovers.slice(0, revealedPayCycles)
+    };
+    updateChart(limitedChartData); 
+  } else if (viewMode === 'payCycle') {
+    const cycleDates = getCycleDates(new Date(payday), getCycleLength(payFrequency), generatedPayCycles);
+    const chartData = { dates: [], billsData: [], incomeData: [] };
 
-        cycleDates.forEach((dates, index) => {
-            if (index >= revealedPayCycles) return;
+    cycleDates.forEach((dates, index) => {
+      if (index >= revealedPayCycles) return;
 
-            let cycleTotal = 0;
-            let cycleIncome = income;
+      let cycleTotal = 0;
+      let cycleIncome = income;
 
-            const sortedBills = sortBillsByDate(bills);
-            sortedBills.forEach(bill => {
-                cycleTotal += getBillTotalForCycle(bill, dates);
-            });
+      const sortedBills = sortBillsByDate(bills);
+      sortedBills.forEach(bill => {
+        cycleTotal += getBillTotalForCycle(bill, dates);
+      });
 
-            oneOffIncomes.forEach(incomeItem => {
-                const incomeDate = new Date(incomeItem.date);
-                if (incomeDate >= dates.start && incomeDate <= dates.end) {
-                    cycleIncome += incomeItem.amount; 
-                }
-            });
+      oneOffIncomes.forEach(incomeItem => {
+        const incomeDate = new Date(incomeItem.date);
+        if (incomeDate >= dates.start && incomeDate <= dates.end) {
+          cycleIncome += incomeItem.amount; 
+        }
+      });
 
-            const formattedStartDate = formatDate(dates.start);
-            chartData.dates.push(formattedStartDate);
-            chartData.billsData.push(cycleTotal);
-            chartData.incomeData.push(cycleIncome);
-        });
+      const formattedStartDate = formatDate(dates.start);
+      chartData.dates.push(formattedStartDate);
+      chartData.billsData.push(cycleTotal);
+      chartData.incomeData.push(cycleIncome);
+    });
 
-        updateChart(chartData);
-    }
+    updateChart(chartData);
+  }
 }
 
 function updatePayCycleAccordion(chartData) {
-    const accordionContainer = document.getElementById('accordionContainer');
-    const cycleDates = getCycleDates(new Date(payday), getCycleLength(payFrequency), generatedPayCycles);
+  const accordionContainer = document.getElementById('accordionContainer');
+  const cycleDates = getCycleDates(new Date(payday), getCycleLength(payFrequency), generatedPayCycles);
 
-    cycleDates.forEach((dates, index) => {
-        if (index >= revealedPayCycles) return;
+  cycleDates.forEach((dates, index) => {
+    if (index >= revealedPayCycles) return;
 
-        let cycleTotal = 0;
-        let cycleIncome = income; 
-        let cycleBills = '';
+    let cycleTotal = 0;
+    let cycleIncome = income;
+    let cycleBills = '';
 
-        const sortedBills = sortBillsByDate(bills);
-        sortedBills.forEach(bill => {
-            cycleBills += getBillRowsForCycle(bill, dates);
-            cycleTotal += getBillTotalForCycle(bill, dates);
-        });
+    const sortedBills = sortBillsByDate(bills);
+    sortedBills.forEach(bill => {
+      let billDueDate = adjustDate(new Date(bill.date));
 
-        // Reset the processed incomes at the start of each cycle to avoid duplicates
-        let processedIncomes = new Set();
-
-        oneOffIncomes.forEach(incomeItem => {
-            const incomeDate = new Date(incomeItem.date);
-            const incomeKey = `${incomeItem.name}-${incomeDate.toISOString()}`; // Unique key for each income
-
-            // Check if this income has already been processed
-            if (incomeDate >= dates.start && incomeDate <= dates.end && !processedIncomes.has(incomeKey)) {
-                cycleIncome += incomeItem.amount; 
-                cycleBills += `<tr><td>${incomeItem.name}</td><td>${formatDateWithLineBreak(incomeDate)}</td><td class="positive right-align">+$${incomeItem.amount.toFixed(2)}</td></tr>`;
-                processedIncomes.add(incomeKey); // Mark this one-off income as processed
-            }
-        });
-
-        // Calculate leftover amount and determine class
-        const leftoverAmount = cycleIncome - cycleTotal; 
-        const leftoverClass = leftoverAmount >= 0 ? 'positive' : 'negative';
-        const formattedStartDate = formatDate(dates.start);
-        const formattedEndDate = formatDate(dates.end);
-
-        const isOpen = localStorage.getItem(`panel-open-${index}`) === 'true';
-        const panelStyle = isOpen ? 'block' : 'none';
-        const toggleText = isOpen ? 'Hide' : 'Show';
-
-        accordionContainer.innerHTML += `
-        <div class="cycle-summary">
-            <div class="cycle-info">
-                <span class="right-align">${formattedStartDate} - ${formattedEndDate}</span>
-            </div>
-            <div class="income-summary">
-                <p>Income: <span class="positive">$${cycleIncome.toFixed(2)}</span></p>
-                <p>Estimated to pay: <span style="color: #333;">-$${cycleTotal.toFixed(2)}</span></p>
-                <p>Leftover: <span class="leftover-amount ${leftoverClass}">$${leftoverAmount.toFixed(2)}</span></p>
-            </div>
-            <button class="accordion-btn" data-index="${index}">
-                <span>Bills list</span>
-                <span class="toggle-text">${toggleText}</span>
-            </button>
-            <div class="panel-content" style="display: ${panelStyle};">
-                <table>
-                    ${cycleBills}
-                </table>
-            </div>
-        </div>
-        `;
-
-        // Populate chartData for chart updates
-        chartData.dates.push(formattedStartDate);
-        chartData.billsData.push(cycleTotal);
-        chartData.incomeData.push(cycleIncome);
+      if (bill.frequency === 'yearly' || bill.frequency === 'one-off') {
+        if (billDueDate >= dates.start && billDueDate <= dates.end) {
+          cycleBills += `<tr><td>${bill.name}</td><td>${formatDateWithLineBreak(billDueDate)}</td><td class="bills negative right-align">-$${bill.amount.toFixed(2)}</td></tr>`;
+          cycleTotal += bill.amount; 
+        }
+      } else {
+        let iterationCount = 0; 
+        while (billDueDate <= dates.end && iterationCount < 100) { 
+          if (billDueDate >= dates.start && billDueDate <= dates.end) {
+            cycleBills += `<tr><td>${bill.name}</td><td>${formatDateWithLineBreak(billDueDate)}</td><td class="bills negative right-align">-$${bill.amount.toFixed(2)}</td></tr>`;
+            cycleTotal += bill.amount;
+          }
+          billDueDate = getNextBillDate(billDueDate, bill.frequency);
+          billDueDate = adjustDate(billDueDate);
+          iterationCount++;
+        }
+        if (iterationCount >= 100) {
+          console.warn(`Potential infinite loop detected for bill: ${bill.name}`);
+        }
+      }
     });
-}
 
+    // Reset the processed incomes at the start of each cycle to avoid duplicates
+    let processedIncomes = new Set();
+
+    oneOffIncomes.forEach(incomeItem => {
+      const incomeDate = new Date(incomeItem.date);
+      const incomeKey = `${incomeItem.name}-${incomeDate.toISOString()}`;
+
+      if (incomeDate >= dates.start && incomeDate <= dates.end && !processedIncomes.has(incomeKey)) {
+        cycleIncome += incomeItem.amount; 
+        cycleBills += `<tr><td>${incomeItem.name}</td><td>${formatDateWithLineBreak(incomeDate)}</td><td class="positive right-align">+$${incomeItem.amount.toFixed(2)}</td></tr>`;
+        processedIncomes.add(incomeKey); 
+      }
+    });
+
+    const leftoverAmount = cycleIncome - cycleTotal; 
+    const leftoverClass = leftoverAmount >= 0 ? 'positive' : 'negative';
+    const formattedStartDate = formatDate(dates.start);
+    const formattedEndDate = formatDate(dates.end);
+
+    const isOpen = localStorage.getItem(`panel-open-${index}`) === 'true';
+    const panelStyle = isOpen ? 'block' : 'none';
+    const toggleText = isOpen ? 'Hide' : 'Show';
+
+    accordionContainer.innerHTML += `
+    <div class="cycle-summary">
+      <div class="cycle-info">
+        <span class="right-align">${formattedStartDate} - ${formattedEndDate}</span>
+      </div>
+      <div class="income-summary">
+        <p>Income: <span class="positive">$${cycleIncome.toFixed(2)}</span></p>
+        <p>Estimated to pay: <span style="color: #333;">-$${cycleTotal.toFixed(2)}</span></p>
+        <p>Leftover: <span class="leftover-amount ${leftoverClass}">$${leftoverAmount.toFixed(2)}</span></p>
+      </div>
+      <button class="accordion-btn" data-index="${index}">
+        <span>Bills list</span>
+        <span class="toggle-text">${toggleText}</span>
+      </button>
+      <div class="panel-content" style="display: ${panelStyle};">
+        <table>
+          ${cycleBills}
+        </table>
+      </div>
+    </div>
+    `;
+  });
+}
 
 function updateMonthlyAccordion(chartData) {
     const accordionContainer = document.getElementById('accordionContainer');
