@@ -247,7 +247,7 @@ document.addEventListener('DOMContentLoaded', () => {
             totalAmount: 'asc'
         };
     }
-
+    
     // Ensure the sort arrows reflect the correct initial state
     const activeColumn = Object.keys(sortOrder).find(key => sortOrder[key] !== null);
     if (activeColumn) {
@@ -260,7 +260,10 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Populate the tag dropdowns on page load
-    updateTagDropdown(); 
+    updateTagDropdown();     
+    setTimeout(() => {
+        sortTable('date', false, 'asc');
+    }, 500);
 });
 
 
@@ -348,6 +351,8 @@ document.getElementById('oneOffIncomeForm').addEventListener('submit', function(
     updateIncomeTableWithOneOffIncomes();
     closeOneOffIncomeModal();
     resetIncomeForm();
+  
+    
 });
 
 function resetIncomeForm() {
@@ -419,7 +424,7 @@ function updateBillsTable() {
                             </thead>
                             <tbody></tbody>`;
 
-    const sortedBills = sortBills(adjustedBills); // Call sortBills to get the sorted array
+    const sortedBills = adjustedBills; // Call sortBills to get the sorted array
 
     // Subtract bill amounts (as they are expenses)
     sortedBills.forEach((bill, index) => {
@@ -430,7 +435,7 @@ function updateBillsTable() {
             <td>${bill.name}</td>
             <td class="bills negative right-align">-$${bill.amount.toFixed(2)}</td>
             <td>${bill.frequency}</td>
-            <td>${formatDate(bill.displayDate)}</td>
+            <td data-date="${bill.displayDate}">${formatDate(bill.displayDate)}</td>
             <td>${bill.tag}</td>
             <td class="right-align">-$${yearlyAmount.toFixed(2)}</td>
             <td><button class="secondary-btn" onclick="editBill(${index})">Edit</button> <button class="delete-btn" onclick="removeBill(${index})">Delete</button></td>
@@ -445,7 +450,7 @@ function updateBillsTable() {
             <td>${income.name}</td>
             <td class="positive right-align">+$${income.amount.toFixed(2)}</td>
             <td>One-Off</td>
-            <td>${formatDate(income.date)}</td>
+            <td data-date="${income.date}">${formatDate(income.date)}</td>
             <td>One-Off</td>
             <td class="right-align">+$${income.amount.toFixed(2)}</td>
             <td>
@@ -460,9 +465,13 @@ function updateBillsTable() {
     billsTable.querySelector('tbody').insertAdjacentHTML('beforeend', totalRow);
 
     updateIncomeTable(payFrequency, income);
+    setTimeout(() => {
+        sortTable('date', false, 'asc');    
+    }, 1500);
+   
 }
 
-function sortTable(column, toggleDirection = true) {
+function sortTable(column, toggleDirection = true, odr='') {
     // If the column is different from the previous sorted one, reset direction to ascending
     if (toggleDirection) {
         sortOrder[column] = sortOrder[column] === 'asc' ? 'desc' : 'asc';
@@ -479,10 +488,15 @@ function sortTable(column, toggleDirection = true) {
             valA = parseFloat(valA.replace(/[^0-9.-]+/g, ""));
             valB = parseFloat(valB.replace(/[^0-9.-]+/g, ""));
         } else if (column === 'date') {
+            valA = a.querySelector(`td:nth-child(${getColumnIndex(column)})`).getAttribute('data-date');
+            valB = b.querySelector(`td:nth-child(${getColumnIndex(column)})`).getAttribute('data-date');
             valA = new Date(valA);
             valB = new Date(valB);
         }
-
+        if(odr!='')
+        {
+            sortOrder[column] = odr;
+        }
         if (sortOrder[column] === 'asc') {
             return valA > valB ? 1 : -1;
         } else {
@@ -1102,14 +1116,14 @@ function updatePayCycleAccordion(chartData) {
 
       if (bill.frequency === 'yearly' || bill.frequency === 'one-off') {
         if (billDueDate >= dates.start && billDueDate <= dates.end) {
-          cycleBills += `<tr><td>${bill.name}</td><td>${formatDateWithLineBreak(billDueDate)}</td><td class="bills negative right-align">-$${bill.amount.toFixed(2)}</td></tr>`;
+          cycleBills += `<tr><td>${bill.name}</td><td data-date="${bill.date}">${formatDateWithLineBreak(billDueDate)}</td><td class="bills negative right-align">-$${bill.amount.toFixed(2)}</td></tr>`;
           cycleTotal += bill.amount; 
         }
       } else {
         let iterationCount = 0; 
         while (billDueDate <= dates.end && iterationCount < 100) { 
           if (billDueDate >= dates.start && billDueDate <= dates.end) {
-            cycleBills += `<tr><td>${bill.name}</td><td>${formatDateWithLineBreak(billDueDate)}</td><td class="bills negative right-align">-$${bill.amount.toFixed(2)}</td></tr>`;
+            cycleBills += `<tr><td>${bill.name}</td><td data-date="${bill.date}">${formatDateWithLineBreak(billDueDate)}</td><td class="bills negative right-align">-$${bill.amount.toFixed(2)}</td></tr>`;
             cycleTotal += bill.amount;
           }
           billDueDate = getNextBillDate(billDueDate, bill.frequency);
@@ -1146,7 +1160,7 @@ function updatePayCycleAccordion(chartData) {
     const toggleText = isOpen ? 'Hide' : 'Show';
 
     accordionContainer.innerHTML += `
-    <div class="cycle-summary">
+    <div class="cycle-summary cycle-${index}">
       <div class="cycle-info">
         <span class="right-align">${formattedStartDate} - ${formattedEndDate}</span>
       </div>
@@ -1166,6 +1180,22 @@ function updatePayCycleAccordion(chartData) {
       </div>
     </div>
     `;
+      var rows = document.querySelectorAll('.cycle-'+index+' table tr');
+
+        rows = Array.prototype.slice.call(rows);
+    
+        rows.sort(function(rowA, rowB) {
+            var aValue = rowA.querySelector(`td:nth-child(2)`).getAttribute('data-date');
+            var bValue = rowB.querySelector(`td:nth-child(2)`).getAttribute('data-date');
+    
+            return aValue - bValue;
+        });
+    
+        // Append the sorted rows to the table
+        var table = document.querySelector('.cycle-'+index+' table');
+        rows.forEach(function(row) {
+            table.appendChild(row);
+        });
   });
 }
 
@@ -1183,19 +1213,6 @@ function updateMonthlyAccordion(chartData) {
         // Use a Set to track which one-off incomes have been processed
         const addedOneOffIncomes = new Set(); 
 
-        oneOffIncomes.forEach(incomeItem => {
-            const incomeDate = new Date(incomeItem.date);
-            const incomeMonth = incomeDate.getMonth();
-            const incomeYear = incomeDate.getFullYear();
-
-            if (incomeMonth === new Date(monthYear).getMonth() && incomeYear === new Date(monthYear).getFullYear()) {
-                if (!addedOneOffIncomes.has(incomeItem.name)) {
-                    monthIncome += incomeItem.amount; 
-                    billsForMonth += `<tr><td>${incomeItem.name}</td><td>${incomeDate.getDate()}${formatDaySuffix(incomeDate.getDate())}</td><td class="positive right-align">+$${incomeItem.amount.toFixed(2)}</td></tr>`;
-                    addedOneOffIncomes.add(incomeItem.name);
-                }
-            }
-        });
 
         const leftoverAmount = monthIncome - monthTotal;
         const leftoverClass = leftoverAmount >= 0 ? 'positive' : 'negative';
@@ -1203,9 +1220,9 @@ function updateMonthlyAccordion(chartData) {
         const isOpen = localStorage.getItem(`panel-open-${index}`) === 'true';
         const panelStyle = isOpen ? 'block' : 'none';
         const toggleText = isOpen ? 'Hide' : 'Show';
-
+        
         accordionContainer.innerHTML += `
-        <div class="cycle-summary">
+        <div class="cycle-summary cycle-${index}">
             <div class="cycle-info">
                 <span class="right-align">${monthYear}</span>
             </div>
@@ -1225,7 +1242,27 @@ function updateMonthlyAccordion(chartData) {
             </div>
         </div>
         `;
+
+        var rows = document.querySelectorAll('.cycle-'+index+' table tr');
+
+        rows = Array.prototype.slice.call(rows);
+    
+        rows.sort(function(rowA, rowB) {
+            var aValue = parseInt(rowA.querySelector(`td:nth-child(2)`).textContent, 10);
+            var bValue = parseInt(rowB.querySelector(`td:nth-child(2)`).textContent, 10);
+    
+            return aValue - bValue;
+        });
+    
+        // Append the sorted rows to the table
+        var table = document.querySelector('.cycle-'+index+' table');
+        rows.forEach(function(row) {
+            table.appendChild(row);
+        });
+
     });
+
+   
 }
 
 function updateChart(chartData) {

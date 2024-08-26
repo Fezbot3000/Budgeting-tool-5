@@ -514,6 +514,10 @@ body.dark-mode {
     color: #e0e0e0;
 }
 
+.dark-mode .income-summary p span {
+    color: #fff ;
+}
+
 .dark-mode .delete-btn {
     background-color: #1e1e1e;
 }
