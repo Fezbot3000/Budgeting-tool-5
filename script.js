@@ -79,17 +79,25 @@ function calculateYearlyAmount(amount, frequency) {
 
 function updateIncomeTable(payFrequency, income) {
     const yearlyIncome = calculateYearlyIncome(payFrequency, income);
+    let totalOneOffIncome = 0;
+
+    // Add the one-off incomes to the total yearly income
+    oneOffIncomes.forEach(incomeItem => {
+        totalOneOffIncome += incomeItem.amount;
+    });
+
+    const totalYearlyIncome = yearlyIncome + totalOneOffIncome;
     const yearlyBills = calculateYearlyBills();
-    const potentialSavings = yearlyIncome - yearlyBills;
-    const billPercentage = yearlyIncome > 0 ? (yearlyBills / yearlyIncome) * 100 : 0;
-    const savingsPercentage = yearlyIncome > 0 ? (potentialSavings / yearlyIncome) * 100 : 0;
+    const potentialSavings = totalYearlyIncome - yearlyBills;
+    const billPercentage = totalYearlyIncome > 0 ? (yearlyBills / totalYearlyIncome) * 100 : 0;
+    const savingsPercentage = totalYearlyIncome > 0 ? (potentialSavings / totalYearlyIncome) * 100 : 0;
 
     document.getElementById('incomeFrequency').className = '';
     document.getElementById('incomeFrequency').textContent = payFrequency;
     document.getElementById('incomeAmount').className = 'right-align';
     document.getElementById('incomeAmount').textContent = `$${income.toFixed(2)}`;
     document.getElementById('yearlyIncomeAmount').className = 'right-align';
-    document.getElementById('yearlyIncomeAmount').textContent = `$${yearlyIncome.toFixed(2)}`;
+    document.getElementById('yearlyIncomeAmount').textContent = `$${totalYearlyIncome.toFixed(2)}`;
     document.getElementById('yearlyBillsAmount').className = 'right-align';
     document.getElementById('yearlyBillsAmount').textContent = `-$${yearlyBills.toFixed(2)}`;
     document.getElementById('yearlyBillsPercentage').className = 'right-align';
