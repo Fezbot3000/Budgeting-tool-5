@@ -134,6 +134,10 @@ function toggleViewMode() {
     viewMode = document.getElementById('viewMode').value;
     localStorage.setItem('viewMode', viewMode);
 
+    // Update the h2 title based on the view mode
+    const viewModeTitle = document.getElementById('viewModeTitle');
+    viewModeTitle.textContent = viewMode === 'payCycle' ? 'Pay Cycle' : 'Month to Month';
+
     if (previousViewMode !== viewMode) {
         revealedPayCycles = 12; // Reset to 12 cycles for both views when switching
 
@@ -142,28 +146,69 @@ function toggleViewMode() {
         }
     }
 
-    document.getElementById('accordionContainer').innerHTML = ''; 
+    // Clear the canvas and destroy the existing chart
+    const canvas = document.getElementById('financialChart');
+    if (window.financialChart && typeof window.financialChart.destroy === 'function') {
+        window.financialChart.destroy();
+    }
+    canvas.width = canvas.width; // Reset the canvas size to clear the content
+    
+    // Ensure canvas height stays correct
+    canvas.height = 480; // Explicitly set the height here
+
+    document.getElementById('accordionContainer').innerHTML = '';
 
     if (viewMode === 'payCycle') {
         updateAccordion();
+        const cycleDates = getCycleDates(new Date(payday), getCycleLength(payFrequency), generatedPayCycles);
+        const chartData = { dates: [], billsData: [], incomeData: [] };
+
+        cycleDates.forEach((dates, index) => {
+            if (index >= revealedPayCycles) return;
+
+            let cycleTotal = 0;
+            let cycleIncome = income;
+
+            const sortedBills = sortBillsByDate(bills);
+            sortedBills.forEach(bill => {
+                cycleTotal += getBillTotalForCycle(bill, dates);
+            });
+
+            oneOffIncomes.forEach(incomeItem => {
+                const incomeDate = new Date(incomeItem.date);
+                if (incomeDate >= dates.start && incomeDate <= dates.end) {
+                    cycleIncome += incomeItem.amount;
+                }
+            });
+
+            const formattedStartDate = formatDate(dates.start);
+            chartData.dates.push(formattedStartDate);
+            chartData.billsData.push(cycleTotal);
+            chartData.incomeData.push(cycleIncome);
+        });
+
+        updateChart(chartData);
     } else if (viewMode === 'monthly') {
         const chartData = calculateMonthlyView();
         if (chartData.dates.length > 0) {
-            updateAccordion(); 
+            updateAccordion();
             const limitedChartData = {
                 dates: chartData.dates.slice(0, revealedPayCycles),
                 totals: chartData.totals.slice(0, revealedPayCycles),
                 bills: chartData.bills.slice(0, revealedPayCycles),
                 incomes: chartData.incomes.slice(0, revealedPayCycles),
-                leftovers: chartData.leftovers.slice(0, revealedPayCycles) 
+                leftovers: chartData.leftovers.slice(0, revealedPayCycles)
             };
-            updateChart(limitedChartData); 
+            updateChart(limitedChartData);
         }
     }
 
     updateIncomeTable(payFrequency, income);
     updateBillsTable();
 }
+
+
+document.getElementById('viewMode').addEventListener('change', toggleViewMode);
 
 document.addEventListener('DOMContentLoaded', () => {
     // Load the saved view mode from localStorage
@@ -1294,61 +1339,67 @@ function updateMonthlyAccordion(chartData) {
 }
 
 function updateChart(chartData) {
-    const financialChartElement = document.getElementById('financialChart');
-    financialChartElement.style.width = '100%';
-    financialChartElement.style.height = '400px';
+    // Find all income-summary elements
+    const incomeSummaries = document.querySelectorAll('.income-summary');
 
-    const ctx = financialChartElement.getContext('2d');
+    if (incomeSummaries.length === 0) {
+        console.error("No income summaries found.");
+        return;
+    }
 
+    // Initialize arrays to store chart data
+    const incomeData = [];
+    const estimatedToPayData = [];
+    const leftoverData = [];
+
+    // Loop through each income-summary and extract data
+    incomeSummaries.forEach(summary => {
+        const income = parseFloat(summary.querySelector('p:nth-child(1) span').textContent.replace(/[^0-9.-]+/g, ""));
+        const estimatedToPay = parseFloat(summary.querySelector('p:nth-child(2) span').textContent.replace(/[^0-9.-]+/g, ""));
+        const leftover = parseFloat(summary.querySelector('p:nth-child(3) span').textContent.replace(/[^0-9.-]+/g, ""));
+
+        incomeData.push(income);
+        estimatedToPayData.push(estimatedToPay);
+        leftoverData.push(leftover);
+    });
+
+    // Ensure the number of data points matches the number of dates
+    if (chartData.dates.length !== incomeData.length) {
+        console.error("Mismatch between the number of chart dates and income summaries.");
+        return;
+    }
+
+    // Destroy the previous chart instance if it exists
     if (window.financialChart && typeof window.financialChart.destroy === 'function') {
         window.financialChart.destroy();
     }
 
-    let datasets;
+    // Clear the canvas before rendering the new chart
+    const canvas = document.getElementById('financialChart');
+    const ctx = canvas.getContext('2d');
+    ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear the canvas
 
-    if (viewMode === 'payCycle') {
-        const netIncomeData = chartData.incomeData.map((income, index) => income - chartData.billsData[index]);
-
-        datasets = [
-            {
-                label: 'Total Bills',
-                data: chartData.billsData,
-                backgroundColor: 'rgba(255, 255, 255, 1)',
-                borderRadius: 10,
-                stack: 'Stack 0'
-            },
-            {
-                label: 'Leftover',
-                data: netIncomeData,
-                backgroundColor: 'rgba(0, 0, 0, 0.8)',
-                borderRadius: 10,
-                stack: 'Stack 0'
-            }
-        ];
-    } else if (viewMode === 'monthly') {
-        datasets = [
-            {
-                label: 'Total Bills',
-                data: chartData.totals,
-                backgroundColor: 'rgba(255, 255, 255, 1)',
-                borderRadius: 10,
-                stack: 'Stack 0'
-            },
-            {
-                label: 'Leftover',
-                data: chartData.leftovers, // Use the leftovers array directly
-                backgroundColor: 'rgba(0, 0, 0, 0.8)',
-                borderRadius: 10,
-                stack: 'Stack 0'
-            }
-        ];
-    }
-
+    // Set up the chart with the extracted data
     window.financialChart = new Chart(ctx, {
         type: 'bar',
         data: {
             labels: chartData.dates,
-            datasets: datasets
+            datasets: [
+                {
+                    label: 'Total Bills',
+                    data: estimatedToPayData,
+                    backgroundColor: 'rgba(255, 255, 255, 1)',
+                    borderRadius: 10,
+                    stack: 'Stack 0',
+                },
+                {
+                    label: 'Leftover',
+                    data: leftoverData,
+                    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                    borderRadius: 10,
+                    stack: 'Stack 0',
+                }
+            ]
         },
         options: {
             scales: {
@@ -1358,7 +1409,7 @@ function updateChart(chartData) {
                     type: 'category',
                     labels: chartData.dates,
                     ticks: { autoSkip: true, maxTicksLimit: 20 },
-                    title: { display: false },  // Hide the x-axis title (e.g., "Month")
+                    title: { display: false },
                     grid: {
                         display: false,
                     }
@@ -1387,7 +1438,6 @@ function updateChart(chartData) {
         }
     });
 }
-
 
 function resetLocalStorage() {
     if (confirm('Are you sure you want to reset all data? This action cannot be undone.')) {
