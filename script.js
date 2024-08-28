@@ -146,6 +146,12 @@ function toggleViewMode() {
     const viewModeTitle = document.getElementById('viewModeTitle');
     viewModeTitle.textContent = viewMode === 'payCycle' ? 'Pay Cycle' : 'Month to Month';
 
+    // Update the "Load More" button text based on the view mode
+    const loadMoreButton = document.getElementById('loadMoreButton');
+    if (loadMoreButton) {
+        loadMoreButton.textContent = viewMode === 'payCycle' ? 'Load 3 More Pay Cycles' : 'Load 3 More Months';
+    }
+
     if (previousViewMode !== viewMode) {
         revealedPayCycles = 12; // Reset to 12 cycles for both views when switching
 
@@ -214,7 +220,6 @@ function toggleViewMode() {
     updateIncomeTable(payFrequency, income);
     updateBillsTable();
 }
-
 
 document.getElementById('viewMode').addEventListener('change', toggleViewMode);
 
