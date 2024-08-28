@@ -1084,16 +1084,27 @@ function getNextBillDate(date, frequency) {
             date.setDate(date.getDate() + 14);
             break;
         case 'monthly':
-            date.setMonth(date.getMonth() + 1);
-            // Special handling for bills due on the 30th
-            if (originalDay === 30) {
-                const lastDayOfCurrentMonth = new Date(date.getFullYear(), date.getMonth(), 0).getDate(); 
-                date.setDate(lastDayOfCurrentMonth); 
+            if(originalDay === 31) {
+                var dmt = parseInt(date.getMonth())+1;
+                var dyr = date.getFullYear();
+                var lsdy = getLastDayOfMonth(dyr,dmt);
+                date.setDate(lsdy);
+                date.setMonth(date.getMonth() + 1);
             }
-
-            if (originalDay === 31) {
-                const lastDateOfMonth = new Date(date.getFullYear(), date.getMonth() , 0).getDate();
-                date.setDate(lastDateOfMonth);
+            else if(originalDay === 30) {
+                var dmt = parseInt(date.getMonth());
+                var dyr = date.getFullYear();
+                var lsdy = getLastDayOfMonth(dyr,dmt);
+                if(lsdy==30) {
+                    var mpt = dmt+1;
+                    var tyy = getLastDayOfMonth(dyr,mpt);
+                    date.setMonth(date.getMonth() + 1);
+                    date.setDate(tyy);
+                } else {
+                    date.setMonth(date.getMonth() + 1);
+                }
+            } else {
+                date.setMonth(date.getMonth() + 1);
             }
             break;
         case 'quarterly':
@@ -1109,6 +1120,11 @@ function getNextBillDate(date, frequency) {
 
     // Apply general date adjustment to ensure it's a valid day within the month
     return adjustDate(date);
+}
+
+function getLastDayOfMonth(year, month) {
+    var date = new Date(year, month + 1, 0);
+    return date.getDate();
 }
 
 function loadMorePayCycles() {
