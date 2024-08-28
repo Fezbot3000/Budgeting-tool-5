@@ -305,7 +305,16 @@ function saveOneOffIncomesToLocalStorage() {
     localStorage.setItem('oneOffIncomes', JSON.stringify(oneOffIncomes));
 }
 
-function openOneOffIncomeModal() {
+function openOneOffIncomeModal(inp=0) {
+    if(inp==1)
+    {
+        document.getElementById('incomeName').value = '';
+        document.getElementById('oneOffIncomeAmount').value = '';
+        document.getElementById('incomeDate').value = '';
+        document.getElementById('incomeIndex').value = '';
+
+        document.getElementById('submitOneOffIncome').textContent = 'Add Income';
+    }
     document.getElementById('oneOffIncomeModal').style.display = 'block';
 }
 
@@ -990,13 +999,13 @@ function calculateMonthlyView() {
         oneOffIncomes.forEach((incomeItem) => {
             const incomeDate = new Date(incomeItem.date);
             if (incomeDate >= startDate && incomeDate <= endDate && !incomeProcessed) {
-                monthBills += `<tr><td>${incomeItem.name}</td><td>${formatDayOnly(
+                /*monthBills += `<tr><td>${incomeItem.name}</td><td>${formatDayOnly(
                     incomeDate
                 )}</td><td class="positive right-align">+$${incomeItem.amount.toFixed(
                     2
-                )}</td></tr>`;
+                )}</td></tr>`;*/
                 monthIncome += incomeItem.amount;
-                incomeProcessed = true; // Mark this one-off income as processed for the month
+                incomeProcessed = true;
             }
         });
 
@@ -1012,6 +1021,11 @@ function calculateMonthlyView() {
     return monthlyData;
 }
 
+function getLastDayOfMonth(year, month) {
+    var date = new Date(year , month + 1, 0);
+    return date.getDate();
+  }
+
 function getNextBillDate(date, frequency) {
     const originalDay = date.getDate();
 
@@ -1023,11 +1037,37 @@ function getNextBillDate(date, frequency) {
             date.setDate(date.getDate() + 14);
             break;
         case 'monthly':
-            date.setMonth(date.getMonth() + 1);
-            // Special handling for bills due on the 30th
-            if (originalDay === 30) {
-                const lastDayOfCurrentMonth = new Date(date.getFullYear(), date.getMonth(), 0).getDate(); 
-                date.setDate(lastDayOfCurrentMonth); 
+            if(originalDay === 31) {
+                var dmt = parseInt(date.getMonth())+1;
+                var dyr = date.getFullYear();
+                var lsdy = getLastDayOfMonth(dyr,dmt);
+                date.setDate(lsdy);
+                date.setMonth(date.getMonth() + 1);
+               
+                // if(date.getMonth()==9)
+                // date.setDate(lastDayOfCurrentMonth);
+                // date.setMonth(date.getMonth() + 1);
+            }
+            else if(originalDay === 30) {
+                var dmt = parseInt(date.getMonth());
+                var dyr = date.getFullYear();
+                var lsdy = getLastDayOfMonth(dyr,dmt);
+                if(lsdy==30)
+                {
+                    var mpt = dmt+1;
+                    var tyy = getLastDayOfMonth(dyr,mpt);
+                    date.setMonth(date.getMonth() + 1);
+                    date.setDate(tyy);
+                }
+                else
+                {
+                    date.setMonth(date.getMonth() + 1);
+                }
+                
+            }
+            else
+            {
+                date.setMonth(date.getMonth() + 1);
             }
             break;
         case 'quarterly':
@@ -1113,20 +1153,34 @@ function updatePayCycleAccordion(chartData) {
     const sortedBills = sortBillsByDate(bills);
     sortedBills.forEach(bill => {
       let billDueDate = adjustDate(new Date(bill.date));
-
+ 
       if (bill.frequency === 'yearly' || bill.frequency === 'one-off') {
+     
         if (billDueDate >= dates.start && billDueDate <= dates.end) {
           cycleBills += `<tr><td>${bill.name}</td><td data-date="${bill.date}">${formatDateWithLineBreak(billDueDate)}</td><td class="bills negative right-align">-$${bill.amount.toFixed(2)}</td></tr>`;
           cycleTotal += bill.amount; 
         }
       } else {
+        
         let iterationCount = 0; 
         while (billDueDate <= dates.end && iterationCount < 100) { 
+           
           if (billDueDate >= dates.start && billDueDate <= dates.end) {
+            
             cycleBills += `<tr><td>${bill.name}</td><td data-date="${bill.date}">${formatDateWithLineBreak(billDueDate)}</td><td class="bills negative right-align">-$${bill.amount.toFixed(2)}</td></tr>`;
             cycleTotal += bill.amount;
           }
+          if(bill.date=='2024-08-31')
+          {
+            console.log("Time Before "+billDueDate);
+          }
           billDueDate = getNextBillDate(billDueDate, bill.frequency);
+          if(bill.date=='2024-08-31')
+          {
+            console.log("Time After "+billDueDate);
+          }
+       
+  
           billDueDate = adjustDate(billDueDate);
           iterationCount++;
         }
@@ -1213,7 +1267,20 @@ function updateMonthlyAccordion(chartData) {
         // Use a Set to track which one-off incomes have been processed
         const addedOneOffIncomes = new Set(); 
 
+        oneOffIncomes.forEach(incomeItem => {
+            const incomeDate = new Date(incomeItem.date);
+            const incomeMonth = incomeDate.getMonth();
+            const incomeYear = incomeDate.getFullYear();
 
+            if (incomeMonth === new Date(monthYear).getMonth() && incomeYear === new Date(monthYear).getFullYear()) {
+                if (!addedOneOffIncomes.has(incomeItem.name)) {
+                    monthIncome += incomeItem.amount; 
+                    billsForMonth += `<tr><td>${incomeItem.name}</td><td>${incomeDate.getDate()}${formatDaySuffix(incomeDate.getDate())}</td><td class="positive right-align">+$${incomeItem.amount.toFixed(2)}</td></tr>`;
+                    addedOneOffIncomes.add(incomeItem.name);
+                }
+            }
+        });
+        
         const leftoverAmount = monthIncome - monthTotal;
         const leftoverClass = leftoverAmount >= 0 ? 'positive' : 'negative';
 
