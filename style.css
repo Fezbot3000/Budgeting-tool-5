@@ -33,9 +33,9 @@ a.addbill {
 }
 
 .container {
-    max-width: 1080px;
+    max-width: 980px;
     margin: 0 auto;
-    padding: 20px;
+   
     background: #F5F5F7;
     border-radius: 8px;
     transition: background-color 0.3s, color 0.3s;
@@ -839,7 +839,7 @@ body.dark-mode #billModal .modal-footer button:hover {
 ======================================== */
 .cycle-info {
     display: flex;
-    justify-content: start; /* Center the content horizontally */
+    justify-content: center; /* Center the content horizontally */
     align-items: center;
     padding: 10px 0;
     margin-bottom: 10px;
@@ -1091,4 +1091,22 @@ img#cavnav {
 .mxc {
     border: 1px dashed #EBDA814D;
     border-radius: 8px;
+}
+
+
+
+@media only screen and (max-width: 767px) { 
+.income-summary {
+padding: 20px 0 !Important;
+
+}
+.box {
+  padding: 20px 0 !Important;
+}
+.cycle-info {
+    justify-content: space-between;
+}
+span.kkk {
+    margin-left: 13px;
+}
 }

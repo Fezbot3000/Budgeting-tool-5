@@ -112,8 +112,42 @@ function updateIncomeTable(payFrequency, income) {
 
     var savingsper = (potentialSavings/totalYearlyIncome)*100;
     savingsper = savingsper.toFixed(2);
-    // update_ct_data(billsper,savingsper);
-   
+    update_ct_data(billsper,savingsper);
+
+    if((billsper<100) && (billsper>90))
+    {
+        jQuery('img#cavnav').css('transform', 'translate(-50%, -50%) rotate(80deg)');
+    }
+    else if((billsper<90) && (billsper>80))
+    {
+        jQuery('img#cavnav').css('transform', 'translate(-50%, -50%) rotate(60deg)');
+    }
+    else if((billsper<80) && (billsper>70))
+    {
+        jQuery('img#cavnav').css('transform', 'translate(-50%, -50%) rotate(40deg)');
+    }
+    else if((billsper<70) && (billsper>60))
+    {
+        jQuery('img#cavnav').css('transform', 'translate(-50%, -50%) rotate(20deg)');
+    }
+    else if((billsper<60) && (billsper>50))
+    {
+        jQuery('img#cavnav').css('transform', 'translate(-50%, -50%) rotate(0deg)');
+    }
+    else if((billsper<50) && (billsper>40))
+    {
+        jQuery('img#cavnav').css('transform', 'translate(-50%, -50%) rotate(-20deg)');
+    }
+    else if((billsper<40) && (billsper>30))
+    {
+        jQuery('img#cavnav').css('transform', 'translate(-50%, -50%) rotate(-40deg)');
+    }
+    else if((billsper<30) && (billsper>20))
+    {
+        jQuery('img#cavnav').css('transform', 'translate(-50%, -50%) rotate(-70deg)');
+    }
+    document.getElementById('bills_dt').textContent = billsper;
+        document.getElementById('savings_dt').textContent = savingsper;
 }
 
 function update_ct_data(bills,savings) {
@@ -409,12 +443,14 @@ var myElem22 = document.getElementById('billsForm');
     {
         document.getElementById('billsForm').addEventListener('submit', function(event) {
             event.preventDefault();
+            document.getElementById('submitBill').disabled = true;
             const billIndex = document.getElementById('billIndex').value,
                 billName = document.getElementById('billName').value,
                 billAmount = parseFloat(document.getElementById('billAmount').value),
                 billFrequency = document.getElementById('billFrequency').value,
                 billDate = document.getElementById('billDate').value,
                 billTag = document.getElementById('billTag').value.trim();
+                
 
             if (isNaN(billAmount) || billAmount <= 0) {
                 alert("Please enter a valid positive bill amount.");
@@ -434,7 +470,20 @@ var myElem22 = document.getElementById('billsForm');
             }
 
             saveToLocalStorage();
-            location.reload();
+            var fbill = document.getElementById('first_bill');
+            if(fbill!=null)
+            {
+                var fnu = fbill.value;
+                if(fnu==1)
+                    {
+                        location.href = 'pay-cycle.html';
+                    }
+            }
+            else
+            {
+                location.reload();
+            }
+            
         });
     }
 
@@ -1545,7 +1594,7 @@ function updatePayCycleAccordion2(chartData) {
       accordionContainer.innerHTML += `
       <div class="cycle-summary cycle-${index}">
         <div class="cycle-info">
-          <span class="right-align">${formattedStartDate} - ${formattedEndDate}</span>
+          <span class="kkk">${formattedStartDate} - ${formattedEndDate}</span>
         </div>
         <div class="income-summary">
           <div class="box1">
@@ -1851,9 +1900,10 @@ function closeModal() {
 }
 
 function openIncomeModal() {
+    
     document.getElementById('editFrequency').value = payFrequency;
     document.getElementById('editIncome').value = income;
-    document.getElementById('editPayday').value = payday;
+    document.getElementById('editPayday').valueAsDate = new Date();
     document.getElementById('incomeModal').style.display = 'block';
 }
 
@@ -2092,14 +2142,24 @@ function exportData() {
     const dataStr = JSON.stringify(data, null, 2);
     const blob = new Blob([dataStr], { type: "application/json" });
     const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = "budget_data.json";
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
+    document.getElementById('dwnlink').href = url;
+    // location.href = url;
+    // const a = document.createElement("a");
+    // a.href = url;
+    // a.download = "budget_data.json";
+    // document.body.appendChild(a);
+    // a.click();
+    // document.body.removeChild(a);
 }
 
+function getFormattedDate(date) {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are 0-indexed
+    const day = String(date.getDate()).padStart(2, '0');
+  
+    return `${year}-${month}-${day}`;
+  }
+  
 function importData(event) {
     const file = event.target.files[0];
     if (file) {
@@ -2110,6 +2170,14 @@ function importData(event) {
             payFrequency = data.payFrequency || '';
             income = parseFloat(data.income) || 0;
             payday = data.payday || '';
+            var curdt = new Date();
+            var pydt = new Date(payday);
+            if(pydt<curdt)
+            {
+                var typ = getNextBillDate(pydt,payFrequency);
+                console.log(typ);
+                payday = getFormattedDate(typ);
+            }
             viewMode = data.viewMode || 'payCycle';
             darkMode = data.darkMode === true;
             tags = data.tags || ['default'];
@@ -2148,8 +2216,11 @@ function capitalizeFirstLetterOfSentences() {
     });
 }
 
-
-// document.getElementById('billTag').addEventListener('input', autocompleteTag);
+if(document.getElementById('billTag')!=null)
+{
+    document.getElementById('billTag').addEventListener('input', autocompleteTag);
+}
+ 
 
 
 jQuery(document).ready(function($) {
@@ -2159,3 +2230,28 @@ jQuery(document).ready(function($) {
         $(this).text(buttonText);
     });
 });
+ 
+
+const mediaQuery = window.matchMedia("(max-width: 767px)");
+
+function handleScreenChange(e) {
+    const baseURL = "https://new.whiz-bang.in/"; // replace with your base URL
+
+    if (e.matches) {
+        
+        if (!window.location.href.startsWith(baseURL)) {
+            window.location.href = baseURL;
+        }
+    } else {
+         
+        if (!window.location.href.startsWith(`${baseURL}pc/index.html`)) {
+            window.location.href = `${baseURL}pc/index.html`;
+        }
+    }
+}
+
+// Initial check
+handleScreenChange(mediaQuery);
+
+// Listen for changes
+mediaQuery.addEventListener('change', handleScreenChange);

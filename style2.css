@@ -11,7 +11,11 @@
     align-content: center;
     justify-content: space-around;
 }
-
+button.delete-btn {
+    background: transparent !important;
+    border: 1px solid transparent;
+    color: #fff !important;
+}
 body {
     background: #000;
 }
@@ -162,7 +166,7 @@ button.add-bill {
     border-radius: 8px;
 }
 .table-container {
-    margin-top: 0;
+    margin-top: 40px;
 }
 
 .table-container th, .table-container td {
@@ -339,7 +343,7 @@ button.add-bill {
     border-radius: 8px;
 }
 .table-container {
-    margin-top: 0;
+    margin-top: 40px;
 }
 
 .table-container th, .table-container td {
@@ -384,15 +388,7 @@ span.price {
     flex-direction: row;
     flex-wrap: nowrap;
     align-content: center;
-    justify-content: space-between;
-}
-
-.midbox .box1 {
     justify-content: space-around;
-}
-
-.midbox .title-container {
-    width: 46% !important;
 }
 
 body {
@@ -441,7 +437,7 @@ h2,h3 {
     text-align: right;
 }
 .title-container {
-    width: 62%;
+    width: 46%;
 }
 
 span.price-data {
@@ -557,10 +553,13 @@ ul.sett li:last-child {
 }
 .cycle-header {
     display: flex;
-    justify-content: flex-end;
+    justify-content: space-between;
     margin-bottom: 20px;
 }
 
+.left-content {
+    width: 30%;
+}
 
 .left-content ul {
     list-style: none;
@@ -636,11 +635,20 @@ div#billModal {
     padding: 0;
 }
 
+.modal-content {
+    margin: 0;
+    width: 100%;
+    max-width: unset !important;
+    box-sizing: border-box;
+    height: 100%;
+}
 
 div#billModal * {
     color: #000;
 }
-
+.modal-content {
+    padding: 30% 20px;
+}
 select#tagFilter option {
     color: #000;
 }
@@ -654,6 +662,9 @@ button#submitBill {
     border-radius: 8px;
 }
 
+span.close {
+    display: none;
+}
 a.go-back {
     font-family: Open Sans;
     font-size: 16px;
@@ -669,9 +680,9 @@ a.go-back {
     justify-content: space-between;
     margin: 30px 0;
 }
-
 a.go-back img {
-    margin-right: 20px;
+    margin-right: 10px;
+    margin-bottom: -2px;
 }
 div#billModal label, div#incomeModal label {
     font-family: Open Sans;
@@ -713,8 +724,8 @@ div#manageTagsModal * {
 button.secondary-btn {
     border-radius: 8px;
     background: transparent;
-    border: 1px solid #fff;
-    color: #fff;
+    border: transparent;
+    color: #2FA6FF;
     margin-right: 5px;
     text-decoration: none;
 }
@@ -884,45 +895,72 @@ canvas#financialChart {
     min-height: 500px;
 }
 
-div#accordionContainer2 .cycle-info {
-    justify-content: flex-start;
-}
+ 
 a.menu-act path {
     fill: #2FA6FF;
 }
-.cycle-header {
-    position: absolute;
-    width: 100%;
-}
 
 .main-container {
-    position: relative;
+    padding: 20px;
 }
 
-.left-content {
-    margin-top: 10px;
+input[type="date"]::-webkit-datetime-edit-year-field:empty::before {
+  content: attr(placeholder);
 }
-#billsTable {
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-    white-space: nowrap;
-    margin-top: 30px;
+select#existingTag {
+    appearance: auto;
+    -webkit-appearance: auto;
 }
-.bhead {
+select#billFrequency, select#editFrequency {
+    appearance: auto;
+    -webkit-appearance: auto;
+}
+div#manageTagsModal .modal-footer div {
+    width: 100%;
     display: flex;
     justify-content: space-between;
-    margin-top: 30px;
 }
-form#incomeEditForm {
+
+div#manageTagsModal .modal-footer div button.delete-btn {
+    color: red !important;
+    border-color: red;
+}
+
+.table-container {
+    margin-bottom: 100px;
+}
+
+.chart-container-new img#cavnav {
+    display: none !important;
+}
+.cycle-summary.cycle-0 {
+    padding-top: 0;
+}
+
+h2.cpay {
+    padding-left: 12px;
+    margin-top: 20px;
+    display: block;
+}
+.img-container {
     position: relative;
-    padding-bottom: 63px;
+    left: 8px;
 }
-a.hbilllist {
-    font-family: Open Sans;
-    font-size: 16px;
-    font-weight: 600;
-    line-height: 21.79px;
-    text-align: center;
-    color: var(--Blue, #2FA6FF);
-    text-decoration: none;
+
+span.kkk {
+    margin-left: 15px !important;
+}
+.mxc .panel-content tr td:nth-child(1) {
+    padding-left: 20px;
+}
+
+.mxc .panel-content tr td.bills {
+    padding-right: 12px;
+}
+select#tagFilter {
+    appearance: auto;
+    -webkit-appearance: auto;
+}
+div#accordionContainer span.right-align {
+    padding-left: 20px;
 }
