@@ -2235,7 +2235,7 @@ jQuery(document).ready(function($) {
 const mediaQuery = window.matchMedia("(max-width: 767px)");
 
 function handleScreenChange(e) {
-    const baseURL = "https://new.whiz-bang.in/"; // replace with your base URL
+    const baseURL = "https://budgetingtool.com.au/";
 
     if (e.matches) {
         
