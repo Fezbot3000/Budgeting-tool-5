@@ -2,11 +2,13 @@ const CACHE_NAME = 'budgeting-tool-cache-v1';
 const urlsToCache = [
     '/',
     '/index.html',
+    '/bills.html',
+    '/pay-cycle.html',
+    '/settings.html',
     '/style.css',
+    '/style2.css',
     '/script.js',
-    '/manifest.json',
-    '/icons/icon-192x192.png', // If you have icons, include them here
-    '/icons/icon-512x512.png'  // Include any other assets that should be cached
+    '/manifest.webmanifest'
 ];
 
 self.addEventListener('install', event => {

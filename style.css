@@ -1072,11 +1072,15 @@ button.hide-button {
     background:none;
  
 } 
+span.right_label {
+float: right;
+}
 .rwrt {
     display: flex;
+    margin-top: -57px;
+    position: absolute;
     justify-content: space-between;
-    margin-bottom: 2rem;
-    margin-top: -37px;
+    width: 100%;
 }
 img#cavnav {
     position: absolute;
