@@ -1032,3 +1032,12 @@ select#existingTag, select#editFrequency2 {
 form#incomeEditForm .nxsp {
     float: right;
 }
+div#manageTagsModal .delete-btn {
+    color: red !important;
+    border-color: red;
+    padding: 9px 12px;
+}
+div#manageTagsModal .delete-btn:hover {
+    background: red !important;
+    color: #fff !important;
+}
