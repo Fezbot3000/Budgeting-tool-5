@@ -271,6 +271,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (myElem2 !== null)
     {
         updateBillsTable();
+        sortTable('date', false, 'asc');
         updateTagDropdown(); 
     }
 
@@ -2142,6 +2143,31 @@ function getFormattedDate(date) {
     return `${year}-${month}-${day}`;
   }
   
+
+function getNextBillDated(date, frequency) {
+    let nextDate = new Date(date.getTime());
+    let currentDate = new Date();
+  
+    while (nextDate <= currentDate) {
+      switch (frequency) {
+        case 'weekly':
+          nextDate.setDate(nextDate.getDate() + 7);
+          break;
+        case 'fortnightly':
+          nextDate.setDate(nextDate.getDate() + 14);
+          break;
+        case 'monthly':
+          nextDate.setMonth(nextDate.getMonth() + 1);
+          break;
+        // add more frequencies as needed
+        default:
+          throw new Error(`Unsupported frequency: ${frequency}`);
+      }
+    }
+  
+    return nextDate;
+}
+
 function importData(event) {
     const file = event.target.files[0];
     if (file) {
@@ -2156,8 +2182,8 @@ function importData(event) {
             var pydt = new Date(payday);
             if(pydt<curdt)
             {
-                var typ = getNextBillDate(pydt,payFrequency);
-                console.log(typ);
+                var typ = getNextBillDated(pydt,payFrequency);
+                
                 payday = getFormattedDate(typ);
             }
             viewMode = data.viewMode || 'payCycle';
@@ -2214,7 +2240,7 @@ jQuery(document).ready(function($) {
 const mediaQuery = window.matchMedia("(max-width: 767px)");
 
 function handleScreenChange(e) {
-    const baseURL = "https://budgetingtool.com.au/"; // Replace with your base URL
+    const baseURL = "https://budgetingtool.com.au/"; // replace with your base URL
     const pcURL = `${baseURL}pc/index.html`; // Construct the PC URL
 
     if (e.matches) {
