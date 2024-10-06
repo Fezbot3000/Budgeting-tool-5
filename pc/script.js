@@ -1351,7 +1351,7 @@ function updatePayCycleAccordion(chartData) {
           if (bill.frequency === 'yearly' || bill.frequency === 'one-off') {
          
             if (billDueDate >= dates.start && billDueDate <= dates.end) {
-              cycleBills += `<tr><td>${bill.name}</td><td data-date="${bill.date}">${formatDateWithLineBreak(billDueDate)}</td><td class="bills negative right-align">-$${bill.amount.toFixed(2)}</td></tr>`;
+              cycleBills += `<tr><td>${bill.name}</td><td data-date="${billDueDate}">${formatDateWithLineBreak(billDueDate)}</td><td class="bills negative right-align">-$${bill.amount.toFixed(2)}</td></tr>`;
               cycleTotal += bill.amount; 
             }
           } else {
@@ -1361,7 +1361,7 @@ function updatePayCycleAccordion(chartData) {
                
               if (billDueDate >= dates.start && billDueDate <= dates.end) {
                 
-                cycleBills += `<tr><td>${bill.name}</td><td data-date="${bill.date}">${formatDateWithLineBreak(billDueDate)}</td><td class="bills negative right-align">-$${bill.amount.toFixed(2)}</td></tr>`;
+                cycleBills += `<tr><td>${bill.name}</td><td data-date="${billDueDate}">${formatDateWithLineBreak(billDueDate)}</td><td class="bills negative right-align">-$${bill.amount.toFixed(2)}</td></tr>`;
                 cycleTotal += bill.amount;
               }
               
@@ -1376,17 +1376,31 @@ function updatePayCycleAccordion(chartData) {
             }
           }
         });
+
+        // Sort cycleBills before adding it to the container
+        const rowssa = cycleBills.split('</tr>');
+        rowssa.sort(function(rowA, rowB) {
+            const dateA = rowA.match(/data-date="([^"]+)"/);
+            const dateB = rowB.match(/data-date="([^"]+)"/);
+
+            if (dateA && dateB) {
+                return new Date(dateA[1]) - new Date(dateB[1]);
+            } else {
+                return 0;
+            }
+        });
+        cycleBills = rowssa.join('</tr>');
     
         // Reset the processed incomes at the start of each cycle to avoid duplicates
         let processedIncomes = new Set();
-    
+        
         oneOffIncomes.forEach(incomeItem => {
           const incomeDate = new Date(incomeItem.date);
           const incomeKey = `${incomeItem.name}-${incomeDate.toISOString()}`;
     
           if (incomeDate >= dates.start && incomeDate <= dates.end && !processedIncomes.has(incomeKey)) {
             cycleIncome += incomeItem.amount; 
-            cycleBills += `<tr><td>${incomeItem.name}</td><td>${formatDateWithLineBreak(incomeDate)}</td><td class="positive right-align">+$${incomeItem.amount.toFixed(2)}</td></tr>`;
+            cycleBills += `<tr><td>${incomeItem.name}</td><td data-date="${incomeDate}">${formatDateWithLineBreak(incomeDate)}</td><td class="positive right-align">+$${incomeItem.amount.toFixed(2)}</td></tr>`;
             processedIncomes.add(incomeKey); 
           }
         });
@@ -2182,7 +2196,7 @@ function importData(event) {
             var pydt = new Date(payday);
             if(pydt<curdt)
             {
-                var typ = getNextBillDated(pydt,payFrequency);
+                var typ = getNextBillDate(pydt,payFrequency);
                 
                 payday = getFormattedDate(typ);
             }
