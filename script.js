@@ -305,7 +305,6 @@ document.addEventListener('DOMContentLoaded', () => {
     if (myElem2 !== null)
     {
         updateBillsTable();
-        sortTable('date', false, 'asc');
         updateTagDropdown(); 
     }
 
