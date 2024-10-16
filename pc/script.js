@@ -815,24 +815,26 @@ function editBill(index) {
         let billDueDate = new Date(bill.date);
         const today = new Date();
 
-        // If the date is in the past, adjust to the next due date
+        // Adjust the date to match the logic used in the accordion and bill list
         if (billDueDate < today) {
             billDueDate = getNextBillDated(billDueDate, bill.frequency);
         }
 
-        document.getElementById('billIndex').value = index;  // Set the correct bill index
+        // Format the date to ensure it matches the displayed date format
+        const formattedBillDueDate = billDueDate.toISOString().split('T')[0];  // Ensuring ISO format YYYY-MM-DD
+
+        // Populate the edit modal with the adjusted date
+        document.getElementById('billIndex').value = index;
         document.getElementById('billName').value = bill.name;
         document.getElementById('billAmount').value = bill.amount;
         document.getElementById('billFrequency').value = bill.frequency;
-        document.getElementById('billDate').value = billDueDate.toISOString().split('T')[0];  // Set the adjusted date
+        document.getElementById('billDate').value = formattedBillDueDate;  // Use the adjusted date
         document.getElementById('billTag').value = bill.tag;
 
         document.getElementById('submitBill').textContent = 'Save';
-        openModal(true);  // Indicate that it's in edit mode
+        openModal(true);  // Open the modal in edit mode
     }
 }
-
-
 
 function resetBillForm() {
     document.getElementById('billIndex').value = '';
