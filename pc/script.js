@@ -408,49 +408,44 @@ document.addEventListener('DOMContentLoaded', () => {
 var myElem22 = document.getElementById('billsForm');
     if (myElem22 !== null)
     {
-    document.getElementById('billsForm').addEventListener('submit', function(event) {
-        event.preventDefault();
-        
-        // Get the bill index and other input values
-        const billIndex = document.getElementById('billIndex').value,
-            billName = document.getElementById('billName').value,
-            billAmount = parseFloat(document.getElementById('billAmount').value),
-            billFrequency = document.getElementById('billFrequency').value,
-            billDate = document.getElementById('billDate').value,
-            billTag = document.getElementById('billTag').value.trim();
+        document.getElementById('billsForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            
+            // Get bill index and inputs
+            const billIndex = document.getElementById('billIndex').value,
+                billName = document.getElementById('billName').value,
+                billAmount = parseFloat(document.getElementById('billAmount').value),
+                billFrequency = document.getElementById('billFrequency').value,
+                billDate = document.getElementById('billDate').value,
+                billTag = document.getElementById('billTag').value.trim();
 
-        // Validation: ensure bill amount is valid
-        if (isNaN(billAmount) || billAmount <= 0) {
-            alert("Please enter a valid positive bill amount.");
-            return;
-        }
+            if (isNaN(billAmount) || billAmount <= 0) {
+                alert("Please enter a valid positive bill amount.");
+                return;
+            }
 
-        // Add a new tag to the tags array if it's not already included
-        if (!tags.includes(billTag)) {
-            tags.push(billTag);
-        }
+            if (!tags.includes(billTag)) {
+                tags.push(billTag);
+            }
 
-        const newBill = { 
-            name: billName, 
-            amount: billAmount, 
-            frequency: billFrequency, 
-            date: billDate, 
-            tag: billTag 
-        };
+            const newBill = { 
+                name: billName, 
+                amount: billAmount, 
+                frequency: billFrequency, 
+                date: billDate, 
+                tag: billTag 
+            };
 
-        // If billIndex is empty, it's a new bill; otherwise, update the existing one
-        if (billIndex === '') {
-            bills.push(newBill);  // Add new bill
-        } else {
-            bills[billIndex] = newBill;  // Update existing bill
-        }
+            if (billIndex === '') {
+                bills.push(newBill);  // Add new bill
+            } else {
+                bills[billIndex] = newBill;  // Update existing bill
+            }
 
-        // Save the updated bills list to localStorage
-        saveToLocalStorage();
-
-        // Reload the page to reflect changes
-        location.reload();
-    });
+            saveToLocalStorage();  // Save the updated bills list to localStorage
+            updateBillsTable();     // Dynamically update the bills table without reloading the page
+            closeModal();           // Close the modal after saving
+        });
     }
 
 // One-Off Income Functions
@@ -814,9 +809,9 @@ function removeOneOffIncome(index) {
 
 function editBill(index) {
     const bill = bills[index];
-
+    
     if (bill) {
-        document.getElementById('billIndex').value = index;
+        document.getElementById('billIndex').value = index;  // Set the correct bill index
         document.getElementById('billName').value = bill.name;
         document.getElementById('billAmount').value = bill.amount;
         document.getElementById('billFrequency').value = bill.frequency;
@@ -824,10 +819,10 @@ function editBill(index) {
         document.getElementById('billTag').value = bill.tag;
 
         document.getElementById('submitBill').textContent = 'Save';
-
-        openModal(true);  // Pass true to indicate this is an edit
+        openModal(true);  // Indicate that it's in edit mode
     }
 }
+
 
 function resetBillForm() {
     document.getElementById('billIndex').value = '';
