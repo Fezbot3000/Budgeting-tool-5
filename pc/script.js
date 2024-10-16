@@ -271,7 +271,6 @@ document.addEventListener('DOMContentLoaded', () => {
     if (myElem2 !== null)
     {
         updateBillsTable();
-        sortTable('date', false, 'asc');
         updateTagDropdown(); 
     }
 
@@ -410,8 +409,6 @@ var myElem22 = document.getElementById('billsForm');
     {
         document.getElementById('billsForm').addEventListener('submit', function(event) {
             event.preventDefault();
-            
-            // Get bill index and inputs
             const billIndex = document.getElementById('billIndex').value,
                 billName = document.getElementById('billName').value,
                 billAmount = parseFloat(document.getElementById('billAmount').value),
@@ -425,26 +422,19 @@ var myElem22 = document.getElementById('billsForm');
             }
 
             if (!tags.includes(billTag)) {
-                tags.push(billTag);
+                tags.push(billTag); // Add new tag to tags array
             }
 
-            const newBill = { 
-                name: billName, 
-                amount: billAmount, 
-                frequency: billFrequency, 
-                date: billDate, 
-                tag: billTag 
-            };
+            const newBill = { name: billName, amount: billAmount, frequency: billFrequency, date: billDate, tag: billTag };
 
             if (billIndex === '') {
-                bills.push(newBill);  // Add new bill
+                bills.push(newBill);
             } else {
-                bills[billIndex] = newBill;  // Update existing bill
+                bills[billIndex] = newBill;
             }
 
-            saveToLocalStorage();  // Save the updated bills list to localStorage
-            updateBillsTable();     // Dynamically update the bills table without reloading the page
-            closeModal();           // Close the modal after saving
+            saveToLocalStorage();
+            location.reload();
         });
     }
 
@@ -809,30 +799,18 @@ function removeOneOffIncome(index) {
 
 function editBill(index) {
     const bill = bills[index];
-    
+
     if (bill) {
-        // Calculate the adjusted date for display, in case the original is in the past
-        let billDueDate = new Date(bill.date);
-        const today = new Date();
-
-        // Adjust the date to match the logic used in the accordion and bill list
-        if (billDueDate < today) {
-            billDueDate = getNextBillDated(billDueDate, bill.frequency);
-        }
-
-        // Format the date to ensure it matches the displayed date format
-        const formattedBillDueDate = billDueDate.toISOString().split('T')[0];  // Ensuring ISO format YYYY-MM-DD
-
-        // Populate the edit modal with the adjusted date
         document.getElementById('billIndex').value = index;
         document.getElementById('billName').value = bill.name;
         document.getElementById('billAmount').value = bill.amount;
         document.getElementById('billFrequency').value = bill.frequency;
-        document.getElementById('billDate').value = formattedBillDueDate;  // Use the adjusted date
+        document.getElementById('billDate').value = bill.date;
         document.getElementById('billTag').value = bill.tag;
 
         document.getElementById('submitBill').textContent = 'Save';
-        openModal(true);  // Open the modal in edit mode
+
+        openModal(true);  // Pass true to indicate this is an edit
     }
 }
 
@@ -1372,7 +1350,7 @@ function updatePayCycleAccordion(chartData) {
           if (bill.frequency === 'yearly' || bill.frequency === 'one-off') {
          
             if (billDueDate >= dates.start && billDueDate <= dates.end) {
-              cycleBills += `<tr><td>${bill.name}</td><td data-date="${billDueDate}">${formatDateWithLineBreak(billDueDate)}</td><td class="bills negative right-align">-$${bill.amount.toFixed(2)}</td></tr>`;
+              cycleBills += `<tr><td>${bill.name}</td><td data-date="${bill.date}">${formatDateWithLineBreak(billDueDate)}</td><td class="bills negative right-align">-$${bill.amount.toFixed(2)}</td></tr>`;
               cycleTotal += bill.amount; 
             }
           } else {
@@ -1382,7 +1360,7 @@ function updatePayCycleAccordion(chartData) {
                
               if (billDueDate >= dates.start && billDueDate <= dates.end) {
                 
-                cycleBills += `<tr><td>${bill.name}</td><td data-date="${billDueDate}">${formatDateWithLineBreak(billDueDate)}</td><td class="bills negative right-align">-$${bill.amount.toFixed(2)}</td></tr>`;
+                cycleBills += `<tr><td>${bill.name}</td><td data-date="${bill.date}">${formatDateWithLineBreak(billDueDate)}</td><td class="bills negative right-align">-$${bill.amount.toFixed(2)}</td></tr>`;
                 cycleTotal += bill.amount;
               }
               
@@ -1397,31 +1375,17 @@ function updatePayCycleAccordion(chartData) {
             }
           }
         });
-
-        // Sort cycleBills before adding it to the container
-        const rowssa = cycleBills.split('</tr>');
-        rowssa.sort(function(rowA, rowB) {
-            const dateA = rowA.match(/data-date="([^"]+)"/);
-            const dateB = rowB.match(/data-date="([^"]+)"/);
-
-            if (dateA && dateB) {
-                return new Date(dateA[1]) - new Date(dateB[1]);
-            } else {
-                return 0;
-            }
-        });
-        cycleBills = rowssa.join('</tr>');
     
         // Reset the processed incomes at the start of each cycle to avoid duplicates
         let processedIncomes = new Set();
-        
+    
         oneOffIncomes.forEach(incomeItem => {
           const incomeDate = new Date(incomeItem.date);
           const incomeKey = `${incomeItem.name}-${incomeDate.toISOString()}`;
     
           if (incomeDate >= dates.start && incomeDate <= dates.end && !processedIncomes.has(incomeKey)) {
             cycleIncome += incomeItem.amount; 
-            cycleBills += `<tr><td>${incomeItem.name}</td><td data-date="${incomeDate}">${formatDateWithLineBreak(incomeDate)}</td><td class="positive right-align">+$${incomeItem.amount.toFixed(2)}</td></tr>`;
+            cycleBills += `<tr><td>${incomeItem.name}</td><td>${formatDateWithLineBreak(incomeDate)}</td><td class="positive right-align">+$${incomeItem.amount.toFixed(2)}</td></tr>`;
             processedIncomes.add(incomeKey); 
           }
         });
@@ -2217,7 +2181,7 @@ function importData(event) {
             var pydt = new Date(payday);
             if(pydt<curdt)
             {
-                var typ = getNextBillDate(pydt,payFrequency);
+                var typ = getNextBillDated(pydt,payFrequency);
                 
                 payday = getFormattedDate(typ);
             }
