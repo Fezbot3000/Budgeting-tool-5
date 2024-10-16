@@ -408,35 +408,49 @@ document.addEventListener('DOMContentLoaded', () => {
 var myElem22 = document.getElementById('billsForm');
     if (myElem22 !== null)
     {
-        document.getElementById('billsForm').addEventListener('submit', function(event) {
-            event.preventDefault();
-            const billIndex = document.getElementById('billIndex').value,
-                billName = document.getElementById('billName').value,
-                billAmount = parseFloat(document.getElementById('billAmount').value),
-                billFrequency = document.getElementById('billFrequency').value,
-                billDate = document.getElementById('billDate').value,
-                billTag = document.getElementById('billTag').value.trim();
+    document.getElementById('billsForm').addEventListener('submit', function(event) {
+        event.preventDefault();
+        
+        // Get the bill index and other input values
+        const billIndex = document.getElementById('billIndex').value,
+            billName = document.getElementById('billName').value,
+            billAmount = parseFloat(document.getElementById('billAmount').value),
+            billFrequency = document.getElementById('billFrequency').value,
+            billDate = document.getElementById('billDate').value,
+            billTag = document.getElementById('billTag').value.trim();
 
-            if (isNaN(billAmount) || billAmount <= 0) {
-                alert("Please enter a valid positive bill amount.");
-                return;
-            }
+        // Validation: ensure bill amount is valid
+        if (isNaN(billAmount) || billAmount <= 0) {
+            alert("Please enter a valid positive bill amount.");
+            return;
+        }
 
-            if (!tags.includes(billTag)) {
-                tags.push(billTag); // Add new tag to tags array
-            }
+        // Add a new tag to the tags array if it's not already included
+        if (!tags.includes(billTag)) {
+            tags.push(billTag);
+        }
 
-            const newBill = { name: billName, amount: billAmount, frequency: billFrequency, date: billDate, tag: billTag };
+        const newBill = { 
+            name: billName, 
+            amount: billAmount, 
+            frequency: billFrequency, 
+            date: billDate, 
+            tag: billTag 
+        };
 
-            if (billIndex === '') {
-                bills.push(newBill);
-            } else {
-                bills[billIndex] = newBill;
-            }
+        // If billIndex is empty, it's a new bill; otherwise, update the existing one
+        if (billIndex === '') {
+            bills.push(newBill);  // Add new bill
+        } else {
+            bills[billIndex] = newBill;  // Update existing bill
+        }
 
-            saveToLocalStorage();
-            location.reload();
-        });
+        // Save the updated bills list to localStorage
+        saveToLocalStorage();
+
+        // Reload the page to reflect changes
+        location.reload();
+    });
     }
 
 // One-Off Income Functions
