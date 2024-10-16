@@ -9,7 +9,7 @@ let generatedPayCycles = 30; // Generate 12 months of pay cycles
 let revealedPayCycles = 12; // Initially reveal 12 pay cycles instead of 3
 let tags = JSON.parse(localStorage.getItem('tags')) || ['default'];
 let oneOffIncomes = JSON.parse(localStorage.getItem('oneOffIncomes')) || []; // Load one-off incomes
-
+let bls = [];
 
 // Load saved sortOrder from localStorage or use default values
 let sortOrder;
@@ -305,6 +305,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (myElem2 !== null)
     {
         updateBillsTable();
+        sortTable('date', false, 'asc');
         updateTagDropdown(); 
     }
 
@@ -608,10 +609,10 @@ function updateBillsTable2() {
 
     const adjustedBills = updateBillDueDatesForDisplay();
 
-    const sortedBills = adjustedBills;
+    bls = adjustedBills;
 
     // Subtract bill amounts (as they are expenses)
-    sortedBills.forEach((bill, index) => {
+    bls.forEach((bill, index) => {
         const yearlyAmount = calculateYearlyAmount(bill.amount, bill.frequency);
         totalYearlyAmount -= yearlyAmount; // Subtract the yearly bill amounts
         var valA = new Date(bill.displayDate);
@@ -665,10 +666,10 @@ function updateBillsTable() {
                             </thead>
                             <tbody></tbody>`;
 
-    const sortedBills = adjustedBills;
+    bls = adjustedBills;
 
     // Subtract bill amounts (as they are expenses)
-    sortedBills.forEach((bill, index) => {
+    bls.forEach((bill, index) => {
         const yearlyAmount = calculateYearlyAmount(bill.amount, bill.frequency);
         totalYearlyAmount -= yearlyAmount; // Subtract the yearly bill amounts
 
@@ -847,7 +848,7 @@ function removeOneOffIncome(index) {
 }
 
 function editBill(index) {
-    const bill = bills[index];
+    const bill = bls[index];
 
     if (bill) {
         document.getElementById('billIndex').value = index;
