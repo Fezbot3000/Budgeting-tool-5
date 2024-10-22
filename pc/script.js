@@ -752,9 +752,25 @@ function updateSortArrows(column) {
     });
 }
 
+function findtagoccurance(tag) {
+    const specificTag = tag;
+    const billsWithSpecificTag = bills.filter(bill => bill.tag === specificTag);
+    const countOfBillsWithSpecificTag = billsWithSpecificTag.length;
+    return countOfBillsWithSpecificTag;
+    // console.log(`Number of bills with tag "${specificTag}": ${countOfBillsWithSpecificTag}`);
+}
 function removeBill(index) {
     const confirmed = confirm("Are you sure you want to delete this bill? This action cannot be undone.");
     if (confirmed) {
+        var vl = bills[index];
+        if(vl.tag!='default')
+        {
+            var toc = findtagoccurance(vl.tag);
+            if(toc==1)
+            {
+                tags = tags.filter(tag => tag !== vl.tag);
+            }
+        }
         bills.splice(index, 1);
         saveToLocalStorage();
         updateBillsTable();
